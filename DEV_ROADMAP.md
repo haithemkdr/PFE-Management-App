@@ -52,9 +52,9 @@
 - [ ] **2B.4** Modification possible dans les 48h suivant la séance
 
 ### 2C — Gestion des Supports de Cours (UC-E04)
-- [ ] **2C.1** Upload de fichiers (PDF, DOCX) via `multer`
-- [ ] **2C.2** Route `POST /api/supports` · `GET /api/supports/:affectationId` · `DELETE /api/supports/:id`
-- [ ] **2C.3** Vérification du format et de la taille des fichiers
+- [x] **2C.1** Upload de fichiers (PDF, DOCX) via `multer` *(Réécrit en L3 Mode)*
+- [x] **2C.2** Route `POST /api/supports/upload` · `GET /api/supports/:affectationId` · `DELETE /api/supports/:id` *(Réécrit en L3 Mode)*
+- [x] **2C.3** Vérification du format et de la taille des fichiers *(Réécrit en L3 Mode)*
 
 ### 2D — Gestion des Utilisateurs & Affectations (Agent)
 - [ ] **2D.1** CRUD utilisateurs (enseignants) : `GET` · `POST` · `PUT` · `DELETE`
