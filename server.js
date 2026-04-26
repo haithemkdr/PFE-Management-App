@@ -18,7 +18,10 @@ app.get('/api/status', (req, res) => {
 
 // Importation des routes
 const authRoutes = require('./routes/authRoutes');
+const notesRoutes = require('./routes/notesRoutes');
+
 app.use('/api/auth', authRoutes);
+app.use('/api/notes', notesRoutes);
 
 // Route protégée de test (nécessite un token JWT valide)
 const verifierToken = require('./middleware/authMiddleware');

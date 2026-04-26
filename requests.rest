@@ -1,7 +1,49 @@
+### Login Admin
 POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
   "email": "admin@univ-oran.dz",
   "mot_de_passe": "admin123"
+}
+
+###
+
+### Test route protégée (remplacer TOKEN par le token reçu au login)
+GET http://localhost:5000/api/profil
+Authorization: Bearer TOKEN_ICI
+
+###
+
+### Récupérer les notes d'un groupe pour un module
+GET http://localhost:5000/api/notes?id_module=1&id_groupe=1
+Authorization: Bearer TOKEN_ICI
+
+###
+
+### Saisir une note (upsert)
+POST http://localhost:5000/api/notes/upsert
+Content-Type: application/json
+Authorization: Bearer TOKEN_ICI
+
+{
+  "id_etudiant": 1,
+  "id_module": 1,
+  "note_cc": 14,
+  "note_ef": 12
+}
+
+###
+
+### Saisir une note avec rattrapage
+POST http://localhost:5000/api/notes/upsert
+Content-Type: application/json
+Authorization: Bearer TOKEN_ICI
+
+{
+  "id_etudiant": 1,
+  "id_module": 1,
+  "note_cc": 8,
+  "note_ef": 4,
+  "note_er": 11
 }

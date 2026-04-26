@@ -101,11 +101,52 @@ CREATE TABLE IF NOT EXISTS supports_cours (
     FOREIGN KEY (id_affectation) REFERENCES affectations(id_affectation) ON DELETE CASCADE
 );
 
--- Insertion des données de base (Seed) pour les rôles et l'administrateur
+-- ============================================================
+-- Données de base (Seed) — Rôles, utilisateurs, modules, groupes, étudiants
+-- ============================================================
+
+-- Rôles du système
 INSERT INTO roles (libelle, description) VALUES
 ('Administrateur', 'Accès total au système'),
 ('Enseignant', 'Gestion des notes, absences et supports de cours'),
 ('Agent', 'Agent de scolarité pour consultation et gestion basique');
 
+-- Compte administrateur (mot de passe : admin123, hashé avec bcrypt)
 INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, id_role, actif) VALUES
 ('Admin', 'Super', 'admin@univ-oran.dz', '$2b$10$ij/2B2pQeoh7IuaWl/ylP.QQ2MWJx9XLf8jCXDMoh0HIFh4EbF8AG', 1, 1);
+
+-- Compte enseignant de test (mot de passe : prof123, hashé avec bcrypt)
+-- Le hash sera généré et mis à jour lors du premier lancement
+INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, id_role, actif) VALUES
+('Benali', 'Mohamed', 'benali@univ-oran.dz', '$2b$10$ij/2B2pQeoh7IuaWl/ylP.QQ2MWJx9XLf8jCXDMoh0HIFh4EbF8AG', 2, 1);
+
+-- Compte agent de test (mot de passe : agent123)
+INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, id_role, actif) VALUES
+('Kherfi', 'Amina', 'kherfi@univ-oran.dz', '$2b$10$ij/2B2pQeoh7IuaWl/ylP.QQ2MWJx9XLf8jCXDMoh0HIFh4EbF8AG', 3, 1);
+
+-- Modules enseignés (semestre 1 et 2)
+INSERT INTO modules (nom_module, coefficient, semestre) VALUES
+('Bases de Données', 3.0, 'S1'),
+('Programmation Web', 2.5, 'S1'),
+('Réseaux Informatiques', 2.0, 'S2');
+
+-- Groupes d'étudiants
+INSERT INTO groupes (libelle, type_seance, id_module) VALUES
+('L3-G1', 'TD', 1),
+('L3-G2', 'TD', 1),
+('L3-G1', 'TP', 2);
+
+-- Étudiants du département (6 étudiants répartis dans les groupes)
+INSERT INTO etudiants (matricule, nom, prenom, id_groupe) VALUES
+('202100001', 'Boudiaf', 'Yacine', 1),
+('202100002', 'Mebarki', 'Sara', 1),
+('202100003', 'Hamidi', 'Karim', 1),
+('202100004', 'Ziani', 'Fatima', 2),
+('202100005', 'Boudaoud', 'Amine', 2),
+('202100006', 'Cherifi', 'Nadia', 2);
+
+-- Affectations : enseignant → module → groupe → année
+INSERT INTO affectations (id_utilisateur, id_module, id_groupe, annee_univ) VALUES
+(2, 1, 1, '2025-2026'),
+(2, 1, 2, '2025-2026'),
+(2, 2, 3, '2025-2026');

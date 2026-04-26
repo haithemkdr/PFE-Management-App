@@ -35,13 +35,13 @@
 > Objectif : Développer les API REST pour chaque cas d'utilisation du rapport.
 
 ### 2A — Gestion des Notes (UC-E02)
-- [ ] **2A.1** CRUD notes : `GET /api/notes/:moduleId/:groupeId` · `POST /api/notes` · `PUT /api/notes/:id`
-- [ ] **2A.2** Logique de calcul des moyennes conforme au PV officiel :
+- [x] **2A.1** CRUD notes : `GET /api/notes?id_module=X&id_groupe=Y` · `POST /api/notes/upsert`
+- [x] **2A.2** Logique de calcul des moyennes conforme au PV officiel :
   - `moy1 = 0.40 * note_cc + 0.60 * note_ef`
   - `moy2 = 0.40 * note_cc + 0.60 * note_er` (rattrapage)
   - `moyenne_finale = MAX(moy1, moy2)`
-  - `resultat = ADM si >= 10, RAT si session2 possible, ELI sinon`
-- [ ] **2A.3** Validation : chaque note comprise entre 0.00 et 20.00
+  - `resultat = ADM si >= 10, RAT si >= 5, ELI si < 5`
+- [x] **2A.3** Validation : chaque note comprise entre 0.00 et 20.00
 - [ ] **2A.4** Verrouillage : si `periode_saisie_ouverte = 0`, rejeter toute modification (intégrité pré-délibération)
 - [ ] **2A.5** Traçabilité : chaque saisie horodatée avec `saisie_par` (id enseignant)
 
