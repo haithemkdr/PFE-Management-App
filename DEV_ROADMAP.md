@@ -35,19 +35,19 @@
 > Objectif : Développer les API REST pour chaque cas d'utilisation du rapport.
 
 ### 2A — Gestion des Notes (UC-E02)
-- [x] **2A.1** CRUD notes : `GET /api/notes?id_module=X&id_groupe=Y` · `POST /api/notes/upsert`
-- [x] **2A.2** Logique de calcul des moyennes conforme au PV officiel :
+- [x] **2A.1** CRUD notes : `GET /api/notes?id_module=X&id_groupe=Y` · `POST /api/notes/upsert` *(Réécrit en L3 Mode)*
+- [x] **2A.2** Logique de calcul des moyennes conforme au PV officiel : *(Réécrit en L3 Mode)*
   - `moy1 = 0.40 * note_cc + 0.60 * note_ef`
   - `moy2 = 0.40 * note_cc + 0.60 * note_er` (rattrapage)
   - `moyenne_finale = MAX(moy1, moy2)`
   - `resultat = ADM si >= 10, RAT si >= 5, ELI si < 5`
-- [x] **2A.3** Validation : chaque note comprise entre 0.00 et 20.00
+- [x] **2A.3** Validation : chaque note comprise entre 0.00 et 20.00 *(Réécrit en L3 Mode)*
 - [ ] **2A.4** Verrouillage : si `periode_saisie_ouverte = 0`, rejeter toute modification (intégrité pré-délibération)
 - [ ] **2A.5** Traçabilité : chaque saisie horodatée avec `saisie_par` (id enseignant)
 
 ### 2B — Gestion des Absences (UC-E03)
-- [ ] **2B.1** CRUD absences : `GET /api/absences/:affectationId` · `POST /api/absences` · `PUT /api/absences/:id`
-- [ ] **2B.2** Liste alphabétique des étudiants, tous "Présent" par défaut
+- [x] **2B.1** CRUD absences : `GET /api/absences/:affectationId` · `POST /api/absences` · `PUT /api/absences/:id` *(Réécrit en L3 Mode)*
+- [x] **2B.2** Liste alphabétique des étudiants, tous "Présent" par défaut *(Réécrit en L3 Mode)*
 - [ ] **2B.3** Calcul automatique du taux d'absence cumulé par étudiant
 - [ ] **2B.4** Modification possible dans les 48h suivant la séance
 
