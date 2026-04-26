@@ -19,14 +19,14 @@
   - [ ] `routes/` — Définition des routes API REST
   - [ ] `controllers/` — Logique de traitement des requêtes
   - [ ] `middleware/` — Auth JWT, vérification des rôles
-- [ ] **1.5** Implémenter le module d'authentification :
-  - [ ] Route `POST /api/auth/login` — Connexion avec email/mot_de_passe
-  - [ ] Hachage bcrypt du mot de passe
-  - [ ] Génération et vérification du token JWT
-  - [ ] Middleware `authMiddleware.js` pour protéger les routes
-  - [ ] Middleware `roleMiddleware.js` pour le contrôle RBAC (Enseignant / Agent)
-- [ ] **1.6** Exécuter le `schema.sql` sur MySQL et vérifier les tables via phpMyAdmin
-- [ ] **1.7** Commit & push : `feat: fondation backend MVC avec auth JWT`
+- [x] **1.5** Implémenter le module d'authentification :
+  - [x] Route `POST /api/auth/login` — Connexion avec email/mot_de_passe
+  - [x] Hachage bcrypt du mot de passe
+  - [x] Génération et vérification du token JWT
+  - [x] Middleware `authMiddleware.js` pour protéger les routes
+  - [x] Middleware `roleMiddleware.js` pour le contrôle RBAC (Enseignant / Agent)
+- [x] **1.6** Exécuter le `schema.sql` sur MySQL et vérifier les tables via phpMyAdmin
+- [x] **1.7** Commit & push : `feat: fondation backend MVC avec auth JWT`
 
 ---
 

@@ -16,9 +16,15 @@ app.get('/api/status', (req, res) => {
     res.json({ message: "Le serveur MVC PFE fonctionne correctement ! 🚀" });
 });
 
-// Importation des routes (à décommenter lors de la création des fichiers)
-// const authRoutes = require('./routes/authRoutes');
-// app.use('/api/auth', authRoutes);
+// Importation des routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+// Route protégée de test (nécessite un token JWT valide)
+const verifierToken = require('./middleware/authMiddleware');
+app.get('/api/profil', verifierToken, (req, res) => {
+    res.json({ message: "Accès autorisé !", utilisateur: req.user });
+});
 
 const PORT = process.env.PORT || 5000;
 

@@ -108,4 +108,4 @@ INSERT INTO roles (libelle, description) VALUES
 ('Agent', 'Agent de scolarité pour consultation et gestion basique');
 
 INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, id_role, actif) VALUES
-('Admin', 'Super', 'admin@univ-oran.dz', 'admin123', 1, 1);
+('Admin', 'Super', 'admin@univ-oran.dz', '$2b$10$ij/2B2pQeoh7IuaWl/ylP.QQ2MWJx9XLf8jCXDMoh0HIFh4EbF8AG', 1, 1);
