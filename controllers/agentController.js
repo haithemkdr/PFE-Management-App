@@ -44,6 +44,7 @@ const affecterEnseignant = async (req, res) => {
 const togglePeriodeSaisie = async (req, res) => {
     try {
         let id_module = req.body.id_module;
+        let id_groupe = req.body.id_groupe; // Optionnel: si absent, on met à jour TOUTES les affectations du module
         let periode_saisie_ouverte = req.body.periode_saisie_ouverte;
 
         // Vérification basique
@@ -51,9 +52,25 @@ const togglePeriodeSaisie = async (req, res) => {
             return res.status(400).send("Il manque le module ou le statut de la période !");
         }
 
-        // J'ouvre ou je ferme la saisie pour toutes les notes de ce module
-        let sql = "UPDATE notes SET periode_saisie_ouverte = ? WHERE id_module = ?";
-        await db.query(sql, [periode_saisie_ouverte, id_module]);
+        // ============================================================
+        // PATCH AUDIT: On met à jour la table AFFECTATIONS (et non plus notes)
+        // C'est la bonne table car periode_saisie_ouverte est une propriété
+        // de l'affectation (enseignant + module + groupe), pas de la note elle-même.
+        // ============================================================
+        let sql;
+        let params;
+
+        if (id_groupe != null) {
+            // Si l'agent spécifie un groupe, on ouvre/ferme uniquement cette affectation précise
+            sql = "UPDATE affectations SET periode_saisie_ouverte = ? WHERE id_module = ? AND id_groupe = ?";
+            params = [periode_saisie_ouverte, id_module, id_groupe];
+        } else {
+            // Sinon, on ouvre/ferme TOUTES les affectations de ce module (pour tous les groupes)
+            sql = "UPDATE affectations SET periode_saisie_ouverte = ? WHERE id_module = ?";
+            params = [periode_saisie_ouverte, id_module];
+        }
+
+        await db.query(sql, params);
 
         res.json({ message: "La période de saisie a été mise à jour." });
     } catch (err) {

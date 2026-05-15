@@ -19,11 +19,14 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
 );
 
 -- Table `modules` — Catalogue des matières enseignées.
+-- poids_cc et poids_ef : pondérations configurables par l'Agent (ex: 0.40 et 0.60)
 CREATE TABLE IF NOT EXISTS modules (
     id_module INT AUTO_INCREMENT PRIMARY KEY,
     nom_module VARCHAR(100) NOT NULL,
     coefficient DECIMAL(3,1) NOT NULL,
-    semestre ENUM('S1', 'S2') NOT NULL
+    semestre ENUM('S1', 'S2') NOT NULL,
+    poids_cc DECIMAL(3,2) DEFAULT 0.40,
+    poids_ef DECIMAL(3,2) DEFAULT 0.60
 );
 
 -- Table `groupes` — Les groupes d'étudiants (TD, TP, Cours).
@@ -46,18 +49,21 @@ CREATE TABLE IF NOT EXISTS etudiants (
 );
 
 -- Table `affectations` — Relie un enseignant à un module et un groupe pour une année donnée.
+-- periode_saisie_ouverte : 0 = fermée (par défaut), 1 = ouverte par l'Agent avant les délibérations
 CREATE TABLE IF NOT EXISTS affectations (
     id_affectation INT AUTO_INCREMENT PRIMARY KEY,
     id_utilisateur INT,
     id_module INT,
     id_groupe INT,
     annee_univ VARCHAR(20),
+    periode_saisie_ouverte TINYINT(1) DEFAULT 0,
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id_utilisateur) ON DELETE CASCADE,
     FOREIGN KEY (id_module) REFERENCES modules(id_module) ON DELETE CASCADE,
     FOREIGN KEY (id_groupe) REFERENCES groupes(id_groupe) ON DELETE CASCADE
 );
 
 -- Table `notes` — Relevés de notes alignés sur le PV officiel.
+-- Note: periode_saisie_ouverte a été déplacé dans la table `affectations`
 CREATE TABLE IF NOT EXISTS notes (
     id_note INT AUTO_INCREMENT PRIMARY KEY,
     id_etudiant INT,
@@ -69,7 +75,6 @@ CREATE TABLE IF NOT EXISTS notes (
     moy2 DECIMAL(4,2) NULL,
     moyenne_finale DECIMAL(4,2) NULL,
     resultat ENUM('ADM','RAT','ELI') NULL,
-    periode_saisie_ouverte TINYINT(1) DEFAULT 0,
     saisie_par INT,
     date_saisie DATETIME DEFAULT NOW(),
     FOREIGN KEY (id_etudiant) REFERENCES etudiants(id_etudiant) ON DELETE CASCADE,
