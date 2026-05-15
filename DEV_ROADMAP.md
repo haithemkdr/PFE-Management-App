@@ -57,12 +57,12 @@
 - [x] **2C.3** Vérification du format et de la taille des fichiers *(Réécrit en L3 Mode)*
 
 ### 2D — Gestion des Utilisateurs & Affectations (Agent)
-- [ ] **2D.1** CRUD utilisateurs (enseignants) : `GET` · `POST` · `PUT` · `DELETE`
-- [ ] **2D.2** CRUD affectations : associer enseignant → module → groupe → année
-- [ ] **2D.3** CRUD étudiants et groupes
-- [ ] **2D.4** Ouverture/fermeture des périodes de saisie par l'agent
+- [x] **2D.1** CRUD utilisateurs (enseignants) : `GET` · `POST` · `PUT` · `DELETE`
+- [x] **2D.2** CRUD affectations : associer enseignant → module → groupe → année
+- [x] **2D.3** CRUD étudiants et groupes
+- [x] **2D.4** Ouverture/fermeture des périodes de saisie par l'agent
 
-- [ ] **2.END** Commit & push : `feat: modules métier notes, absences, supports, affectations`
+- [x] **2.END** Commit & push : `feat: modules métier notes, absences, supports, affectations`
 
 ---
 
