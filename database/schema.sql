@@ -155,3 +155,41 @@ INSERT INTO affectations (id_utilisateur, id_module, id_groupe, annee_univ) VALU
 (2, 1, 1, '2025-2026'),
 (2, 1, 2, '2025-2026'),
 (2, 2, 3, '2025-2026');
+
+-- ============================================================
+-- Table `annonces` — Messages envoyés par un enseignant à un groupe (UC-E05)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS annonces (
+    id_annonce     INT AUTO_INCREMENT PRIMARY KEY,
+    id_enseignant  INT NOT NULL,
+    id_groupe      INT NOT NULL,
+    titre          VARCHAR(255) NOT NULL,
+    contenu        TEXT NOT NULL,
+    date_envoi     DATETIME DEFAULT NOW(),
+    FOREIGN KEY (id_enseignant) REFERENCES utilisateurs(id_utilisateur) ON DELETE CASCADE,
+    FOREIGN KEY (id_groupe)     REFERENCES groupes(id_groupe)           ON DELETE CASCADE
+);
+
+-- ============================================================
+-- Table `emploi_du_temps` — Créneaux hebdomadaires d'un enseignant (UC-E06)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS emploi_du_temps (
+    id_creneau     INT AUTO_INCREMENT PRIMARY KEY,
+    id_affectation INT NOT NULL,
+    jour           ENUM('Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi') NOT NULL,
+    heure_debut    TIME NOT NULL,
+    heure_fin      TIME NOT NULL,
+    salle          VARCHAR(50),
+    type_seance    ENUM('CM','TD','TP') NOT NULL,
+    FOREIGN KEY (id_affectation) REFERENCES affectations(id_affectation) ON DELETE CASCADE
+);
+
+-- Données de démonstration — emploi du temps de l'enseignant Benali (id=2)
+INSERT INTO emploi_du_temps (id_affectation, jour, heure_debut, heure_fin, salle, type_seance) VALUES
+(1, 'Lundi',    '08:00:00', '09:30:00', 'Amphi A', 'CM'),
+(1, 'Mercredi', '09:30:00', '11:00:00', 'TP 04',   'TP'),
+(2, 'Mardi',    '11:00:00', '12:30:00', 'TD 02',   'TD'),
+(2, 'Mardi',    '15:00:00', '16:30:00', 'Salle 08','TD'),
+(3, 'Jeudi',    '08:00:00', '09:30:00', 'Amphi B', 'CM'),
+(3, 'Vendredi', '13:30:00', '15:00:00', 'TP 02',   'TP');
+

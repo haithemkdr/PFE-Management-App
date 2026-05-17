@@ -3,6 +3,7 @@
 > **Source :** Synchronisé depuis le notebook NotebookLM "Portail de Gestion Pédagogique" + "Gestion Numérique des Notes"
 > **Stack :** Node.js/Express (MVC) · MySQL/mysql2 · React.js (via Google Stitch) · Git/GitHub
 > **Règle :** Avant chaque session de travail, relire ce fichier et cocher `[x]` les tâches terminées.
+> **Dernière mise à jour :** 2026-05-16 — Conformité complète Agent pédagogique (6/6 fonctions)
 
 ---
 
@@ -14,11 +15,11 @@
 - [x] **1.2** Initialiser le projet Node.js (`npm init`) + installer les dépendances (`express`, `mysql2`, `dotenv`, `cors`, `bcryptjs`, `jsonwebtoken`)
 - [x] **1.3** Configurer la connexion MySQL avec `mysql2/promise` dans `config/db.js`
 - [x] **1.4** Structurer le projet en MVC :
-  - [ ] `server.js` — Point d'entrée
-  - [ ] `config/` — Configuration BDD et variables d'environnement
-  - [ ] `routes/` — Définition des routes API REST
-  - [ ] `controllers/` — Logique de traitement des requêtes
-  - [ ] `middleware/` — Auth JWT, vérification des rôles
+  - [x] `server.js` — Point d'entrée
+  - [x] `config/` — Configuration BDD et variables d'environnement
+  - [x] `routes/` — Définition des routes API REST
+  - [x] `controllers/` — Logique de traitement des requêtes
+  - [x] `middleware/` — Auth JWT, vérification des rôles
 - [x] **1.5** Implémenter le module d'authentification :
   - [x] Route `POST /api/auth/login` — Connexion avec email/mot_de_passe
   - [x] Hachage bcrypt du mot de passe
@@ -34,76 +35,156 @@
 
 > Objectif : Développer les API REST pour chaque cas d'utilisation du rapport.
 
-### 2A — Gestion des Notes (UC-E02)
-- [x] **2A.1** CRUD notes : `GET /api/notes?id_module=X&id_groupe=Y` · `POST /api/notes/upsert` *(Réécrit en L3 Mode)*
-- [x] **2A.2** Logique de calcul des moyennes conforme au PV officiel : *(Réécrit en L3 Mode)*
-  - `moy1 = 0.40 * note_cc + 0.60 * note_ef`
-  - `moy2 = 0.40 * note_cc + 0.60 * note_er` (rattrapage)
+### 2A — Gestion des Notes (UC-E02) ✅
+- [x] **2A.1** CRUD notes : `GET /api/notes?id_module=X&id_groupe=Y` · `POST /api/notes/upsert`
+- [x] **2A.2** Logique de calcul des moyennes conforme au PV officiel :
+  - `moy1 = poids_cc * note_cc + poids_ef * note_ef` *(pondérations dynamiques depuis BDD)*
+  - `moy2 = poids_cc * note_cc + poids_ef * note_er` (rattrapage)
   - `moyenne_finale = MAX(moy1, moy2)`
   - `resultat = ADM si >= 10, RAT si >= 5, ELI si < 5`
-- [x] **2A.3** Validation : chaque note comprise entre 0.00 et 20.00 *(Réécrit en L3 Mode)*
-- [ ] **2A.4** Verrouillage : si `periode_saisie_ouverte = 0`, rejeter toute modification (intégrité pré-délibération)
-- [ ] **2A.5** Traçabilité : chaque saisie horodatée avec `saisie_par` (id enseignant)
+- [x] **2A.3** Validation : chaque note comprise entre 0.00 et 20.00
+- [x] **2A.4** Verrouillage : si `periode_saisie_ouverte = 0`, rejeter toute modification (intégrité pré-délibération)
+- [x] **2A.5** Traçabilité : chaque saisie horodatée avec `saisie_par` (id enseignant via JWT `id_utilisateur`)
 
-### 2B — Gestion des Absences (UC-E03)
-- [x] **2B.1** CRUD absences : `GET /api/absences/:affectationId` · `POST /api/absences` · `PUT /api/absences/:id` *(Réécrit en L3 Mode)*
-- [x] **2B.2** Liste alphabétique des étudiants, tous "Présent" par défaut *(Réécrit en L3 Mode)*
-- [ ] **2B.3** Calcul automatique du taux d'absence cumulé par étudiant
-- [ ] **2B.4** Modification possible dans les 48h suivant la séance
+### 2B — Gestion des Absences (UC-E03) ✅
+- [x] **2B.1** CRUD absences : `GET /api/absences/:affectationId` · `POST /api/absences` · `PUT /api/absences/:id`
+- [x] **2B.2** Liste alphabétique des étudiants, tous "Présent" par défaut
+- [ ] **2B.3** Calcul automatique du taux d'absence cumulé par étudiant *(Phase 4)*
+- [ ] **2B.4** Modification possible dans les 48h suivant la séance *(Phase 4)*
 
-### 2C — Gestion des Supports de Cours (UC-E04)
-- [x] **2C.1** Upload de fichiers (PDF, DOCX) via `multer` *(Réécrit en L3 Mode)*
-- [x] **2C.2** Route `POST /api/supports/upload` · `GET /api/supports/:affectationId` · `DELETE /api/supports/:id` *(Réécrit en L3 Mode)*
-- [x] **2C.3** Vérification du format et de la taille des fichiers *(Réécrit en L3 Mode)*
+### 2C — Gestion des Supports de Cours (UC-E04) ✅
+- [x] **2C.1** Upload de fichiers (PDF, DOCX) via `multer`
+- [x] **2C.2** Route `POST /api/supports/upload` · `GET /api/supports/:affectationId` · `DELETE /api/supports/:id`
+- [x] **2C.3** Vérification du format et de la taille des fichiers
 
-### 2D — Gestion des Utilisateurs & Affectations (Agent)
-- [x] **2D.1** CRUD utilisateurs (enseignants) : `GET` · `POST` · `PUT` · `DELETE`
+### 2D — Gestion des Utilisateurs & Affectations (Agent) ✅
+- [x] **2D.1** CRUD utilisateurs (enseignants) : `GET` · `POST` · `PUT` · `PATCH statut`
 - [x] **2D.2** CRUD affectations : associer enseignant → module → groupe → année
 - [x] **2D.3** CRUD étudiants et groupes
-- [x] **2D.4** Ouverture/fermeture des périodes de saisie par l'agent
-
 - [x] **2.END** Commit & push : `feat: modules métier notes, absences, supports, affectations`
 
+### 2E — Annonces & Messages aux Étudiants (UC-E05) ✅
+- [x] **2E.1** Route `POST /api/annonces` — créer et envoyer une annonce à un groupe
+- [x] **2E.2** Route `GET /api/annonces?id_enseignant=X` — liste des annonces envoyées
+- [x] **2E.3** Route `DELETE /api/annonces/:id_annonce` — suppression d'une annonce
+- [x] **2E.4** Validation : titre et contenu non vides, groupe destinataire valide
+- [x] **2E.5** Ownership guard : JWT `id_utilisateur` vérifié avant suppression
+
+### 2F — Emploi du Temps Enseignant (UC-E06) ✅
+- [x] **2F.1** Route `GET /api/emploi-du-temps/:id_enseignant` — retourner les créneaux de la semaine courante
+- [x] **2F.2** Ownership guard : l'enseignant ne peut modifier que ses propres créneaux
+- [x] **2F.3** Réponse structurée : `{ jour, heure_debut, heure_fin, module, groupe, salle, type (CM/TD/TP) }`
+
+### 2G — Agent Pédagogique — Conformité Complète (UC-A01 à UC-A06) ✅ *[NOUVEAU — 2026-05-16]*
+- [x] **2G.1** REQ-1 : Gérer les comptes enseignants — `GET/POST /api/agent/enseignants` · `PUT /api/agent/enseignants/:id` · `PATCH /api/agent/enseignants/:id/statut`
+  - Hash bcryptjs du mot de passe à la création
+  - Vérification unicité email (HTTP 409)
+  - Protection : seuls les comptes `id_role=2` peuvent être activés/désactivés
+- [x] **2G.2** REQ-2 : Affecter les enseignants aux modules et groupes — `POST /api/agent/affectation` *(existait, confirmé)*
+- [x] **2G.3** REQ-3 : Définir les règles de calcul des notes — `PUT /api/agent/modules/:id/regles-notes`
+  - Validation mathématique : `poids_cc + poids_ef = 1.00` (HTTP 400 sinon)
+  - Les notes sont recalculées dynamiquement à chaque saisie via ces poids
+- [x] **2G.4** REQ-4 : Autoriser/verrouiller la saisie des notes — `PUT /api/agent/periode-saisie` *(existait, confirmé)*
+- [x] **2G.5** REQ-5 : Superviser le dépôt des cours — `GET /api/agent/supports`
+  - Vue enrichie 4 tables JOIN : fichier + enseignant + module + groupe + date
+- [x] **2G.6** REQ-6 : Mettre à jour l'emploi du temps — `GET/POST/PUT /api/agent/edt` · `DELETE /api/agent/edt/:id`
+  - Vérification existence de l'affectation avant CREATE/UPDATE
+  - `upsertCreneauAgent` : même endpoint pour créer (sans `id_creneau`) et modifier (avec `id_creneau`)
+
+- [x] **2.G.END** Commit & push : `feat: conformité complète agent pédagogique (6/6 UC-A)`
+
 ---
 
-## Phase 3 — Interface Utilisateur (React via Google Stitch)
+## Phase 3 — Interface Utilisateur (Figma / React via Google Stitch)
 
-> Objectif : Intégrer les composants UI générés par Google Stitch avec le backend API.
+> Objectif : Créer et raffiner les maquettes UI, puis intégrer les composants React avec le backend.
 
-- [ ] **3.1** Initialiser le projet React (Vite ou CRA) dans `client/`
-- [ ] **3.2** Configurer le proxy API vers le backend Express
-- [ ] **3.3** Page de connexion (login) — formulaire email/mot_de_passe → JWT
-- [ ] **3.4** Tableau de bord Enseignant :
-  - [ ] Vue emploi du temps (UC-E01) — calendrier hebdomadaire
-  - [ ] Tableau de saisie des notes (UC-E02) — grille éditable
-  - [ ] Formulaire d'appel (UC-E03) — liste avec toggle Présent/Absent
-  - [ ] Section supports de cours (UC-E04) — upload + liste des fichiers
-- [ ] **3.5** Tableau de bord Agent :
-  - [ ] Gestion des comptes enseignants
-  - [ ] Gestion des affectations module/groupe
-  - [ ] Ouverture/fermeture des périodes de saisie
-- [ ] **3.6** Composants réutilisables : `Navbar`, `Sidebar`, `DataTable`, `Modal`
-- [ ] **3.7** Commit & push : `feat: intégration frontend React avec backend API`
+### 3A — Maquettes Figma (Design System) ✅ *[Complété — 2026-05-17]*
+- [x] **3A.1** Identité visuelle **TRACE** (Teacher Record and Academic Control Environment) appliquée sur toutes les vues.
+- [x] **3A.2** Design system défini : tokens couleur (ex: `--primary` #1B3A5C, `--danger` #C62828), typographie, grille 1440×900.
+- [x] **3A.3** 14 pages Figma créées et validées (alignées sur le MVP) :
+  - Page 01 : Login (avec branding TRACE)
+  - Pages 02–07 : Interfaces Enseignant (Dashboard, Notes, Absences, Supports, Annonces, EDT)
+  - Page 08 : Agent Dashboard
+  - Pages 09–14 : Interfaces Agent (Enseignants, Affectations, Règles des notes [Page 14], Périodes de Saisie, Supervision cours, EDT Agent). La page "Gestion Étudiants" a été retirée du MVP.
+- [x] **3A.4** Sidebar normalisée sur toutes les pages (icons Feather, spacing 16/14px, gap 12px).
+  - Sidebar Agent stricte à 7 items : Tableau de bord + 6 Fonctions Obligatoires (A01-A06).
+- [x] **3A.5** Navbar globale normalisée : Titre/Logo TRACE à gauche, Nom d'utilisateur et bouton "Déconnexion" (couleur `--danger` #C62828) à droite.
+
+### 3B — Intégration React (En cours)
+- [ ] **3B.1** Initialiser le projet React (Vite) dans `client/` avec configuration du proxy API (`/api` → `http://localhost:5000`).
+- [ ] **3B.2** Implémenter le Layout Global et les composants partagés :
+  - [ ] `Navbar` : Branding TRACE, affichage du nom de l'utilisateur, bouton "Déconnexion" fonctionnel (clear token + redirect `/login`).
+  - [ ] `Sidebar` : Menu dynamique basé sur le `role` du JWT (Enseignant vs Agent) avec icônes Feather.
+  - [ ] `DataTable`, `Modal`, `ProtectedRoute`.
+- [ ] **3B.3** Page de connexion (`LoginPage`) — formulaire email/mot_de_passe → JWT → redirect selon rôle.
+- [ ] **3B.4** Interfaces Enseignant (Génération Stitch & Connexion API) :
+  - [ ] Notes (UC-E02) — grille éditable CC/EF/ER.
+  - [ ] Absences (UC-E03) — liste avec toggle Présent/Absent.
+  - [ ] Supports (UC-E04) — upload + liste des fichiers.
+  - [ ] Annonces (UC-E05) — formulaire + tableau.
+  - [ ] Emploi du Temps (UC-E06) — grille hebdomadaire Lun–Sam.
+- [ ] **3B.5** Interfaces Agent (Génération Stitch & Connexion API) :
+  - [ ] `TeachersListPage` (A01) : CRUD Enseignants.
+  - [ ] `AssignmentsPage` (A02) : Affectations (enseignant → module → groupe).
+  - [ ] `GradeRulesPage` (A03) : Configuration des poids CC/EF par module.
+  - [ ] `GradePeriodPage` (A04) : Ouverture/fermeture des périodes de saisie.
+  - [ ] `SupportsSupervisionPage` (A05) : Vue globale des supports déposés.
+  - [ ] `EdtManagementPage` (A06) : Vue globale et CRUD des créneaux EDT.
+- [ ] **3B.6** Commit & push : `feat: intégration frontend React avec backend API`
 
 ---
 
-## Phase 4 — Tests, Sécurité & Finalisation
+## Phase 4 — Interface Étudiants (À venir)
+
+> Objectif : Créer les pages et l'API pour le portail étudiant.
+
+- [ ] **4.1** Maquettes Figma : pages 16–20 (Dashboard étudiant, Notes, Absences, Supports, EDT)
+- [ ] **4.2** Nouvelles routes backend : `GET /api/etudiant/notes` · `GET /api/etudiant/absences`
+- [ ] **4.3** Authentification étudiant (rôle séparé ou token dédié)
+- [ ] **4.4** Intégration React frontend étudiant
+
+---
+
+## Phase 5 — Tests, Sécurité & Finalisation
 
 > Objectif : Valider le fonctionnement complet et la conformité avec le cahier des charges.
 
-- [ ] **4.1** Tests manuels de chaque cas d'utilisation (scénarios nominaux + alternatifs)
-- [ ] **4.2** Vérification de la sécurité :
-  - [ ] Mots de passe hashés (bcrypt) — jamais en clair
-  - [ ] Tokens JWT avec expiration
-  - [ ] RBAC fonctionnel (Enseignant ne peut pas accéder aux routes Agent)
-  - [ ] Permissions départementales et de données
-- [ ] **4.3** Vérification de la conformité :
-  - [ ] Notes alignées sur le PV réel (Annexe 1)
-  - [ ] Fiches d'absence alignées sur les séances S1-S10 (Annexe 2)
+- [ ] **5.1** Tests manuels de chaque cas d'utilisation (scénarios nominaux + alternatifs)
+- [ ] **5.2** Vérification de la sécurité :
+  - [x] Mots de passe hashés (bcryptjs) — jamais en clair
+  - [x] Tokens JWT avec expiration
+  - [x] RBAC fonctionnel (Enseignant ne peut pas accéder aux routes Agent)
+  - [x] Ownership guards sur annonces et EDT
+  - [ ] Rate limiting sur `/api/auth/login`
+- [ ] **5.3** Vérification de la conformité :
+  - [x] Notes alignées sur le PV réel (pondérations dynamiques)
+  - [x] Fiches d'absence alignées sur les séances
   - [ ] Intégrité référentielle : pas de note orpheline, pas d'étudiant sans groupe
-- [ ] **4.4** Captures d'écran pour le rapport PFE (chapitre Implémentation)
-- [ ] **4.5** Déploiement local final + documentation README
-- [ ] **4.6** Commit & push : `release: v1.0 application PFE complète`
+- [ ] **5.4** Captures d'écran pour le rapport PFE (chapitre Implémentation)
+- [ ] **5.5** Déploiement local final + documentation README
+- [ ] **5.6** Commit & push : `release: v1.0 application PFE complète`
+
+---
+
+## 📊 Tableau de Bord de Conformité
+
+| Rôle | UC | Fonction | Backend | Figma | React |
+|------|-----|----------|---------|-------|-------|
+| **Enseignant** | UC-E01 | Consulter modules & groupes affectés | ✅ | ✅ P02 | ⬜ |
+| **Enseignant** | UC-E02 | Saisir les notes (CC, TD, TP, Examen) | ✅ | ✅ P03 | ⬜ |
+| **Enseignant** | UC-E03 | Effectuer l'appel (présences/absences) | ✅ | ✅ P04 | ⬜ |
+| **Enseignant** | UC-E04 | Déposer des supports de cours | ✅ | ✅ P05 | ⬜ |
+| **Enseignant** | UC-E05 | Envoyer des annonces aux étudiants | ✅ | ✅ P06 | ⬜ |
+| **Enseignant** | UC-E06 | Consulter son emploi du temps | ✅ | ✅ P07 | ⬜ |
+| **Agent Péd.** | UC-A01 | Gérer les comptes enseignants | ✅ | ✅ P09 | ⬜ |
+| **Agent Péd.** | UC-A02 | Affecter enseignants aux modules/groupes | ✅ | ✅ P11 | ⬜ |
+| **Agent Péd.** | UC-A03 | Définir les règles de calcul des notes | ✅ | ✅ P13 | ⬜ |
+| **Agent Péd.** | UC-A04 | Autoriser/verrouiller la saisie des notes | ✅ | ✅ P12 | ⬜ |
+| **Agent Péd.** | UC-A05 | Superviser le dépôt des cours | ✅ | ✅ P09 | ⬜ |
+| **Agent Péd.** | UC-A06 | Mettre à jour l'emploi du temps | ✅ | ✅ P07 | ⬜ |
+
+**Légende :** ✅ Terminé · ⬜ À faire · 🔄 En cours
 
 ---
 

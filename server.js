@@ -21,12 +21,16 @@ const notesRoutes = require('./routes/notesRoutes');
 const absencesRoutes = require('./routes/absencesRoutes');
 const supportsRoutes = require('./routes/supportsRoutes');
 const agentRoutes = require('./routes/agentRoutes');
+const annoncesRoutes = require('./routes/annoncesRoutes');
+const emploiDuTempsRoutes = require('./routes/emploiDuTempsRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/absences', absencesRoutes);
 app.use('/api/supports', supportsRoutes);
 app.use('/api/agent', agentRoutes);
+app.use('/api/annonces', annoncesRoutes);
+app.use('/api/emploi-du-temps', emploiDuTempsRoutes);
 
 // Je rends le dossier uploads/ accessible publiquement pour que le front puisse télécharger les fichiers
 app.use('/uploads', express.static('uploads'));
