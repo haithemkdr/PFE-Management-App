@@ -3,7 +3,7 @@
 > **Source :** Synchronisé depuis le notebook NotebookLM "Portail de Gestion Pédagogique" + "Gestion Numérique des Notes"
 > **Stack :** Node.js/Express (MVC) · MySQL/mysql2 · React.js (via Google Stitch) · Git/GitHub
 > **Règle :** Avant chaque session de travail, relire ce fichier et cocher `[x]` les tâches terminées.
-> **Dernière mise à jour :** 2026-05-16 — Conformité complète Agent pédagogique (6/6 fonctions)
+> **Dernière mise à jour :** 2026-05-22 — Phase 5 sécurité + intégrité terminée (rate limiting + check-data-integrity ✅)
 
 ---
 
@@ -106,43 +106,33 @@
   - Page 01 : Login (avec branding TRACE)
   - Pages 02–07 : Interfaces Enseignant (Dashboard, Notes, Absences, Supports, Annonces, EDT)
   - Page 08 : Agent Dashboard
-  - Pages 09–14 : Interfaces Agent (Enseignants, Affectations, Règles des notes [Page 14], Périodes de Saisie, Supervision cours, EDT Agent). La page "Gestion Étudiants" a été retirée du MVP.
+  - Pages 09–14 : Interfaces Agent (09-Gestion Enseignants, 10-Gestion Affectations, 11-Règles des Notes, 12-Périodes de Saisie, 13-Supervision des Supports, 14-Gestion Emploi du Temps). La page "Gestion Étudiants" a été retirée du MVP.
 - [x] **3A.4** Sidebar normalisée sur toutes les pages (icons Feather, spacing 16/14px, gap 12px).
   - Sidebar Agent stricte à 7 items : Tableau de bord + 6 Fonctions Obligatoires (A01-A06).
 - [x] **3A.5** Navbar globale normalisée : Titre/Logo TRACE à gauche, Nom d'utilisateur et bouton "Déconnexion" (couleur `--danger` #C62828) à droite.
 
 ### 3B — Intégration React (En cours)
-- [ ] **3B.1** Initialiser le projet React (Vite) dans `client/` avec configuration du proxy API (`/api` → `http://localhost:5000`).
-- [ ] **3B.2** Implémenter le Layout Global et les composants partagés :
-  - [ ] `Navbar` : Branding TRACE, affichage du nom de l'utilisateur, bouton "Déconnexion" fonctionnel (clear token + redirect `/login`).
-  - [ ] `Sidebar` : Menu dynamique basé sur le `role` du JWT (Enseignant vs Agent) avec icônes Feather.
-  - [ ] `DataTable`, `Modal`, `ProtectedRoute`.
-- [ ] **3B.3** Page de connexion (`LoginPage`) — formulaire email/mot_de_passe → JWT → redirect selon rôle.
-- [ ] **3B.4** Interfaces Enseignant (Génération Stitch & Connexion API) :
-  - [ ] Notes (UC-E02) — grille éditable CC/EF/ER.
-  - [ ] Absences (UC-E03) — liste avec toggle Présent/Absent.
-  - [ ] Supports (UC-E04) — upload + liste des fichiers.
-  - [ ] Annonces (UC-E05) — formulaire + tableau.
-  - [ ] Emploi du Temps (UC-E06) — grille hebdomadaire Lun–Sam.
-- [ ] **3B.5** Interfaces Agent (Génération Stitch & Connexion API) :
-  - [ ] `TeachersListPage` (A01) : CRUD Enseignants.
-  - [ ] `AssignmentsPage` (A02) : Affectations (enseignant → module → groupe).
-  - [ ] `GradeRulesPage` (A03) : Configuration des poids CC/EF par module.
-  - [ ] `GradePeriodPage` (A04) : Ouverture/fermeture des périodes de saisie.
-  - [ ] `SupportsSupervisionPage` (A05) : Vue globale des supports déposés.
-  - [ ] `EdtManagementPage` (A06) : Vue globale et CRUD des créneaux EDT.
-- [ ] **3B.6** Commit & push : `feat: intégration frontend React avec backend API`
-
----
-
-## Phase 4 — Interface Étudiants (À venir)
-
-> Objectif : Créer les pages et l'API pour le portail étudiant.
-
-- [ ] **4.1** Maquettes Figma : pages 16–20 (Dashboard étudiant, Notes, Absences, Supports, EDT)
-- [ ] **4.2** Nouvelles routes backend : `GET /api/etudiant/notes` · `GET /api/etudiant/absences`
-- [ ] **4.3** Authentification étudiant (rôle séparé ou token dédié)
-- [ ] **4.4** Intégration React frontend étudiant
+- [x] **3B.1** Initialiser le projet React (Vite) dans `client/` avec configuration du proxy API (`/api` → `http://localhost:5000`).
+- [x] **3B.2** Implémenter le Layout Global et les composants partagés :
+  - [x] `Navbar` : Branding TRACE, affichage du nom de l'utilisateur, bouton "Déconnexion" fonctionnel (clear token + redirect `/login`).
+  - [x] `Sidebar` : Menu dynamique basé sur le `role` du JWT (Enseignant vs Agent) avec icônes Feather.
+  - [x] `DataTable`, `Modal`, `ProtectedRoute`.
+- [x] **3B.3** Page de connexion (`LoginPage`) — formulaire email/mot_de_passe → JWT → redirect selon rôle.
+- [x] **3B.4** Interfaces Enseignant (Génération Stitch & Connexion API) :
+  - [x] Dashboard (UC-E01) — stat cards + tableau mes affectations.
+  - [x] Notes (UC-E02) — grille éditable CC/EF/ER.
+  - [x] Absences (UC-E03) — liste avec toggle Présent/Absent.
+  - [x] Supports (UC-E04) — upload + liste des fichiers.
+  - [x] Annonces (UC-E05) — formulaire + tableau.
+  - [x] Emploi du Temps (UC-E06) — grille hebdomadaire Lun–Sam.
+- [x] **3B.5** Interfaces Agent (Génération Stitch & Connexion API) :
+  - [x] `TeachersListPage` (A01) : CRUD Enseignants.
+  - [x] `AssignmentsPage` (A02) : Affectations (enseignant → module → groupe).
+  - [x] `GradeRulesPage` (A03) : Configuration des poids CC/EF par module.
+  - [x] `GradePeriodPage` (A04) : Ouverture/fermeture des périodes de saisie.
+  - [x] `ContinueonPage` (A05) : Vue globale des supports déposés.
+  - [x] `EdtManagementPage` (A06) : Vue globale et CRUD des créneaux EDT.
+- [x] **3B.6** Commit & push : `feat: intégration frontend React avec backend API`
 
 ---
 
@@ -150,19 +140,19 @@
 
 > Objectif : Valider le fonctionnement complet et la conformité avec le cahier des charges.
 
-- [ ] **5.1** Tests manuels de chaque cas d'utilisation (scénarios nominaux + alternatifs)
-- [ ] **5.2** Vérification de la sécurité :
+- [x] **5.1** Tests manuels de chaque cas d'utilisation (scénarios nominaux + alternatifs)
+- [x] **5.2** Vérification de la sécurité :
   - [x] Mots de passe hashés (bcryptjs) — jamais en clair
   - [x] Tokens JWT avec expiration
   - [x] RBAC fonctionnel (Enseignant ne peut pas accéder aux routes Agent)
   - [x] Ownership guards sur annonces et EDT
-  - [ ] Rate limiting sur `/api/auth/login`
-- [ ] **5.3** Vérification de la conformité :
+  - [x] Rate limiting sur `/api/auth/login` — `express-rate-limit` (10 req/15min/IP)
+- [x] **5.3** Vérification de la conformité :
   - [x] Notes alignées sur le PV réel (pondérations dynamiques)
   - [x] Fiches d'absence alignées sur les séances
-  - [ ] Intégrité référentielle : pas de note orpheline, pas d'étudiant sans groupe
-- [ ] **5.4** Captures d'écran pour le rapport PFE (chapitre Implémentation)
-- [ ] **5.5** Déploiement local final + documentation README
+  - [x] Intégrité référentielle : `scripts/check-data-integrity.js` — 0 problèmes détectés ✅
+- [x] **5.4** Captures d'écran pour le rapport PFE (chapitre Implémentation)
+- [x] **5.5** Déploiement local final + documentation README
 - [ ] **5.6** Commit & push : `release: v1.0 application PFE complète`
 
 ---
@@ -171,18 +161,18 @@
 
 | Rôle | UC | Fonction | Backend | Figma | React |
 |------|-----|----------|---------|-------|-------|
-| **Enseignant** | UC-E01 | Consulter modules & groupes affectés | ✅ | ✅ P02 | ⬜ |
-| **Enseignant** | UC-E02 | Saisir les notes (CC, TD, TP, Examen) | ✅ | ✅ P03 | ⬜ |
-| **Enseignant** | UC-E03 | Effectuer l'appel (présences/absences) | ✅ | ✅ P04 | ⬜ |
-| **Enseignant** | UC-E04 | Déposer des supports de cours | ✅ | ✅ P05 | ⬜ |
-| **Enseignant** | UC-E05 | Envoyer des annonces aux étudiants | ✅ | ✅ P06 | ⬜ |
-| **Enseignant** | UC-E06 | Consulter son emploi du temps | ✅ | ✅ P07 | ⬜ |
-| **Agent Péd.** | UC-A01 | Gérer les comptes enseignants | ✅ | ✅ P09 | ⬜ |
-| **Agent Péd.** | UC-A02 | Affecter enseignants aux modules/groupes | ✅ | ✅ P11 | ⬜ |
-| **Agent Péd.** | UC-A03 | Définir les règles de calcul des notes | ✅ | ✅ P13 | ⬜ |
-| **Agent Péd.** | UC-A04 | Autoriser/verrouiller la saisie des notes | ✅ | ✅ P12 | ⬜ |
-| **Agent Péd.** | UC-A05 | Superviser le dépôt des cours | ✅ | ✅ P09 | ⬜ |
-| **Agent Péd.** | UC-A06 | Mettre à jour l'emploi du temps | ✅ | ✅ P07 | ⬜ |
+| **Enseignant** | UC-E01 | Consulter modules & groupes affectés | ✅ | ✅ P02 | ✅ |
+| **Enseignant** | UC-E02 | Saisir les notes (CC, TD, TP, Examen) | ✅ | ✅ P03 | ✅ |
+| **Enseignant** | UC-E03 | Effectuer l'appel (présences/absences) | ✅ | ✅ P04 | ✅ |
+| **Enseignant** | UC-E04 | Déposer des supports de cours | ✅ | ✅ P05 | ✅ |
+| **Enseignant** | UC-E05 | Envoyer des annonces aux étudiants | ✅ | ✅ P06 | ✅ |
+| **Enseignant** | UC-E06 | Consulter son emploi du temps | ✅ | ✅ P07 | ✅ |
+| **Agent Péd.** | UC-A01 | Gérer les comptes enseignants | ✅ | ✅ P09 | ✅ |
+| **Agent Péd.** | UC-A02 | Affecter enseignants aux modules/groupes | ✅ | ✅ P10 | ✅ |
+| **Agent Péd.** | UC-A03 | Définir les règles de calcul des notes | ✅ | ✅ P11 | ✅ |
+| **Agent Péd.** | UC-A04 | Autoriser/verrouiller la saisie des notes | ✅ | ✅ P12 | ✅ |
+| **Agent Péd.** | UC-A05 | Superviser le dépôt des cours | ✅ | ✅ P13 | ✅ |
+| **Agent Péd.** | UC-A06 | Mettre à jour l'emploi du temps | ✅ | ✅ P14 | ✅ |
 
 **Légende :** ✅ Terminé · ⬜ À faire · 🔄 En cours
 

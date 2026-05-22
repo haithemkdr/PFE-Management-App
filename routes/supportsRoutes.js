@@ -4,8 +4,22 @@ const { uploadSupport, getSupports, deleteSupport } = require('../controllers/su
 const verifierToken = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
-// Route pour uploader un fichier (avec le middleware multer)
-router.post('/upload', verifierToken, upload.single('fichier'), uploadSupport);
+const multer = require('multer');
+
+// Route pour uploader un fichier (avec gestion d'erreurs multer)
+router.post('/upload', verifierToken, (req, res, next) => {
+    upload.single('fichier')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ message: 'Le fichier dépasse la limite de 10 Mo' });
+            }
+            return res.status(400).json({ message: err.message });
+        } else if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        next();
+    });
+}, uploadSupport);
 
 // Route pour récupérer les supports d'une affectation
 router.get('/:id_affectation', verifierToken, getSupports);

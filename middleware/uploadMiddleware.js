@@ -13,27 +13,32 @@ const storage = multer.diskStorage({
     }
 });
 
-// Filtre pour n'accepter que les PDF et DOCX
+// Types de fichiers autorisés (PDF, DOC, DOCX, PPTX, ZIP, RAR)
+const ALLOWED_MIMES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/zip',
+    'application/x-zip-compressed',
+    'application/x-rar-compressed',
+    'application/vnd.rar',
+];
+
 const fileFilter = (req, file, cb) => {
-    // Je vérifie le type de fichier
-    if (file.mimetype === 'application/pdf') {
-        cb(null, true);
-    } else if (file.mimetype === 'application/msword') {
-        // Pour les vieux .doc
-        cb(null, true);
-    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        // Pour les nouveaux .docx
+    if (ALLOWED_MIMES.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        // Si c'est autre chose, je refuse
-        cb(new Error("Seuls les fichiers PDF et DOC/DOCX sont autorisés"), false);
+        cb(new Error("Type de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, PPTX, ZIP, RAR"), false);
     }
 };
 
-// Initialisation de multer
+// Initialisation de multer — limite à 10 Mo
 const upload = multer({ 
     storage: storage,
-    fileFilter: fileFilter
+    fileFilter: fileFilter,
+    limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 module.exports = upload;

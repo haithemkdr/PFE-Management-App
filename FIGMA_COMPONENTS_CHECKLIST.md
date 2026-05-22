@@ -162,16 +162,20 @@ Assembler les molecules ci-dessus dans des frames de page (1440×900 desktop).
 
 | # | Page | Composants utilisés | ☐ |
 |---|------|---------------------|---|
-| 53 | `LoginPage` | LoginForm centré, fond `--bg-page`. | ☐ |
-| 54 | `TeacherDashboard` | Navbar + Sidebar(Enseignant) + WelcomeCard + 3× StatCard. | ☐ |
-| 55 | `GradesPage` | Navbar + Sidebar + ModuleGroupeSelector + DataTable(GradesTable éditable) + Alert/Locked (si fermée). | ☐ |
-| 56 | `AttendancePage` | Navbar + Sidebar + AttendanceDateSelector + AttendanceList. | ☐ |
-| 57 | `CourseMaterialPage` | Navbar + Sidebar + SupportUploadForm + SupportsList. | ☐ |
-| 58 | `AgentDashboard` | Navbar + Sidebar(Agent) + WelcomeCard + 2× StatCard. | ☐ |
-| 59 | `TeachersListPage` | Navbar + Sidebar + DataTable(TeachersTable). | ☐ |
-| 60 | `AssignmentsPage` | Navbar + Sidebar + AssignmentForm + Toast feedback. | ☐ |
-| 61 | `GradePeriodPage` | Navbar + Sidebar + PeriodeToggleList. | ☐ |
-| 62 | `NotFoundPage (404)` | Texte "404" (Poppins 48px), message, Button/Primary "Retour". | ☐ |
+| 53 | `01 - Login` | LoginForm centré, fond `--bg-page`. | ☐ |
+| 54 | `02 - Teacher Dashboard` | Navbar + Sidebar(Enseignant) + WelcomeCard + 3× StatCard. | ☐ |
+| 55 | `03 - Notes` | Navbar + Sidebar + ModuleGroupeSelector + DataTable(GradesTable éditable) + Alert/Locked (si fermée). | ☐ |
+| 56 | `04 - Absences` | Navbar + Sidebar + AttendanceDateSelector + AttendanceList. | ☐ |
+| 57 | `05 - Supports` | Navbar + Sidebar + SupportUploadForm + SupportsList. | ☐ |
+| 58 | `06 - Annonces` | Navbar + Sidebar + Formulaire + DataTable. | ☐ |
+| 59 | `07 - Emploi du Temps` | Navbar + Sidebar + Grille EDT. | ☐ |
+| 60 | `08 - Agent Dashboard` | Navbar + Sidebar(Agent) + WelcomeCard + 2× StatCard. | ☐ |
+| 61 | `09 - Gestion Enseignants` | Navbar + Sidebar + DataTable(TeachersTable). | ☐ |
+| 62 | `10 - Gestion Affectations` | Navbar + Sidebar + AssignmentForm + Toast feedback. | ☐ |
+| 63 | `11 - Regles des Notes` | Navbar + Sidebar + Configuration des règles. | ☐ |
+| 64 | `12 - Periodes de Saisie` | Navbar + Sidebar + PeriodeToggleList. | ☐ |
+| 65 | `13 - Supervision des Supports` | Navbar + Sidebar + Tableau de bord des supports. | ☐ |
+| 66 | `14 - Gestion Emploi du Temps` | Navbar + Sidebar + Grille EDT Agent. | ☐ |
 
 ---
 
@@ -181,8 +185,8 @@ Assembler les molecules ci-dessus dans des frames de page (1440×900 desktop).
 |-----------|-------|-----------|---|
 | Atoms (Boutons, Inputs, Badges, Toggle) | 26 | _ / 26 | _ % |
 | Molecules (Nav, Tables, Cards, Modals, Forms, Lists, Feedback) | 26 | _ / 26 | _ % |
-| Pages (Organisms) | 10 | _ / 10 | _ % |
-| **TOTAL** | **62** | **_ / 62** | **_ %** |
+| Pages (Organisms) | 14 | _ / 14 | _ % |
+| **TOTAL** | **66** | **_ / 66** | **_ %** |
 
 ---
 

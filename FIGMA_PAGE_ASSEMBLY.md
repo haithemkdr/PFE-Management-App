@@ -288,16 +288,20 @@ MAIN CONTENT (padding 32px)
 
 | # | Page | Taille | Sidebar | Priorité |
 |---|------|--------|---------|----------|
-| 1 | LoginPage | 1440×900 | Non | 🔴 Critique |
-| 2 | TeacherDashboard | 1440×900 | Enseignant | 🔴 Critique |
-| 3 | GradesPage | 1440×960 | Enseignant | 🔴 Critique |
-| 4 | AttendancePage | 1440×960 | Enseignant | 🔴 Critique |
-| 5 | CourseMaterialPage | 1440×900 | Enseignant | 🟡 Important |
-| 6 | AgentDashboard | 1440×900 | Agent | 🔴 Critique |
-| 7 | TeachersListPage | 1440×900 | Agent | 🟡 Important |
-| 8 | AssignmentsPage | 1440×900 | Agent | 🟡 Important |
-| 9 | GradePeriodPage | 1440×900 | Agent | 🟡 Important |
-| 10 | NotFoundPage | 1440×900 | Non | 🟢 Optionnel |
+| 1 | 01 - Login | 1440×900 | Non | 🔴 Critique |
+| 2 | 02 - Teacher Dashboard | 1440×900 | Enseignant | 🔴 Critique |
+| 3 | 03 - Notes | 1440×960 | Enseignant | 🔴 Critique |
+| 4 | 04 - Absences | 1440×960 | Enseignant | 🔴 Critique |
+| 5 | 05 - Supports | 1440×900 | Enseignant | 🟡 Important |
+| 6 | 06 - Annonces | 1440×900 | Enseignant | 🟡 Important |
+| 7 | 07 - Emploi du Temps | 1440×900 | Enseignant | 🟡 Important |
+| 8 | 08 - Agent Dashboard | 1440×900 | Agent | 🔴 Critique |
+| 9 | 09 - Gestion Enseignants | 1440×900 | Agent | 🟡 Important |
+| 10 | 10 - Gestion Affectations | 1440×900 | Agent | 🟡 Important |
+| 11 | 11 - Regles des Notes | 1440×900 | Agent | 🔴 Critique |
+| 12 | 12 - Periodes de Saisie | 1440×900 | Agent | 🟡 Important |
+| 13 | 13 - Supervision des Supports | 1440×900 | Agent | 🟡 Important |
+| 14 | 14 - Gestion Emploi du Temps | 1440×900 | Agent | 🟡 Important |
 
 ---
 

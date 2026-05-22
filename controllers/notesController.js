@@ -161,4 +161,30 @@ const upsertNote = async (req, res) => {
     }
 };
 
-module.exports = { getNotesByGroupe, upsertNote };
+module.exports = { getNotesByGroupe, upsertNote, getMesAffectations };
+
+// ============================================================
+// getMesAffectations
+// Retourne les affectations de l'enseignant connecté (modules + groupes)
+// Utilisé par le frontend pour alimenter les filtres dropdowns
+// ============================================================
+async function getMesAffectations(req, res) {
+    try {
+        let id_enseignant = req.user.id_utilisateur;
+        let sql = `
+            SELECT a.id_affectation, a.id_module, a.id_groupe, a.periode_saisie_ouverte,
+                   m.nom_module, m.semestre,
+                   g.libelle AS nom_groupe
+            FROM affectations a
+            JOIN modules m ON a.id_module = m.id_module
+            JOIN groupes g ON a.id_groupe = g.id_groupe
+            WHERE a.id_utilisateur = ?
+            ORDER BY m.nom_module, g.libelle
+        `;
+        let result = await db.query(sql, [id_enseignant]);
+        res.json(result[0]);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Erreur lors de la récupération des affectations");
+    }
+}

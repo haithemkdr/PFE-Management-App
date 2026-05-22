@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     nom VARCHAR(50) NOT NULL,
     prenom VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
+    matricule VARCHAR(50) DEFAULT NULL,
+    grade VARCHAR(20) DEFAULT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
     id_role INT,
     actif TINYINT(1) DEFAULT 1,
@@ -26,7 +28,10 @@ CREATE TABLE IF NOT EXISTS modules (
     coefficient DECIMAL(3,1) NOT NULL,
     semestre ENUM('S1', 'S2') NOT NULL,
     poids_cc DECIMAL(3,2) DEFAULT 0.40,
-    poids_ef DECIMAL(3,2) DEFAULT 0.60
+    poids_ef DECIMAL(3,2) DEFAULT 0.60,
+    type_eval ENUM('Mixte', '100% Examen') DEFAULT 'Mixte',
+    note_eliminatoire DECIMAL(4,2) DEFAULT 5.00,
+    credits INT DEFAULT 6
 );
 
 -- Table `groupes` — Les groupes d'étudiants (TD, TP, Cours).
@@ -74,7 +79,7 @@ CREATE TABLE IF NOT EXISTS notes (
     note_er DECIMAL(4,2) NULL,
     moy2 DECIMAL(4,2) NULL,
     moyenne_finale DECIMAL(4,2) NULL,
-    resultat ENUM('ADM','RAT','ELI') NULL,
+    resultat ENUM('ADM','RAT','ELI','EXC') NULL,
     saisie_par INT,
     date_saisie DATETIME DEFAULT NOW(),
     FOREIGN KEY (id_etudiant) REFERENCES etudiants(id_etudiant) ON DELETE CASCADE,
@@ -176,7 +181,7 @@ CREATE TABLE IF NOT EXISTS annonces (
 CREATE TABLE IF NOT EXISTS emploi_du_temps (
     id_creneau     INT AUTO_INCREMENT PRIMARY KEY,
     id_affectation INT NOT NULL,
-    jour           ENUM('Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi') NOT NULL,
+    jour           ENUM('Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi') NOT NULL,
     heure_debut    TIME NOT NULL,
     heure_fin      TIME NOT NULL,
     salle          VARCHAR(50),

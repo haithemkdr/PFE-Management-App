@@ -1,0 +1,324 @@
+/* ========================================
+   DashboardLayout.css — Sidebar + Navbar
+   Shared shell for Teacher & Agent views
+   ======================================== */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--grid-sidebar-width);
+  min-height: 100vh;
+  background: var(--surface-bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  height: 64px;
+}
+
+.sidebar__logo {
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sidebar__logo .cross-h {
+  position: absolute;
+  width: 20px;
+  height: 4px;
+  background: #fff;
+  border-radius: 2px;
+  top: 7px;
+  left: 7px;
+}
+
+.sidebar__logo .cross-v {
+  position: absolute;
+  width: 4px;
+  height: 18px;
+  background: #fff;
+  border-radius: 1px;
+  top: 7px;
+  left: 17px;
+}
+
+.sidebar__logo .dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  bottom: 5px;
+  right: 5px;
+}
+
+.sidebar__brand {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+/* Nav items */
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 12px 0;
+  overflow-y: auto;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(177, 187, 197, 1);
+  text-decoration: none;
+  transition: all var(--motion-fast) ease;
+  cursor: pointer;
+}
+
+.sidebar__link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.sidebar__link--active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 500;
+}
+
+.sidebar__link svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.sidebar__link--active svg {
+  opacity: 1;
+}
+
+/* User profile at bottom */
+.sidebar__footer {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sidebar__avatar--teacher {
+  background: var(--brand-primary-light);
+}
+
+.sidebar__avatar--agent {
+  background: var(--brand-secondary);
+}
+
+.sidebar__user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.sidebar__user-name {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__user-role {
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 11px;
+  color: rgba(177, 187, 197, 0.7);
+}
+
+.sidebar__logout-btn {
+  background: none;
+  border: none;
+  color: rgba(177, 187, 197, 0.6);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  transition: all var(--motion-fast) ease;
+}
+
+.sidebar__logout-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__logout-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Main content area ── */
+.dashboard__main {
+  flex: 1;
+  margin-left: var(--grid-sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Navbar ── */
+.navbar {
+  height: var(--grid-navbar-height);
+  background: var(--surface-bg-navbar);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar__title {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar__bell {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  transition: all var(--motion-fast) ease;
+}
+
+.navbar__bell:hover {
+  background: var(--surface-bg-hover-row);
+  color: var(--text-primary);
+}
+
+.navbar__bell svg {
+  width: 20px;
+  height: 20px;
+}
+
+.navbar__user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-bg-page);
+  border: 1px solid var(--border-default);
+}
+
+.navbar__user-pill-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.navbar__user-pill-avatar--teacher {
+  background: var(--brand-primary-light);
+}
+
+.navbar__user-pill-avatar--agent {
+  background: var(--brand-secondary);
+}
+
+.navbar__user-pill-name {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* ── Page content wrapper ── */
+.dashboard__content {
+  flex: 1;
+  padding: 28px 32px;
+  background: var(--surface-bg-page);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--motion-normal) ease;
+  }
+  .sidebar--open {
+    transform: translateX(0);
+  }
+  .dashboard__main {
+    margin-left: 0;
+  }
+}

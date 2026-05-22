@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getNotesByGroupe, upsertNote } = require('../controllers/notesController');
+const { getNotesByGroupe, upsertNote, getMesAffectations } = require('../controllers/notesController');
 const verifierToken = require('../middleware/authMiddleware');
 
 // ============================================================
 // Routes de gestion des notes — Toutes protégées par JWT
 // ============================================================
+
+// GET /api/notes/mes-affectations
+// Récupère les affectations de l'enseignant connecté (pour les dropdowns du frontend)
+router.get('/mes-affectations', verifierToken, getMesAffectations);
 
 // GET /api/notes?id_module=X&id_groupe=Y
 // Récupère les étudiants d'un groupe avec leurs notes pour un module
