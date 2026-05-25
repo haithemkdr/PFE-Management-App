@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getNotesByGroupe, upsertNote, getMesAffectations } = require('../controllers/notesController');
+const { getNotesByGroupe, upsertNote, getMesAffectations, getBilanEnseignant } = require('../controllers/notesController');
 const verifierToken = require('../middleware/authMiddleware');
 
 // ============================================================
@@ -18,5 +18,9 @@ router.get('/', verifierToken, getNotesByGroupe);
 // POST /api/notes/upsert
 // Saisie ou modification d'une note avec calcul automatique des moyennes
 router.post('/upsert', verifierToken, upsertNote);
+
+// GET /api/notes/bilan?semestre=S5
+// Bilan semestriel en lecture seule — scopé aux modules/groupes de l'enseignant
+router.get('/bilan', verifierToken, getBilanEnseignant);
 
 module.exports = router;

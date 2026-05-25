@@ -20,6 +20,10 @@ import ReglesNotesPage from './pages/agent/ReglesNotesPage';
 import PeriodesPage from './pages/agent/PeriodesPage';
 import SupervisionPage from './pages/agent/SupervisionPage';
 import EdtAgentPage from './pages/agent/EdtAgentPage';
+import BilanSemestrielPage from './pages/agent/BilanSemestrielPage';
+
+// Teacher bilan
+import BilanEnseignantPage from './pages/teacher/BilanEnseignantPage';
 
 function App() {
   return (
@@ -43,6 +47,7 @@ function App() {
           <Route path="supports" element={<SupportsPage />} />
           <Route path="annonces" element={<AnnoncesPage />} />
           <Route path="emploi"   element={<EmploiDuTempsPage />} />
+          <Route path="bilan"    element={<BilanEnseignantPage />} />
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>
 
@@ -62,6 +67,7 @@ function App() {
           <Route path="periodes"     element={<PeriodesPage />} />
           <Route path="supervision"  element={<SupervisionPage />} />
           <Route path="emploi"       element={<EdtAgentPage />} />
+          <Route path="bilan"        element={<BilanSemestrielPage />} />
           <Route index element={<Navigate to="dashboard" replace />} />
         </Route>
 

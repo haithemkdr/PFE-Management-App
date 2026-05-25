@@ -111,6 +111,27 @@ export default function SupportsPage() {
     }
   }
 
+  /* ── Download handler ── */
+  const handleDownload = async (support) => {
+    try {
+      const response = await api.get(`/supports/download/${support.id_support}`, {
+        responseType: 'blob',
+      });
+      const originalName = support.chemin_fichier.replace(/^\d{13}-/, '');
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', originalName);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Erreur de téléchargement', err);
+      showToast('Erreur lors du téléchargement', 'error');
+    }
+  };
+
   /* ── Drag-and-drop ── */
   const handleDrag = useCallback((e) => {
     e.preventDefault();
@@ -258,10 +279,10 @@ export default function SupportsPage() {
                     </td>
                     <td>{formatDateTime(s.uploaded_at)}</td>
                     <td style={{ display: 'flex', gap: 6 }}>
-                      <a href={`/uploads/${s.chemin_fichier}`} target="_blank" rel="noopener noreferrer"
+                      <button onClick={() => handleDownload(s)}
                         className="btn btn--secondary btn--sm">
                         <Download /> Télécharger
-                      </a>
+                      </button>
                       <button className="btn btn--danger btn--sm"
                         onClick={() => setDeleteModal({ id: s.id_support, titre: s.titre })}>
                         <Trash2 /> Supprimer

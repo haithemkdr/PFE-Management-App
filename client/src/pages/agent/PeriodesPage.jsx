@@ -3,6 +3,13 @@ import api from '../../utils/api';
 import { Lock, Unlock, Info } from 'lucide-react';
 import '../shared.css';
 
+// Niveau → Semestre mapping (LMD standard)
+const NIVEAU_SEMESTERS = {
+  L1: [{ value: 'S1', label: 'Semestre 1' }, { value: 'S2', label: 'Semestre 2' }],
+  L2: [{ value: 'S3', label: 'Semestre 3' }, { value: 'S4', label: 'Semestre 4' }],
+  L3: [{ value: 'S5', label: 'Semestre 5' }, { value: 'S6', label: 'Semestre 6' }]
+};
+
 /**
  * PeriodesPage — Gestion des Périodes de Saisie (UC-A04)
  * Correspond au Figma Page 12 (node 21:5456)
@@ -17,8 +24,9 @@ export default function PeriodesPage() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
-  // Filtres — Figma montre 3 filtres : Année, Semestre, Filière (groupe)
+  // Filtres — Année, Niveau, Semestre, Filière
   const [anneeFilter, setAnneeFilter] = useState('');
+  const [niveauFilter, setNiveauFilter] = useState('');
   const [semestreFilter, setSemestreFilter] = useState('');
   const [groupeFilter, setGroupeFilter] = useState('');
 
@@ -97,11 +105,12 @@ export default function PeriodesPage() {
       .catch(() => showToast('Erreur lors de la mise à jour en masse', 'error'));
   }
 
-  // Formater le rapport CC/EF pour l'affichage (ex: "40/60")
-  function formatCcEf(poids_cc, poids_ef) {
-    const cc = poids_cc != null ? Math.round(poids_cc * 100) : '—';
-    const ef = poids_ef != null ? Math.round(poids_ef * 100) : '—';
-    return `${cc}/${ef}`;
+  // Formater les poids 3-way pour l'affichage (ex: "60/20/20")
+  function formatPoids(poids_exam, poids_td, poids_tp) {
+    const ex = poids_exam != null ? Math.round(poids_exam * 100) : '—';
+    const td = poids_td != null ? Math.round(poids_td * 100) : '—';
+    const tp = poids_tp != null ? Math.round(poids_tp * 100) : '—';
+    return `${ex}/${td}/${tp}`;
   }
 
   function showToast(msg, type) {
@@ -131,11 +140,25 @@ export default function PeriodesPage() {
 
         <select
           className="filter-bar__select"
+          value={niveauFilter}
+          onChange={e => { setNiveauFilter(e.target.value); setSemestreFilter(''); }}
+        >
+          <option value="">Tous les niveaux</option>
+          <option value="L1">L1</option>
+          <option value="L2">L2</option>
+          <option value="L3">L3</option>
+        </select>
+
+        <select
+          className="filter-bar__select"
           value={semestreFilter}
           onChange={e => setSemestreFilter(e.target.value)}
+          disabled={!niveauFilter}
         >
-          <option value="">Tous les semestres</option>
-          {semestres.map(s => <option key={s} value={s}>{s}</option>)}
+          <option value="">{niveauFilter ? 'Tous les semestres' : 'Choisir un niveau'}</option>
+          {(NIVEAU_SEMESTERS[niveauFilter] || []).map(s => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
         </select>
 
         <select
@@ -173,7 +196,7 @@ export default function PeriodesPage() {
               <th>Groupe</th>
               <th>Année Univ.</th>
               <th>Semestre</th>
-              <th>CC / EF</th>
+              <th>Exam/TD/TP</th>
               <th>Statut Période</th>
               <th>Action</th>
             </tr>
@@ -200,8 +223,8 @@ export default function PeriodesPage() {
                   {/* Module */}
                   <td>{a.nom_module}</td>
 
-                  {/* Groupe */}
-                  <td>{a.libelle_groupe}</td>
+                  {/* Groupe — CM affectations have no groupe, show "Section entière" */}
+                  <td>{a.libelle_groupe || (a.type_seance === 'CM' ? 'Section entière' : '—')}</td>
 
                   {/* Année Univ. */}
                   <td>{a.annee_univ}</td>
@@ -210,7 +233,7 @@ export default function PeriodesPage() {
                   <td>{a.semestre || '—'}</td>
 
                   {/* CC/EF — Figma : "40/60" */}
-                  <td>{formatCcEf(a.poids_cc, a.poids_ef)}</td>
+                  <td>{formatPoids(a.poids_exam, a.poids_td, a.poids_tp)}</td>
 
                   {/* Statut Période — Figma : badge vert/rouge */}
                   <td>

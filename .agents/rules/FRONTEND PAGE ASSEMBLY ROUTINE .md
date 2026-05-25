@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: manual
 ---
 
 Context: We are continuing the Frontend development. To prevent context loss, you must strictly follow this Standard Operating Procedure (SOP) for the current page.
@@ -29,4 +29,3 @@ STEP 3: React Component Build
     STEP 4: State & Roadmap Update
 
  Once the page is complete, automatically update DEV_ROADMAP.md to check [x] for this page so we never lose track.
-

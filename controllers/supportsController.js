@@ -72,4 +72,51 @@ const deleteSupport = async (req, res) => {
     }
 };
 
-module.exports = { uploadSupport, getSupports, deleteSupport };
+const downloadSupport = async (req, res) => {
+    try {
+        let id_support = req.params.id_support;
+
+        if (!id_support) {
+            return res.status(400).send("Il faut l'id_support");
+        }
+
+        let sql = "SELECT * FROM supports_cours WHERE id_support = ?";
+        let result = await db.query(sql, [id_support]);
+        let lignes = result[0];
+
+        if (lignes.length === 0) {
+            return res.status(404).send("Support introuvable");
+        }
+
+        let support = lignes[0];
+        const path = require('path');
+        const fs   = require('fs');
+
+        // chemin_fichier stores just the filename (no 'uploads/' prefix)
+        // Strip any accidental 'uploads/' prefix for robustness
+        let filename = support.chemin_fichier.replace(/^uploads[\\/]/, '');
+        let filePath = path.join(__dirname, '../uploads', filename);
+
+        console.log('[download] Looking for:', filePath);
+
+        if (!fs.existsSync(filePath)) {
+            console.error('[download] File not found:', filePath);
+            return res.status(404).json({ message: "Fichier introuvable sur le serveur", path: filePath });
+        }
+
+        // Build a clean download name: titre + original extension
+        const ext = path.extname(filename);        // e.g. '.pdf'
+        const safeTitre = (support.titre || 'support')
+            .replace(/[^a-zA-Z0-9\u00C0-\u024F\s_-]/g, '')  // keep letters, digits, spaces, dashes
+            .trim()
+            .replace(/\s+/g, '_');
+        const downloadName = safeTitre + ext;
+
+        res.download(filePath, downloadName);
+    } catch (err) {
+        console.error('[download] Erreur:', err);
+        res.status(500).send("Erreur lors du téléchargement");
+    }
+};
+
+module.exports = { uploadSupport, getSupports, deleteSupport, downloadSupport };

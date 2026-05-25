@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS modules (
 CREATE TABLE IF NOT EXISTS groupes (
     id_groupe INT AUTO_INCREMENT PRIMARY KEY,
     libelle VARCHAR(50) NOT NULL,
+    niveau VARCHAR(50) DEFAULT 'L3',
+    section VARCHAR(50) DEFAULT 'A',
     type_seance VARCHAR(50),
     id_module INT,
     FOREIGN KEY (id_module) REFERENCES modules(id_module) ON DELETE SET NULL
@@ -55,16 +57,22 @@ CREATE TABLE IF NOT EXISTS etudiants (
 
 -- Table `affectations` — Relie un enseignant à un module et un groupe pour une année donnée.
 -- periode_saisie_ouverte : 0 = fermée (par défaut), 1 = ouverte par l'Agent avant les délibérations
+-- type_seance : CM → affectation à une section entière (id_groupe NULL)
+--              TD/TP → affectation à un groupe spécifique
 CREATE TABLE IF NOT EXISTS affectations (
     id_affectation INT AUTO_INCREMENT PRIMARY KEY,
     id_utilisateur INT,
     id_module INT,
-    id_groupe INT,
+    id_groupe INT NULL,
     annee_univ VARCHAR(20),
+    type_seance ENUM('CM','TD','TP') NOT NULL DEFAULT 'TD',
+    section VARCHAR(50) NULL,
+    niveau VARCHAR(50) NULL,
     periode_saisie_ouverte TINYINT(1) DEFAULT 0,
     FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id_utilisateur) ON DELETE CASCADE,
     FOREIGN KEY (id_module) REFERENCES modules(id_module) ON DELETE CASCADE,
-    FOREIGN KEY (id_groupe) REFERENCES groupes(id_groupe) ON DELETE CASCADE
+    FOREIGN KEY (id_groupe) REFERENCES groupes(id_groupe) ON DELETE CASCADE,
+    UNIQUE KEY uq_affectation (id_utilisateur, id_module, id_groupe, type_seance)
 );
 
 -- Table `notes` — Relevés de notes alignés sur le PV officiel.
@@ -140,11 +148,11 @@ INSERT INTO modules (nom_module, coefficient, semestre) VALUES
 ('Programmation Web', 2.5, 'S1'),
 ('Réseaux Informatiques', 2.0, 'S2');
 
--- Groupes d'étudiants
-INSERT INTO groupes (libelle, type_seance, id_module) VALUES
-('L3-G1', 'TD', 1),
-('L3-G2', 'TD', 1),
-('L3-G1', 'TP', 2);
+-- Groupes d'étudiants (avec niveau et section)
+INSERT INTO groupes (libelle, niveau, section, type_seance, id_module) VALUES
+('G1', 'L3', 'A', 'TD', 1),
+('G2', 'L3', 'A', 'TD', 1),
+('G1', 'L3', 'A', 'TP', 2);
 
 -- Étudiants du département (6 étudiants répartis dans les groupes)
 INSERT INTO etudiants (matricule, nom, prenom, id_groupe) VALUES
@@ -155,11 +163,13 @@ INSERT INTO etudiants (matricule, nom, prenom, id_groupe) VALUES
 ('202100005', 'Boudaoud', 'Amine', 2),
 ('202100006', 'Cherifi', 'Nadia', 2);
 
--- Affectations : enseignant → module → groupe → année
-INSERT INTO affectations (id_utilisateur, id_module, id_groupe, annee_univ) VALUES
-(2, 1, 1, '2025-2026'),
-(2, 1, 2, '2025-2026'),
-(2, 2, 3, '2025-2026');
+-- Affectations : enseignant → module → groupe → année + type de séance
+-- CM: section entière (id_groupe NULL), TD/TP: groupe spécifique
+INSERT INTO affectations (id_utilisateur, id_module, id_groupe, annee_univ, type_seance, section, niveau) VALUES
+(2, 1, NULL, '2025-2026', 'CM', 'A', 'L3'),
+(2, 1, 1,    '2025-2026', 'TD', 'A', 'L3'),
+(2, 1, 2,    '2025-2026', 'TD', 'A', 'L3'),
+(2, 2, 3,    '2025-2026', 'TP', 'A', 'L3');
 
 -- ============================================================
 -- Table `annonces` — Messages envoyés par un enseignant à un groupe (UC-E05)
@@ -192,9 +202,8 @@ CREATE TABLE IF NOT EXISTS emploi_du_temps (
 -- Données de démonstration — emploi du temps de l'enseignant Benali (id=2)
 INSERT INTO emploi_du_temps (id_affectation, jour, heure_debut, heure_fin, salle, type_seance) VALUES
 (1, 'Lundi',    '08:00:00', '09:30:00', 'Amphi A', 'CM'),
-(1, 'Mercredi', '09:30:00', '11:00:00', 'TP 04',   'TP'),
+(1, 'Mercredi', '09:30:00', '11:00:00', 'Amphi B', 'CM'),
 (2, 'Mardi',    '11:00:00', '12:30:00', 'TD 02',   'TD'),
 (2, 'Mardi',    '15:00:00', '16:30:00', 'Salle 08','TD'),
-(3, 'Jeudi',    '08:00:00', '09:30:00', 'Amphi B', 'CM'),
-(3, 'Vendredi', '13:30:00', '15:00:00', 'TP 02',   'TP');
-
+(3, 'Jeudi',    '08:00:00', '09:30:00', 'TD 01',   'TD'),
+(4, 'Vendredi', '13:30:00', '15:00:00', 'TP 02',   'TP');

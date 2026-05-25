@@ -12,6 +12,7 @@ import {
   BookOpenCheck,
   LockKeyhole,
   MonitorCheck,
+  BarChart2,
   Bell,
   LogOut,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ const teacherNav = [
   { to: '/teacher/supports',  label: 'Supports',        icon: FolderOpen },
   { to: '/teacher/annonces',  label: 'Annonces',        icon: Megaphone },
   { to: '/teacher/emploi',    label: 'Emploi du temps',  icon: CalendarDays },
+  { to: '/teacher/bilan',     label: 'Bilan semestriel',  icon: BarChart2 },
 ];
 
 const agentNav = [
@@ -35,6 +37,7 @@ const agentNav = [
   { to: '/agent/periodes',      label: 'Périodes de saisie',    icon: LockKeyhole },
   { to: '/agent/supervision',   label: 'Supervision cours',     icon: MonitorCheck },
   { to: '/agent/emploi',        label: 'Emploi du temps',       icon: CalendarDays },
+  { to: '/agent/bilan',         label: 'Bilan semestriel',      icon: BarChart2 },
 ];
 
 /* ── Page title helper ── */

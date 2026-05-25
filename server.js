@@ -33,7 +33,19 @@ app.use('/api/annonces', annoncesRoutes);
 app.use('/api/emploi-du-temps', emploiDuTempsRoutes);
 
 // Je rends le dossier uploads/ accessible publiquement pour que le front puisse télécharger les fichiers
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static('uploads', {
+    setHeaders: (res, path) => {
+        // Récupérer le nom de fichier physique
+        let filename = path.split(/[\\/]/).pop();
+        
+        // Retirer le préfixe de timestamp (13 chiffres + tiret) généré par multer
+        // pour que l'utilisateur télécharge le fichier avec son nom d'origine
+        filename = filename.replace(/^\d{13}-/, '');
+        
+        // Utiliser la syntaxe correcte (RFC 5987) pour les caractères spéciaux (espaces, accents, etc.)
+        res.set('Content-Disposition', `attachment; filename="${filename.replace(/"/g, '\\"')}"; filename*=UTF-8''${encodeURIComponent(filename)}`);
+    }
+}));
 
 // Route protégée de test (nécessite un token JWT valide)
 const verifierToken = require('./middleware/authMiddleware');

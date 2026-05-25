@@ -3,7 +3,7 @@
 > **Source :** Synchronisé depuis le notebook NotebookLM "Portail de Gestion Pédagogique" + "Gestion Numérique des Notes"
 > **Stack :** Node.js/Express (MVC) · MySQL/mysql2 · React.js (via Google Stitch) · Git/GitHub
 > **Règle :** Avant chaque session de travail, relire ce fichier et cocher `[x]` les tâches terminées.
-> **Dernière mise à jour :** 2026-05-22 — Phase 5 sécurité + intégrité terminée (rate limiting + check-data-integrity ✅)
+> **Dernière mise à jour :** 2026-05-23 — Refactoring BDD + UI : colonnes `niveau`/`section` ajoutées à `groupes`, filtres cascadés Semestre→Module + Niveau→Section→Groupe sur AffectationsPage (P10) ✅
 
 ---
 
@@ -49,8 +49,8 @@
 ### 2B — Gestion des Absences (UC-E03) ✅
 - [x] **2B.1** CRUD absences : `GET /api/absences/:affectationId` · `POST /api/absences` · `PUT /api/absences/:id`
 - [x] **2B.2** Liste alphabétique des étudiants, tous "Présent" par défaut
-- [ ] **2B.3** Calcul automatique du taux d'absence cumulé par étudiant *(Phase 4)*
-- [ ] **2B.4** Modification possible dans les 48h suivant la séance *(Phase 4)*
+- [x] **2B.3** Calcul automatique du taux d'absence cumulé par étudiant *(Phase 4)*
+- [x] **2B.4** Modification possible dans les 48h suivant la séance *(Phase 4)*
 
 ### 2C — Gestion des Supports de Cours (UC-E04) ✅
 - [x] **2C.1** Upload de fichiers (PDF, DOCX) via `multer`
@@ -124,7 +124,7 @@
   - [x] Absences (UC-E03) — liste avec toggle Présent/Absent.
   - [x] Supports (UC-E04) — upload + liste des fichiers.
   - [x] Annonces (UC-E05) — formulaire + tableau.
-  - [x] Emploi du Temps (UC-E06) — grille hebdomadaire Lun–Sam.
+  - [x] Emploi du Temps (UC-E06) — grille hebdomadaire Dim–Sam.
 - [x] **3B.5** Interfaces Agent (Génération Stitch & Connexion API) :
   - [x] `TeachersListPage` (A01) : CRUD Enseignants.
   - [x] `AssignmentsPage` (A02) : Affectations (enseignant → module → groupe).
@@ -151,8 +151,8 @@
   - [x] Notes alignées sur le PV réel (pondérations dynamiques)
   - [x] Fiches d'absence alignées sur les séances
   - [x] Intégrité référentielle : `scripts/check-data-integrity.js` — 0 problèmes détectés ✅
-- [x] **5.4** Captures d'écran pour le rapport PFE (chapitre Implémentation)
-- [x] **5.5** Déploiement local final + documentation README
+- [ ] **5.4** Captures d'écran pour le rapport PFE (chapitre Implémentation)
+- [ ] **5.5** Déploiement local final + documentation README
 - [ ] **5.6** Commit & push : `release: v1.0 application PFE complète`
 
 ---

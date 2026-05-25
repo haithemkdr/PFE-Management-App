@@ -4,113 +4,219 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import '../shared.css';
 
-const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+const JOURS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 const HEURES = ['08:00', '09:30', '11:00', '13:30', '15:00', '16:30'];
-const COULEURS = ['#e3f2fd', '#e8f5e9', '#fff3e0', '#fce4ec', '#f3e5f5', '#e0f2f1'];
+
+const TYPE_COLORS = {
+  'CM': { bg: '#E7EEEE', text: '#1B3A5C', border: '#1B3A5C' },
+  'TD': { bg: '#E1F5F2', text: '#10A38C', border: '#10A38C' },
+  'TP': { bg: '#FFF0E8', text: '#FF7C1E', border: '#FF7C1E' }
+};
+const DEFAULT_COLOR = { bg: '#f3f4f6', text: '#4b5563', border: '#9ca3af' };
+
+// Helpers for dates
+function getWeekData(offset = 0) {
+  const today = new Date();
+  today.setDate(today.getDate() + (offset * 7));
+  
+  // Find Sunday of this week (Algerian week start)
+  const day = today.getDay(); // 0 is Sunday
+  const start = new Date(today);
+  start.setDate(today.getDate() - day);
+  
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6); // Saturday
+  
+  // ISO week number approx (to pass to backend)
+  const startOfYear = new Date(start.getFullYear(), 0, 1);
+  const diff = start - startOfYear + (startOfYear.getTimezoneOffset() - start.getTimezoneOffset()) * 60000;
+  const weekNum = Math.floor(diff / 604800000) + 1;
+  
+  const formatter = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' });
+  const formatterYear = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  
+  return {
+    weekNum,
+    label: `${formatter.format(start)} au ${formatterYear.format(end)}`
+  };
+}
 
 export default function EmploiDuTempsPage() {
   const { user } = useAuth();
   const [creneaux, setCreneaux] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  const weekData = useMemo(() => getWeekData(weekOffset), [weekOffset]);
 
   useEffect(() => {
     if (!user?.id) return;
-    api.get(`/emploi-du-temps/${user.id}`)
+    setLoading(true);
+    api.get(`/emploi-du-temps/${user.id}?semaine=${weekData.weekNum}`)
       .then(res => {
-        // Controller returns { success, data: rows } — each row has 'module' not 'nom_module'
         const rows = res.data.data || res.data;
         setCreneaux(rows.map(r => ({ ...r, nom_module: r.module || r.nom_module })));
       })
       .catch(() => setCreneaux([]))
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [user, weekData.weekNum]);
 
   // Build grid: { 'Lundi-08:00': creneau }
   const grid = useMemo(() => {
     const map = {};
     creneaux.forEach(c => {
-      const key = `${c.jour}-${c.heure_debut}`;
+      // Fix heure_debut mismatch by taking first 5 chars ("08:00:00" -> "08:00")
+      const heureStr = c.heure_debut?.substring(0, 5) || c.heure_debut;
+      const key = `${c.jour}-${heureStr}`;
       if (!map[key]) map[key] = [];
       map[key].push(c);
     });
     return map;
   }, [creneaux]);
 
-  // Color per module
-  const moduleColors = useMemo(() => {
-    const map = {};
-    let idx = 0;
-    creneaux.forEach(c => {
-      if (c.nom_module && !map[c.nom_module]) {
-        map[c.nom_module] = COULEURS[idx % COULEURS.length];
-        idx++;
-      }
-    });
-    return map;
-  }, [creneaux]);
+  const handlePrevWeek = () => setWeekOffset(prev => prev - 1);
+  const handleNextWeek = () => setWeekOffset(prev => prev + 1);
 
   return (
     <>
-      <div className="page-header">
+      {/* Figma: En-tête bleu foncé avec informations et navigation */}
+      <div style={{
+        background: '#1B3A5C',
+        borderRadius: 12,
+        padding: '24px',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 24
+      }}>
         <div>
-          <h2 className="page-header__title">Mon Emploi du Temps</h2>
-          <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>Semestre 2 — 2025/2026</p>
+          <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 8px 0', fontFamily: 'Poppins, sans-serif' }}>
+            Mon Emploi du Temps
+          </h2>
+          <span style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            padding: '4px 12px',
+            borderRadius: 8,
+            fontSize: 11,
+            fontWeight: 600,
+            border: '1px solid rgba(255, 255, 255, 0.2)'
+          }}>
+            Semestre en cours – 2025/2026
+          </span>
+        </div>
+        
+        {/* Nav Semaine */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'white', padding: '6px 12px', borderRadius: 8, color: '#1A1A2E' }}>
+          <button 
+            onClick={handlePrevWeek}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 4 }}
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <span style={{ fontWeight: 600, fontSize: 14 }}>
+            <Calendar size={14} style={{ verticalAlign: -2, marginRight: 6, color: '#6B7280' }} />
+            Semaine {weekData.weekNum} ({weekData.label})
+          </span>
+          <button 
+            onClick={handleNextWeek}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 4 }}
+          >
+            <ChevronRight size={18} />
+          </button>
         </div>
       </div>
 
-      {/* Week navigation */}
-      <div className="filter-bar" style={{ justifyContent: 'center', gap: 16 }}>
-        <button className="btn btn--secondary btn--sm"><ChevronLeft /></button>
-        <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>
-          <Calendar style={{ width: 14, height: 14, verticalAlign: -2, marginRight: 6 }} />
-          Semaine du 12 au 17 Mai 2026
-        </span>
-        <button className="btn btn--secondary btn--sm"><ChevronRight /></button>
-      </div>
-
       {/* Grid */}
-      <div className="data-card" style={{ overflow: 'auto', marginTop: 16 }}>
-        <table className="data-table" style={{ minWidth: 900 }}>
+      <div className="data-card" style={{ overflow: 'auto', padding: 0, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+        <table className="data-table" style={{ minWidth: 1000, margin: 0 }}>
           <thead>
             <tr>
-              <th style={{ width: 80 }} />
-              {JOURS.map(j => <th key={j} style={{ textAlign: 'center' }}>{j}</th>)}
+              <th style={{ width: 80, background: '#F8F9FA', borderBottom: '2px solid #E5E7EB' }} />
+              {JOURS.map(j => (
+                <th key={j} style={{ 
+                  textAlign: 'center', 
+                  background: '#F8F9FA', 
+                  color: '#4B5563', 
+                  fontWeight: 600,
+                  fontSize: 13,
+                  borderBottom: '2px solid #E5E7EB'
+                }}>
+                  {j}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} style={{ textAlign: 'center', padding: 32 }}>Chargement…</td></tr>
+              <tr><td colSpan={8} style={{ textAlign: 'center', padding: 48, color: '#6B7280' }}>Chargement de l'emploi du temps…</td></tr>
             ) : (
-              HEURES.map(h => (
+              HEURES.map((h, i) => (
                 <tr key={h}>
-                  <td style={{ fontWeight: 600, fontSize: 12, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{h}</td>
+                  <td style={{ 
+                    fontWeight: 600, 
+                    fontSize: 11, 
+                    color: '#6B7280', 
+                    whiteSpace: 'nowrap',
+                    textAlign: 'center',
+                    borderRight: '1px solid #F0F1F3',
+                    borderBottom: i === HEURES.length - 1 ? 'none' : '1px solid #F0F1F3'
+                  }}>
+                    {h}
+                  </td>
                   {JOURS.map(j => {
                     const items = grid[`${j}-${h}`] || [];
                     return (
-                      <td key={j} style={{ padding: 4, verticalAlign: 'top', minHeight: 60 }}>
-                        {items.map(c => (
-                          <div
-                            key={c.id_creneau}
-                            style={{
-                              background: moduleColors[c.nom_module] || '#f5f5f5',
-                              borderRadius: 8,
-                              padding: '8px 10px',
-                              fontSize: 12,
-                              lineHeight: 1.5,
-                              position: 'relative'
-                            }}
-                          >
-                            <span style={{
-                              display: 'inline-block',
-                              fontSize: 10, fontWeight: 700, color: 'var(--brand-primary)',
-                              background: 'rgba(255,255,255,0.7)', borderRadius: 4, padding: '1px 5px',
-                              marginBottom: 3
-                            }}>{c.type_seance}</span>
-                            <strong style={{ display: 'block', color: 'var(--text-primary)' }}>{c.nom_module}</strong>
-                            <span style={{ color: 'var(--text-secondary)' }}>{c.libelle_groupe || '—'}</span>
-                            <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: 11 }}>📍 {c.salle || '—'}</span>
-                          </div>
-                        ))}
+                      <td key={j} style={{ 
+                        padding: 6, 
+                        verticalAlign: 'top', 
+                        minHeight: 80,
+                        borderRight: '1px solid #F0F1F3',
+                        borderBottom: i === HEURES.length - 1 ? 'none' : '1px solid #F0F1F3'
+                      }}>
+                        {items.map(c => {
+                          const styleOpts = TYPE_COLORS[c.type_seance] || DEFAULT_COLOR;
+                          return (
+                            <div
+                              key={c.id_creneau || Math.random()}
+                              style={{
+                                background: styleOpts.bg,
+                                borderRadius: 8,
+                                padding: '10px 12px',
+                                fontSize: 12,
+                                position: 'relative',
+                                borderLeft: `4px solid ${styleOpts.border}`,
+                                marginBottom: 8,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                                <strong style={{ 
+                                  color: '#1A1A2E', 
+                                  fontSize: 11, 
+                                  lineHeight: 1.3,
+                                  maxWidth: '75%'
+                                }}>
+                                  {c.nom_module || c.module}
+                                </strong>
+                                <span style={{
+                                  fontSize: 10, 
+                                  fontWeight: 700, 
+                                  color: styleOpts.text,
+                                  background: 'rgba(255,255,255,0.6)', 
+                                  borderRadius: 4, 
+                                  padding: '2px 6px'
+                                }}>
+                                  {c.type_seance}
+                                </span>
+                              </div>
+                              <div style={{ color: '#4B5563', fontSize: 10, marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
+                                <span>{c.groupe || c.libelle_groupe || '—'}</span>
+                                <span style={{ fontWeight: 500 }}>📍 {c.salle || '—'}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </td>
                     );
                   })}
@@ -122,16 +228,21 @@ export default function EmploiDuTempsPage() {
       </div>
 
       {/* Legend */}
-      {creneaux.length > 0 && (
-        <div style={{ marginTop: 12, display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 12, color: 'var(--text-secondary)' }}>
-          {Object.entries(moduleColors).map(([name, color]) => (
-            <span key={name} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ width: 12, height: 12, borderRadius: 3, background: color, display: 'inline-block' }} />
-              {name}
-            </span>
-          ))}
-        </div>
-      )}
+      <div style={{ marginTop: 24, display: 'flex', gap: 24, fontSize: 12, color: '#4B5563' }}>
+        {Object.entries(TYPE_COLORS).map(([type, colors]) => (
+          <span key={type} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ 
+              width: 14, 
+              height: 14, 
+              borderRadius: 4, 
+              background: colors.bg,
+              border: `1px solid ${colors.border}`,
+              display: 'inline-block' 
+            }} />
+            {type === 'CM' ? 'Cours Magistral' : type === 'TD' ? 'Travaux Dirigés' : 'Travaux Pratiques'}
+          </span>
+        ))}
+      </div>
     </>
   );
 }

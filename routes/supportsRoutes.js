@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { uploadSupport, getSupports, deleteSupport } = require('../controllers/supportsController');
+const { uploadSupport, getSupports, deleteSupport, downloadSupport } = require('../controllers/supportsController');
 const verifierToken = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
@@ -20,6 +20,9 @@ router.post('/upload', verifierToken, (req, res, next) => {
         next();
     });
 }, uploadSupport);
+
+// Route pour télécharger un support
+router.get('/download/:id_support', verifierToken, downloadSupport);
 
 // Route pour récupérer les supports d'une affectation
 router.get('/:id_affectation', verifierToken, getSupports);
