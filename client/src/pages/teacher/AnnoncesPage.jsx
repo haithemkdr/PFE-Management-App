@@ -3,6 +3,14 @@ import api from '../../utils/api';
 import { Plus, Trash2, Send, X } from 'lucide-react';
 import '../shared.css';
 
+// Determine current semester period based on date:
+// Sept(9)–Jan(1) → odd semesters (S1,S3,S5)
+// Feb(2)–Aug(8) → even semesters (S2,S4,S6)
+function getCurrentSemesters() {
+  // Return odd semesters to match backend timetable logic
+  return ['S1', 'S3', 'S5'];
+}
+
 export default function AnnoncesPage() {
   const [annonces, setAnnonces] = useState([]);
   const [groupes, setGroupes] = useState([]);
@@ -18,8 +26,33 @@ export default function AnnoncesPage() {
     // Load teacher's assigned groups for the dropdown
     api.get('/notes/mes-affectations')
       .then(res => {
-        const unique = [...new Map(res.data.map(a => [a.id_groupe, a])).values()];
-        setGroupes(unique);
+        const CURRENT_SEMESTERS = getCurrentSemesters();
+        const currentAffectations = res.data.filter(a => CURRENT_SEMESTERS.includes(a.semestre));
+
+        const uniqueTargets = [];
+        const seenKeys = new Set();
+        currentAffectations.forEach(a => {
+          if (a.type_seance === 'CM') {
+            const key = `section:${a.niveau}:${a.section}`;
+            if (!seenKeys.has(key)) {
+              seenKeys.add(key);
+              uniqueTargets.push({
+                value: key,
+                label: `CM — ${a.section} (${a.niveau})`
+              });
+            }
+          } else if (a.id_groupe) {
+            const key = String(a.id_groupe);
+            if (!seenKeys.has(key)) {
+              seenKeys.add(key);
+              uniqueTargets.push({
+                value: key,
+                label: a.nom_groupe
+              });
+            }
+          }
+        });
+        setGroupes(uniqueTargets);
       })
       .catch(() => {});
   }, []);
@@ -91,7 +124,7 @@ export default function AnnoncesPage() {
               <select required value={form.id_groupe} onChange={e => setForm({ ...form, id_groupe: e.target.value })}>
                 <option value="" disabled>-- Sélectionner un groupe --</option>
                 {groupes.map(g => (
-                  <option key={g.id_groupe} value={g.id_groupe}>{g.nom_groupe}</option>
+                  <option key={g.value} value={g.value}>{g.label}</option>
                 ))}
               </select>
             </div>

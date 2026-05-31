@@ -7,6 +7,14 @@ import api from '../../utils/api';
 import { CheckCircle, AlertTriangle, Save, Search, Lock, UserX, SaveAll } from 'lucide-react';
 import '../shared.css';
 
+// Determine current semester period based on date:
+// Sept(9)–Jan(1) → odd semesters (S1,S3,S5)
+// Feb(2)–Aug(8) → even semesters (S2,S4,S6)
+function getCurrentSemesters() {
+  // Return odd semesters to match backend timetable logic
+  return ['S1', 'S3', 'S5'];
+}
+
 export default function NotesPage() {
   const [affectations, setAffectations] = useState([]);
   const [selectedModule, setSelectedModule] = useState('');
@@ -27,8 +35,12 @@ export default function NotesPage() {
       .catch(err => console.error('Erreur chargement affectations:', err));
   }, []);
 
-  const modules = [...new Map(affectations.map(a => [a.id_module, a])).values()];
-  const moduleAffectations = affectations.filter(a => String(a.id_module) === selectedModule);
+  // Semestres académiques en cours — calculé dynamiquement selon la date
+  const CURRENT_SEMESTERS = getCurrentSemesters();
+  const currentAffectations = affectations.filter(a => CURRENT_SEMESTERS.includes(a.semestre));
+
+  const modules = [...new Map(currentAffectations.map(a => [a.id_module, a])).values()];
+  const moduleAffectations = currentAffectations.filter(a => String(a.id_module) === selectedModule);
 
   // Load students + session info when affectation changes
   useEffect(() => {
@@ -46,7 +58,7 @@ export default function NotesPage() {
     // Fetch students AND session state in parallel
     Promise.all([
       api.get(`/notes?${params}`),
-      aff.semestre ? api.get(`/agent/session-active?semestre=${aff.semestre}`).catch(() => ({ data: [] })) : Promise.resolve({ data: [] })
+      aff.semestre ? api.get(`/notes/session-active?semestre=${aff.semestre}`).catch(() => ({ data: [] })) : Promise.resolve({ data: [] })
     ]).then(([notesRes, sessRes]) => {
       setStudents(notesRes.data);
       const sessions = sessRes.data;
@@ -59,17 +71,15 @@ export default function NotesPage() {
   const isRattrapage = sessionType === 'RATTRAPAGE';
   const isNormale = sessionType === 'NORMALE';
 
-  // Union of all types this teacher has for the selected module
-  // A teacher with CM+TD can edit both EF (from CM) and note_td (from TD)
+  // Union of all types this teacher has for the selected module (for visibility checks)
   const ownedTypes = new Set(moduleAffectations.map(a => a.type_seance));
-  const hasTypeTD = ownedTypes.has('TD');
-  const hasTypeTP = ownedTypes.has('TP');
   const hasTypeCM = ownedTypes.has('CM');
 
-  const canEditTD = hasTypeTD && !isRattrapage;
-  const canEditTP = hasTypeTP && !isRattrapage;
-  const canEditEF = hasTypeCM && isNormale;
-  const canEditER = hasTypeCM && isRattrapage;
+  // Edit permissions are strictly tied to the selected affectation type (typeSeance)
+  const canEditTD = typeSeance === 'TD' && !isRattrapage;
+  const canEditTP = typeSeance === 'TP' && !isRattrapage;
+  const canEditEF = typeSeance === 'CM' && isNormale;
+  const canEditER = typeSeance === 'CM' && isRattrapage;
 
   const showEF = hasTypeCM;
   const showER = hasTypeCM && isRattrapage;

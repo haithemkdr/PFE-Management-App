@@ -16,6 +16,7 @@ const getEnseignants = async (req, res) => {
         // On récupère matricule, grade + le nombre de modules affectés via LEFT JOIN
         let sql = `
             SELECT u.id_utilisateur, u.nom, u.prenom, u.email, u.matricule, u.grade, u.actif,
+                   u.mot_de_passe_clair,
                    COUNT(a.id_affectation) AS nb_modules
             FROM utilisateurs u
             LEFT JOIN affectations a ON u.id_utilisateur = a.id_utilisateur
@@ -139,9 +140,9 @@ const createEnseignant = async (req, res) => {
         // Hasher le mot de passe
         let hash = await bcrypt.hash(mot_de_passe, 10);
 
-        // Insérer avec matricule et grade
-        let sql = "INSERT INTO utilisateurs (nom, prenom, email, matricule, grade, mot_de_passe, id_role, actif) VALUES (?, ?, ?, ?, ?, ?, 2, 1)";
-        let [result] = await db.query(sql, [nom, prenom, email, matricule || null, grade || null, hash]);
+        // Insérer avec matricule, grade et mot_de_passe_clair
+        let sql = "INSERT INTO utilisateurs (nom, prenom, email, matricule, grade, mot_de_passe, mot_de_passe_clair, id_role, actif) VALUES (?, ?, ?, ?, ?, ?, ?, 2, 1)";
+        let [result] = await db.query(sql, [nom, prenom, email, matricule || null, grade || null, hash, mot_de_passe]);
 
         res.status(201).json({ message: "Compte enseignant créé avec succès.", id: result.insertId });
     } catch (err) {
@@ -156,7 +157,7 @@ const createEnseignant = async (req, res) => {
 const updateEnseignant = async (req, res) => {
     try {
         let id_utilisateur = req.params.id;
-        let { nom, prenom, email, matricule, grade } = req.body;
+        let { nom, prenom, email, matricule, grade, mot_de_passe } = req.body;
 
         if (!nom || !prenom || !email) {
             return res.status(400).json({ message: "Les champs nom, prenom et email sont obligatoires." });
@@ -171,8 +172,19 @@ const updateEnseignant = async (req, res) => {
             return res.status(403).json({ message: "Cet utilisateur n'est pas un enseignant." });
         }
 
-        let sql = "UPDATE utilisateurs SET nom = ?, prenom = ?, email = ?, matricule = ?, grade = ? WHERE id_utilisateur = ?";
-        await db.query(sql, [nom, prenom, email, matricule || null, grade || null, id_utilisateur]);
+        // Si un nouveau mot de passe est fourni, le hasher et mettre à jour
+        if (mot_de_passe && mot_de_passe.trim()) {
+            let hash = await bcrypt.hash(mot_de_passe, 10);
+            await db.query(
+                "UPDATE utilisateurs SET nom = ?, prenom = ?, email = ?, matricule = ?, grade = ?, mot_de_passe = ?, mot_de_passe_clair = ? WHERE id_utilisateur = ?",
+                [nom, prenom, email, matricule || null, grade || null, hash, mot_de_passe, id_utilisateur]
+            );
+        } else {
+            await db.query(
+                "UPDATE utilisateurs SET nom = ?, prenom = ?, email = ?, matricule = ?, grade = ? WHERE id_utilisateur = ?",
+                [nom, prenom, email, matricule || null, grade || null, id_utilisateur]
+            );
+        }
 
         res.json({ message: "Compte enseignant mis à jour avec succès." });
     } catch (err) {
@@ -412,6 +424,85 @@ const upsertCreneauAgent = async (req, res) => {
         // Le type_seance du créneau est TOUJOURS hérité de l'affectation
         let type_seance = verif[0][0].type_seance;
 
+        // ─── VALIDATION DE CONFLITS (COUCHE SERVEUR) ─────────────────────────────
+        // Même si le frontend a détecté des conflits, cette couche serveur garantit
+        // l'intégrité des données en base, quelles que soient les circonstances.
+
+        // Étape 1 : informations de l'affectation (enseignant, groupe, semestre)
+        let affInfoResult = await db.query(
+            `SELECT a.id_utilisateur, a.id_groupe, m.semestre
+             FROM affectations a
+             JOIN modules m ON a.id_module = m.id_module
+             WHERE a.id_affectation = ?`,
+            [id_affectation]
+        );
+        const affInfoRow = affInfoResult[0][0];
+
+        if (affInfoRow) {
+            const { id_utilisateur: teacherId, id_groupe: groupeId, semestre: newSemestre } = affInfoRow;
+
+            // Extraction du numéro de semestre pour le filtre de parité
+            const extractSemNum = (s) => {
+                if (!s) return 0;
+                const str = String(s).toLowerCase();
+                const match = str.match(/(?:s|semestre)\s*(\d)/);
+                if (match) return parseInt(match[1], 10);
+                const digit = str.match(/\d/);
+                return digit ? parseInt(digit[0], 10) : 0;
+            };
+            const newSemNum = extractSemNum(newSemestre);
+            const newIsImpair = newSemNum % 2 !== 0;
+
+            // Étape 2 : créneaux du même jour dans la même fenêtre de 90 minutes (5400 s)
+            // Deux cours se chevauchent si |début_A - début_B| < 5400 secondes
+            let conflictSql = `
+                SELECT edt.id_creneau, edt.salle, a2.id_utilisateur, a2.id_groupe, m2.semestre
+                FROM emploi_du_temps edt
+                JOIN affectations a2 ON edt.id_affectation = a2.id_affectation
+                JOIN modules m2      ON a2.id_module = m2.id_module
+                WHERE edt.jour = ?
+                  AND ABS(TIME_TO_SEC(edt.heure_debut) - TIME_TO_SEC(?)) < 5400
+            `;
+            let conflictParams = [jour, heure_debut];
+            if (id_creneau) {
+                // En mode modification : exclure le créneau en cours d'édition
+                conflictSql += ' AND edt.id_creneau != ?';
+                conflictParams.push(parseInt(id_creneau));
+            }
+
+            let conflictResult = await db.query(conflictSql, conflictParams);
+            const samePeriod = conflictResult[0];
+
+            for (const c of samePeriod) {
+                // Filtre semestriel : S1/S3/S5 n'entrent jamais en conflit avec S2/S4/S6
+                const cSemNum = extractSemNum(c.semestre);
+                if (newSemNum !== 0 && cSemNum !== 0) {
+                    const cIsImpair = cSemNum % 2 !== 0;
+                    if (cIsImpair !== newIsImpair) continue; // semesters différents → pas de conflit
+                }
+
+                // Conflit enseignant : même professeur, même jour, même créneau
+                if (c.id_utilisateur === teacherId) {
+                    return res.status(409).json({
+                        message: `Conflit : cet enseignant est déjà planifié le ${jour} sur ce créneau horaire.`
+                    });
+                }
+                // Conflit salle : même salle, même jour, même créneau
+                if (salle && c.salle && c.salle === salle) {
+                    return res.status(409).json({
+                        message: `Conflit : la salle « ${salle} » est déjà occupée le ${jour} sur ce créneau horaire.`
+                    });
+                }
+                // Conflit groupe (TD/TP) : même groupe, même jour, même créneau
+                if (groupeId && c.id_groupe && c.id_groupe === groupeId) {
+                    return res.status(409).json({
+                        message: `Conflit : ce groupe est déjà planifié le ${jour} sur ce créneau horaire.`
+                    });
+                }
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────────
+
         if (id_creneau) {
             // Modification d'un créneau existant
             await db.query(
@@ -643,7 +734,7 @@ const getDashboardStats = async (req, res) => {
 };
 
 // ============================================================
-// Bilan Semestriel — Vue complète des résultats par semestre
+// Délibérations — Vue complète des résultats par semestre
 // ============================================================
 const getBilanSemestre = async (req, res) => {
     try {
@@ -782,7 +873,7 @@ const getBilanSemestre = async (req, res) => {
 
     } catch (err) {
         console.log("Erreur dans getBilanSemestre :", err);
-        res.status(500).json({ message: "Erreur lors du calcul du bilan semestriel." });
+        res.status(500).json({ message: "Erreur lors du calcul des délibérations." });
     }
 };
 
@@ -1287,7 +1378,7 @@ module.exports = {
     deleteCreneauAgent,
     // Dashboard
     getDashboardStats,
-    // Bilan semestriel
+    // Délibérations
     getBilanSemestre,
     // Sessions + Délibération
     getSessionActive,

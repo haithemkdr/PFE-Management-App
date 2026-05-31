@@ -24,7 +24,7 @@ const {
     deleteCreneauAgent,
     // Dashboard
     getDashboardStats,
-    // Bilan semestriel
+    // Délibérations
     getBilanSemestre,
     // Sessions + Délibération
     getSessionActive,
@@ -92,7 +92,7 @@ router.put   ('/edt',                            ...guard, upsertCreneauAgent);
 router.delete('/edt/:id',                        ...guard, deleteCreneauAgent);
 
 // ============================================================
-// Bilan Semestriel
+// Délibérations
 // ============================================================
 router.get   ('/bilan-semestre',                 ...guard, getBilanSemestre);
 router.get   ('/formations',                     ...guard, getFormations);

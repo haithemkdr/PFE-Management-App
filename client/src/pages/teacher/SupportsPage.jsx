@@ -29,9 +29,17 @@ function formatDateTime(dateStr) {
   });
 }
 
+// Determine current semester period based on date:
+// Sept(9)–Jan(1) → odd semesters (S1,S3,S5)
+// Feb(2)–Aug(8) → even semesters (S2,S4,S6)
+function getCurrentSemesters() {
+  // Return odd semesters to match backend timetable logic
+  return ['S1', 'S3', 'S5'];
+}
+
 export default function SupportsPage() {
   const [affectations, setAffectations] = useState([]);
-  const [selectedAffectation, setSelectedAffectation] = useState('');
+  const [selectedModule, setSelectedModule] = useState('');
   const [supports, setSupports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -41,6 +49,8 @@ export default function SupportsPage() {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null); // { id, titre }
+  const [audienceMode, setAudienceMode] = useState('all'); // 'all' or 'specific'
+  const [specificAffectations, setSpecificAffectations] = useState([]);
   const fileRef = useRef(null);
 
   /* ── Load affectations ── */
@@ -50,24 +60,45 @@ export default function SupportsPage() {
       .catch(err => console.error('Erreur affectations:', err));
   }, []);
 
-  /* ── Load supports when affectation changes ── */
-  useEffect(() => {
-    if (!selectedAffectation) { setSupports([]); return; }
-    loadSupports();
-  }, [selectedAffectation]);
+  // Semestres académiques en cours — calculé dynamiquement selon la date
+  const CURRENT_SEMESTERS = getCurrentSemesters();
+  const currentAffectations = affectations.filter(a => CURRENT_SEMESTERS.includes(a.semestre));
 
-  function loadSupports() {
+  /* ── Get unique modules assigned to the teacher ── */
+  const uniqueModules = [];
+  const seenModuleIds = new Set();
+  currentAffectations.forEach(a => {
+    if (!seenModuleIds.has(a.id_module)) {
+      seenModuleIds.add(a.id_module);
+      uniqueModules.push({
+        id_module: a.id_module,
+        nom_module: a.nom_module,
+        semestre: a.semestre,
+        niveau: a.niveau
+      });
+    }
+  });
+
+  const loadSupports = useCallback(() => {
+    if (!selectedModule) { setSupports([]); return; }
     setLoading(true);
-    api.get(`/supports/${selectedAffectation}`)
+    api.get(`/supports/teacher/module/${selectedModule}`)
       .then(res => setSupports(res.data))
       .catch(err => console.error('Erreur supports:', err))
       .finally(() => setLoading(false));
-  }
+  }, [selectedModule]);
+
+  /* ── Load supports when selectedModule changes ── */
+  useEffect(() => {
+    setSpecificAffectations([]);
+    setAudienceMode('all');
+    loadSupports();
+  }, [selectedModule, loadSupports]);
 
   /* ── Upload handler ── */
   async function handleUpload() {
     const file = selectedFile;
-    if (!file || !selectedAffectation) return;
+    if (!file || !selectedModule) return;
 
     // Client-side size check
     if (file.size > 10 * 1024 * 1024) {
@@ -75,11 +106,24 @@ export default function SupportsPage() {
       return;
     }
 
+    const moduleAffectations = currentAffectations.filter(a => a.id_module === parseInt(selectedModule));
+    let targetIds = [];
+    if (audienceMode === 'all') {
+      targetIds = moduleAffectations.map(a => a.id_affectation);
+    } else {
+      targetIds = specificAffectations;
+    }
+
+    if (targetIds.length === 0) {
+      showToast('Veuillez sélectionner au moins un groupe ou cours', 'error');
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
+    formData.append('titre', titre || file.name.replace(/\.[^/.]+$/, ''));
+    formData.append('id_affectations', JSON.stringify(targetIds));
     formData.append('fichier', file);
-    formData.append('titre', titre || file.name);
-    formData.append('id_affectation', selectedAffectation);
     try {
       await api.post('/supports/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -87,6 +131,8 @@ export default function SupportsPage() {
       showToast('Fichier uploadé avec succès', 'success');
       setTitre('');
       setSelectedFile(null);
+      setSpecificAffectations([]);
+      setAudienceMode('all');
       if (fileRef.current) fileRef.current.value = '';
       setShowUploadForm(false);
       loadSupports();
@@ -114,7 +160,8 @@ export default function SupportsPage() {
   /* ── Download handler ── */
   const handleDownload = async (support) => {
     try {
-      const response = await api.get(`/supports/download/${support.id_support}`, {
+      const firstId = String(support.id_supports).split(',')[0];
+      const response = await api.get(`/supports/download/${firstId}`, {
         responseType: 'blob',
       });
       const originalName = support.chemin_fichier.replace(/^\d{13}-/, '');
@@ -167,21 +214,23 @@ export default function SupportsPage() {
     setTimeout(() => setToast(null), 3000);
   }
 
+  const moduleAffectations = currentAffectations.filter(a => a.id_module === parseInt(selectedModule));
+
   return (
     <div>
       {/* ── Filter bar ── */}
       <div className="filter-bar">
-        <select className="filter-bar__select" value={selectedAffectation}
-          onChange={e => setSelectedAffectation(e.target.value)} style={{ minWidth: 320 }}>
-          <option value="">— Choisir une affectation —</option>
-          {affectations.map(a => (
-            <option key={a.id_affectation} value={a.id_affectation}>
-              {a.nom_module} ({a.nom_groupe})
+        <select className="filter-bar__select" value={selectedModule}
+          onChange={e => setSelectedModule(e.target.value)} style={{ minWidth: 320 }}>
+          <option value="">— Choisir un cours —</option>
+          {uniqueModules.map(m => (
+            <option key={m.id_module} value={m.id_module}>
+              {m.nom_module} ({m.niveau} - {m.semestre})
             </option>
           ))}
         </select>
         <span className="filter-bar__spacer" />
-        {selectedAffectation && (
+        {selectedModule && (
           <button className="btn btn--primary" onClick={() => setShowUploadForm(v => !v)}>
             {showUploadForm ? <><X /> Fermer</> : <><Plus /> Ajouter support</>}
           </button>
@@ -189,7 +238,7 @@ export default function SupportsPage() {
       </div>
 
       {/* ── Upload form panel ── */}
-      {showUploadForm && selectedAffectation && (
+      {showUploadForm && selectedModule && (
         <div className="form-panel">
           <h4 className="form-panel__title">Nouveau support</h4>
 
@@ -201,6 +250,76 @@ export default function SupportsPage() {
             </div>
           </div>
 
+          {/* ── Selection du public cible ── */}
+          <div className="form-group" style={{ marginBottom: 16 }}>
+            <label style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: 8, display: 'block' }}>
+              Diffusion du support :
+            </label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 4 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 'var(--font-size-small)' }}>
+                <input
+                  type="radio"
+                  name="audienceMode"
+                  value="all"
+                  checked={audienceMode === 'all'}
+                  onChange={() => {
+                    setAudienceMode('all');
+                    setSpecificAffectations([]);
+                  }}
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--brand-primary)', cursor: 'pointer' }}
+                />
+                <span><strong>Envoyer à tous mes groupes</strong> (CM, TD, TP associés à ce cours)</span>
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 'var(--font-size-small)' }}>
+                <input
+                  type="radio"
+                  name="audienceMode"
+                  value="specific"
+                  checked={audienceMode === 'specific'}
+                  onChange={() => setAudienceMode('specific')}
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--brand-primary)', cursor: 'pointer' }}
+                />
+                <span><strong>Spécifier des groupes spécifiques</strong> (devoir, correction de TP, etc.)</span>
+              </label>
+            </div>
+          </div>
+
+          {/* ── Liste des groupes spécifiques ── */}
+          {audienceMode === 'specific' && moduleAffectations.length > 0 && (
+            <div className="form-group" style={{ marginBottom: 16, marginLeft: 24 }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: '8px 16px',
+                padding: '12px',
+                border: '1px solid var(--border-input)',
+                borderRadius: 'var(--radius-md)',
+                background: '#fafbfc',
+                maxHeight: '120px',
+                overflowY: 'auto'
+              }}>
+                {moduleAffectations.map(a => (
+                  <label key={a.id_affectation} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: 'var(--font-size-small)', color: 'var(--text-primary)', cursor: 'pointer', userSelect: 'none' }}>
+                    <input
+                      type="checkbox"
+                      checked={specificAffectations.includes(a.id_affectation)}
+                      style={{ width: '16px', height: '16px', accentColor: 'var(--brand-primary)', cursor: 'pointer' }}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setSpecificAffectations([...specificAffectations, a.id_affectation]);
+                        } else {
+                          setSpecificAffectations(specificAffectations.filter(id => id !== a.id_affectation));
+                        }
+                      }}
+                    />
+                    <span>{a.nom_groupe || a.type_seance}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ── DropZone ── */}
           <div
             className={`upload-area ${dragActive ? 'upload-area--active' : ''}`}
@@ -209,6 +328,7 @@ export default function SupportsPage() {
             onDragOver={handleDrag}
             onDrop={handleDrop}
             onClick={() => fileRef.current?.click()}
+            style={{ marginBottom: 16 }}
           >
             <Upload className="upload-area__icon" />
             {selectedFile ? (
@@ -245,10 +365,10 @@ export default function SupportsPage() {
       {/* ── Supports table ── */}
       {loading ? (
         <div className="empty-state">Chargement…</div>
-      ) : supports.length === 0 && selectedAffectation ? (
+      ) : supports.length === 0 && selectedModule ? (
         <div className="empty-state">
           <FileText />
-          Aucun support déposé pour cette affectation
+          Aucun support déposé pour ce cours
         </div>
       ) : supports.length > 0 ? (
         <div className="data-card">
@@ -260,6 +380,7 @@ export default function SupportsPage() {
             <thead>
               <tr>
                 <th>Titre</th>
+                <th>Destinataires</th>
                 <th>Type</th>
                 <th>Date de dépôt</th>
                 <th>Actions</th>
@@ -269,24 +390,31 @@ export default function SupportsPage() {
               {supports.map(s => {
                 const typeLabel = getFileTypeLabel(s.type_fichier);
                 return (
-                  <tr key={s.id_support}>
+                  <tr key={s.chemin_fichier}>
                     <td style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <FileText style={{ width: 16, height: 16, color: '#6b7280', flexShrink: 0 }} />
                       {s.titre}
                     </td>
                     <td>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                        {s.dest_groupes ? s.dest_groupes.split(',').join(', ') : '—'}
+                      </span>
+                    </td>
+                    <td>
                       <span className={getFileTypeBadgeClass(typeLabel)}>{typeLabel}</span>
                     </td>
                     <td>{formatDateTime(s.uploaded_at)}</td>
-                    <td style={{ display: 'flex', gap: 6 }}>
-                      <button onClick={() => handleDownload(s)}
-                        className="btn btn--secondary btn--sm">
-                        <Download /> Télécharger
-                      </button>
-                      <button className="btn btn--danger btn--sm"
-                        onClick={() => setDeleteModal({ id: s.id_support, titre: s.titre })}>
-                        <Trash2 /> Supprimer
-                      </button>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button onClick={() => handleDownload(s)}
+                          className="btn btn--secondary btn--sm">
+                          <Download /> Télécharger
+                        </button>
+                        <button className="btn btn--danger btn--sm"
+                          onClick={() => setDeleteModal({ id: s.id_supports, titre: s.titre })}>
+                          <Trash2 /> Supprimer
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

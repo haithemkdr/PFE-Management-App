@@ -3,6 +3,25 @@
 
 const db = require('../config/db');
 
+// Helper: resolve student filter for CM vs TD/TP
+// CM affectations have id_groupe = null; the frontend sends 'cm' as id_groupe
+// In that case, we find all groups in the section+niveau of the CM affectation
+async function resolveStudentGroupIds(id_module, id_groupe) {
+    if (id_groupe !== 'cm') return { groupIds: [id_groupe], isCM: false };
+    // Find the CM affectation to get section + niveau
+    const [cmAffs] = await db.query(
+        `SELECT section, niveau FROM affectations WHERE id_module = ? AND type_seance = 'CM' AND id_groupe IS NULL LIMIT 1`,
+        [id_module]
+    );
+    if (cmAffs.length === 0) return { groupIds: [], isCM: true };
+    const { section, niveau } = cmAffs[0];
+    const [groups] = await db.query(
+        `SELECT id_groupe FROM groupes WHERE section = ? AND niveau = ?`,
+        [section, niveau]
+    );
+    return { groupIds: groups.map(g => g.id_groupe), isCM: true, section, niveau };
+}
+
 // Récupère la liste d'appel pour un module, groupe et date de séance
 const getListeAppel = async (req, res) => {
     try {
@@ -10,6 +29,21 @@ const getListeAppel = async (req, res) => {
         let id_module = req.params.id_module;
         let id_groupe = req.params.id_groupe;
         let date_seance = req.params.date_seance;
+
+        // Resolve group IDs (handles CM sections)
+        const { groupIds, isCM } = await resolveStudentGroupIds(id_module, id_groupe);
+        if (groupIds.length === 0) return res.json([]);
+
+        // Find the affectation to use for absence records
+        // For CM: use the CM affectation directly; for TD/TP: use the group affectation
+        let affIdForAbsence;
+        if (isCM) {
+            const [cmAff] = await db.query(
+                `SELECT id_affectation FROM affectations WHERE id_module = ? AND type_seance = 'CM' AND id_groupe IS NULL LIMIT 1`,
+                [id_module]
+            );
+            affIdForAbsence = cmAff.length > 0 ? cmAff[0].id_affectation : null;
+        }
 
         // Je fais une jointure entre les étudiants du groupe et leurs absences pour cette date
         // Pour pouvoir filtrer par module et groupe, je passe par la table affectations
@@ -33,12 +67,34 @@ const getListeAppel = async (req, res) => {
                  JOIN affectations aff5 ON abs.id_affectation = aff5.id_affectation
                  WHERE abs.id_etudiant = e.id_etudiant AND aff5.id_module = ? AND abs.statut = 'Retard' AND abs.justifiee = 0) as nb_retards_non_justifiees
             FROM etudiants e 
-            LEFT JOIN affectations aff ON e.id_groupe = aff.id_groupe AND aff.id_module = ? 
-            LEFT JOIN absences a ON e.id_etudiant = a.id_etudiant AND a.id_affectation = aff.id_affectation AND a.date_seance = ? 
-            LEFT JOIN notes n ON e.id_etudiant = n.id_etudiant AND n.id_module = aff.id_module
-            WHERE e.id_groupe = ? ORDER BY e.nom ASC`;
+            LEFT JOIN absences a ON e.id_etudiant = a.id_etudiant AND a.id_affectation = ? AND a.date_seance = ? 
+            LEFT JOIN notes n ON e.id_etudiant = n.id_etudiant AND n.id_module = ?
+            WHERE e.id_groupe IN (?) ORDER BY e.nom ASC`;
         
-        let result = await db.query(sql, [id_module, id_module, id_module, id_module, id_module, date_seance, id_groupe]);
+        // For CM, use the CM affectation ID; for TD/TP, find the group's affectation
+        let absAffId = affIdForAbsence;
+        if (!isCM) {
+            let type_seance = req.query.type_seance;
+            let queryStr = `SELECT id_affectation FROM affectations WHERE id_module = ? AND id_groupe = ?`;
+            let queryParams = [id_module, id_groupe];
+            if (type_seance) {
+                queryStr += ` AND type_seance = ?`;
+                queryParams.push(type_seance);
+            }
+            const [grpAff] = await db.query(queryStr, queryParams);
+            if (grpAff.length > 0) {
+                const affIds = grpAff.map(g => g.id_affectation);
+                const [edtRows] = await db.query(
+                    `SELECT id_affectation FROM emploi_du_temps WHERE id_affectation IN (?) LIMIT 1`,
+                    [affIds]
+                );
+                absAffId = edtRows.length > 0 ? edtRows[0].id_affectation : affIds[0];
+            } else {
+                absAffId = null;
+            }
+        }
+
+        let result = await db.query(sql, [id_module, id_module, id_module, id_module, absAffId, date_seance, id_module, groupIds]);
         let rows = result[0];
 
         // Par défaut tout le monde est présent si la ligne d'absence n'existe pas
@@ -117,14 +173,7 @@ const enregistrerSeance = async (req, res) => {
             return res.status(400).send("Il manque des champs obligatoires");
         }
 
-        // Vérification de la restriction des 48h
-        let seanceDateObj = new Date(date_seance);
-        let currentDateObj = new Date();
-        let diffHours = (currentDateObj - seanceDateObj) / (1000 * 60 * 60);
-
-        if (diffHours > 48) {
-            return res.status(403).send("Délai de 48h dépassé. L'appel pour cette séance ne peut plus être modifié.");
-        }
+        // NOTE: 48h restriction removed — teachers can manage attendance for the full semester
 
         // Vérifier que le statut est valide pour chaque étudiant
         let statuts_valides = ['Présent', 'Absent', 'Retard'];
@@ -269,6 +318,14 @@ const enregistrerSeance = async (req, res) => {
 // Map French day names to JS getDay() values (0=Sunday)
 const JOUR_MAP = { 'Dimanche': 0, 'Lundi': 1, 'Mardi': 2, 'Mercredi': 3, 'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6 };
 
+// Format a Date as 'YYYY-MM-DD' in LOCAL timezone (avoids UTC shift from toISOString)
+function localDateStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
 // Derive the semester start date from academic year + semestre
 // Odd semesters (S1,S3,S5) → ~Sept 14, Even (S2,S4,S6) → ~Feb 8
 function getSemestreStartDate(annee_univ, semestre) {
@@ -281,6 +338,20 @@ function getSemestreStartDate(annee_univ, semestre) {
     } else {
         return new Date(startYear + 1, 1, 8); // Feb 8
     }
+}
+
+// Compute the effective cutoff date for "passed" session checks.
+// Uses the semester end (start + 14 weeks) as boundary so that
+// sessions are properly bounded within the academic calendar
+// regardless of the real system clock.
+function getEffectiveCutoffDate(semesterStart) {
+    const semEnd = new Date(semesterStart);
+    semEnd.setDate(semEnd.getDate() + 14 * 7); // 14 weeks
+    semEnd.setHours(23, 59, 59, 999);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    // Use the earlier of today or semester end
+    return today < semEnd ? today : semEnd;
 }
 
 // Generate 14 weekly dates starting from semesterStart on the given weekday
@@ -304,15 +375,46 @@ const getSuiviSeances = async (req, res) => {
     try {
         const { id_module, id_groupe } = req.params;
 
+        // Resolve group IDs (handles CM sections)
+        const { groupIds, isCM } = await resolveStudentGroupIds(id_module, id_groupe);
+
         // 1. Find the affectation(s) for this module/groupe
-        const [affs] = await db.query(
-            `SELECT a.id_affectation, a.type_seance, m.semestre, m.nom_module
-             FROM affectations a
-             JOIN modules m ON a.id_module = m.id_module
-             WHERE a.id_module = ? AND (a.id_groupe = ? OR (a.id_groupe IS NULL AND a.type_seance = 'CM'))
-             LIMIT 5`,
-            [id_module, id_groupe]
-        );
+        //    IMPORTANT: For a specific group, only fetch that group's affectations
+        //    Do NOT mix in CM affectations — they have different schedules/days
+        //    If type_seance is provided, narrow to that specific type (TD vs TP)
+        const type_seance = req.query.type_seance;
+        let affs;
+        if (isCM) {
+            const [rows] = await db.query(
+                `SELECT a.id_affectation, a.type_seance, m.semestre, m.nom_module
+                 FROM affectations a
+                 JOIN modules m ON a.id_module = m.id_module
+                 WHERE a.id_module = ? AND a.type_seance = 'CM' AND a.id_groupe IS NULL
+                 LIMIT 5`,
+                [id_module]
+            );
+            affs = rows;
+        } else if (type_seance) {
+            const [rows] = await db.query(
+                `SELECT a.id_affectation, a.type_seance, m.semestre, m.nom_module
+                 FROM affectations a
+                 JOIN modules m ON a.id_module = m.id_module
+                 WHERE a.id_module = ? AND a.id_groupe = ? AND a.type_seance = ?
+                 LIMIT 5`,
+                [id_module, id_groupe, type_seance]
+            );
+            affs = rows;
+        } else {
+            const [rows] = await db.query(
+                `SELECT a.id_affectation, a.type_seance, m.semestre, m.nom_module
+                 FROM affectations a
+                 JOIN modules m ON a.id_module = m.id_module
+                 WHERE a.id_module = ? AND a.id_groupe = ?
+                 LIMIT 5`,
+                [id_module, id_groupe]
+            );
+            affs = rows;
+        }
 
         if (affs.length === 0) {
             return res.json({ seances: [], etudiants: [], stats: { total_seances: 0 } });
@@ -341,34 +443,38 @@ const getSuiviSeances = async (req, res) => {
         );
         const annee_univ = sessRows.length > 0 ? sessRows[0].annee_univ : '2025-2026';
         const semStart = getSemestreStartDate(annee_univ, semestre);
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
+        const cutoff = getEffectiveCutoffDate(semStart);
 
         // 3. Generate session dates from the first EDT entry (primary scheduled day)
-        // If multiple days exist, use the one matching the groupe affectation
-        const primaryEdt = edtRows.find(e => String(e.id_affectation) === String(affs.find(a => a.id_groupe)?.id_affectation)) || edtRows[0];
+        const primaryEdt = edtRows[0];
         const targetDay = JOUR_MAP[primaryEdt.jour];
 
         const sessionDates = generateSessionDates(semStart, targetDay, 14);
 
         const seanceList = sessionDates.map((d, i) => ({
-            date: d.toISOString().split('T')[0],
+            date: localDateStr(d),
             label: `S${i + 1}`,
             numero: i + 1,
             jour: primaryEdt.jour,
             heure: `${primaryEdt.heure_debut.substring(0, 5)}–${primaryEdt.heure_fin.substring(0, 5)}`,
             salle: primaryEdt.salle,
-            passed: d <= today
+            passed: d <= cutoff
         }));
 
         const seancesDispensees = seanceList.filter(s => s.passed).length;
 
-        // 4. Get students
-        const [etudiants] = await db.query(
-            `SELECT e.id_etudiant, e.matricule, e.nom, e.prenom
-             FROM etudiants e WHERE e.id_groupe = ? ORDER BY e.nom ASC`,
-            [id_groupe]
-        );
+        // 4. Get students (by section groups for CM, by single group for TD/TP)
+        let etudiants;
+        if (groupIds.length === 0) {
+            etudiants = [];
+        } else {
+            const [rows] = await db.query(
+                `SELECT e.id_etudiant, e.matricule, e.nom, e.prenom
+                 FROM etudiants e WHERE e.id_groupe IN (?) ORDER BY e.nom ASC`,
+                [groupIds]
+            );
+            etudiants = rows;
+        }
 
         if (etudiants.length === 0) {
             return res.json({ seances: seanceList, etudiants: [], stats: { total_seances: 14, seances_dispensees: seancesDispensees } });
@@ -394,19 +500,24 @@ const getSuiviSeances = async (req, res) => {
         const excluMap = {};
         notes.forEach(n => { if (n.resultat === 'EXC') excluMap[n.id_etudiant] = true; });
 
-        // Index absences by etudiant + date
+        // Index absences by etudiant + date, and track which dates have records
         const absMap = {};
+        const recordedDates = new Set();
         absences.forEach(a => {
-            const key = `${a.id_etudiant}_${new Date(a.date_seance).toISOString().split('T')[0]}`;
+            const dateStr = localDateStr(new Date(a.date_seance));
+            const key = `${a.id_etudiant}_${dateStr}`;
             absMap[key] = { statut: a.statut, justifiee: a.justifiee === 1 };
+            recordedDates.add(dateStr);
         });
+
+        const seancesEnregistreesCount = seanceList.filter(s => s.passed && recordedDates.has(s.date)).length;
 
         // 7. Build the matrix
         const result = etudiants.map(etu => {
             let totalAbsences = 0, totalNonJustifiees = 0, totalPresent = 0, totalRetard = 0;
 
             const presences = seanceList.map(s => {
-                if (!s.passed) return { statut: null, justifiee: false }; // future session
+                if (!s.passed || !recordedDates.has(s.date)) return { statut: null, justifiee: false }; // future or untaken session
 
                 const key = `${etu.id_etudiant}_${s.date}`;
                 const record = absMap[key];
@@ -420,8 +531,8 @@ const getSuiviSeances = async (req, res) => {
                 return { statut, justifiee };
             });
 
-            const tauxPresence = seancesDispensees > 0
-                ? ((totalPresent + totalRetard * 0.5) / seancesDispensees * 100).toFixed(1) : '100.0';
+            const tauxPresence = seancesEnregistreesCount > 0
+                ? ((totalPresent + totalRetard * 0.5) / seancesEnregistreesCount * 100).toFixed(1) : '100.0';
 
             return {
                 id_etudiant: etu.id_etudiant, matricule: etu.matricule, nom: etu.nom, prenom: etu.prenom,
@@ -438,8 +549,8 @@ const getSuiviSeances = async (req, res) => {
             edt: { jour: primaryEdt.jour, heure_debut: primaryEdt.heure_debut, heure_fin: primaryEdt.heure_fin, salle: primaryEdt.salle },
             stats: {
                 total_seances: 14,
-                seances_dispensees: seancesDispensees,
-                seances_restantes: 14 - seancesDispensees,
+                seances_dispensees: seancesEnregistreesCount,
+                seances_restantes: 14 - seancesEnregistreesCount,
                 total_etudiants: etudiants.length,
                 total_exclus: Object.keys(excluMap).length
             }
@@ -457,16 +568,43 @@ const getSuiviSeances = async (req, res) => {
 const getEdtDates = async (req, res) => {
     try {
         const { id_module, id_groupe } = req.params;
+        const isCM = (id_groupe === 'cm');
 
         // Find affectation(s)
-        const [affs] = await db.query(
-            `SELECT a.id_affectation, a.type_seance, m.semestre
-             FROM affectations a
-             JOIN modules m ON a.id_module = m.id_module
-             WHERE a.id_module = ? AND (a.id_groupe = ? OR (a.id_groupe IS NULL AND a.type_seance = 'CM'))
-             LIMIT 5`,
-            [id_module, id_groupe]
-        );
+        // If type_seance is provided, narrow to that specific type (TD vs TP)
+        const type_seance = req.query.type_seance;
+        let affs;
+        if (isCM) {
+            const [rows] = await db.query(
+                `SELECT a.id_affectation, a.type_seance, m.semestre
+                 FROM affectations a
+                 JOIN modules m ON a.id_module = m.id_module
+                 WHERE a.id_module = ? AND a.type_seance = 'CM' AND a.id_groupe IS NULL
+                 LIMIT 5`,
+                [id_module]
+            );
+            affs = rows;
+        } else if (type_seance) {
+            const [rows] = await db.query(
+                `SELECT a.id_affectation, a.type_seance, m.semestre
+                 FROM affectations a
+                 JOIN modules m ON a.id_module = m.id_module
+                 WHERE a.id_module = ? AND a.id_groupe = ? AND a.type_seance = ?
+                 LIMIT 5`,
+                [id_module, id_groupe, type_seance]
+            );
+            affs = rows;
+        } else {
+            const [rows] = await db.query(
+                `SELECT a.id_affectation, a.type_seance, m.semestre
+                 FROM affectations a
+                 JOIN modules m ON a.id_module = m.id_module
+                 WHERE a.id_module = ? AND a.id_groupe = ?
+                 LIMIT 5`,
+                [id_module, id_groupe]
+            );
+            affs = rows;
+        }
 
         if (affs.length === 0) return res.json({ dates: [], edt: null });
 
@@ -489,17 +627,16 @@ const getEdtDates = async (req, res) => {
         const annee_univ = sessRows.length > 0 ? sessRows[0].annee_univ : '2025-2026';
         const semStart = getSemestreStartDate(annee_univ, semestre);
 
-        const primaryEdt = edtRows.find(e => String(e.id_affectation) === String(affs.find(a => a.id_groupe)?.id_affectation)) || edtRows[0];
+        const primaryEdt = edtRows[0];
         const targetDay = JOUR_MAP[primaryEdt.jour];
         const sessionDates = generateSessionDates(semStart, targetDay, 14);
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
+        const cutoff = getEffectiveCutoffDate(semStart);
 
         const dates = sessionDates.map((d, i) => ({
-            date: d.toISOString().split('T')[0],
+            date: localDateStr(d),
             label: `S${i + 1}`,
             numero: i + 1,
-            passed: d <= today
+            passed: d <= cutoff
         }));
 
         res.json({
@@ -508,7 +645,8 @@ const getEdtDates = async (req, res) => {
                 jour: primaryEdt.jour,
                 heure_debut: primaryEdt.heure_debut,
                 heure_fin: primaryEdt.heure_fin,
-                salle: primaryEdt.salle
+                salle: primaryEdt.salle,
+                id_affectation: primaryEdt.id_affectation
             }
         });
     } catch (err) {

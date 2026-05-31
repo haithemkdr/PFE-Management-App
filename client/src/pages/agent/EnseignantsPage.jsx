@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../utils/api';
-import { Plus, Search, Pencil, Trash2, X, Download } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, X, Download, Eye, EyeOff } from 'lucide-react';
 import '../shared.css';
 
 export default function EnseignantsPage() {
@@ -12,6 +12,7 @@ export default function EnseignantsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Form state
   const emptyForm = { nom: '', prenom: '', email: '', matricule: '', grade: 'MAA', mot_de_passe: '' };
@@ -75,13 +76,18 @@ export default function EnseignantsPage() {
     e.preventDefault();
     if (editingId) {
       // Mode edition
-      api.put(`/agent/enseignants/${editingId}`, {
+      const payload = {
         nom: form.nom,
         prenom: form.prenom,
         email: form.email,
         matricule: form.matricule,
         grade: form.grade
-      })
+      };
+      // Inclure le mot de passe seulement s'il a été modifié
+      if (form.mot_de_passe && form.mot_de_passe.trim()) {
+        payload.mot_de_passe = form.mot_de_passe;
+      }
+      api.put(`/agent/enseignants/${editingId}`, payload)
         .then(() => {
           showToast('Enseignant modifié avec succès', 'success');
           resetForm();
@@ -108,10 +114,11 @@ export default function EnseignantsPage() {
       email: enseignant.email,
       matricule: enseignant.matricule || '',
       grade: enseignant.grade || 'MAA',
-      mot_de_passe: ''
+      mot_de_passe: enseignant.mot_de_passe_clair || ''
     });
     setEditingId(enseignant.id_utilisateur);
     setShowForm(true);
+    setShowPassword(false);
   }
 
   // Delete enseignant
@@ -145,6 +152,7 @@ export default function EnseignantsPage() {
     setForm(emptyForm);
     setEditingId(null);
     setShowForm(false);
+    setShowPassword(false);
   }
 
   function showToast(msg, type) {
@@ -246,12 +254,32 @@ export default function EnseignantsPage() {
                 <option value="Prof">Professeur</option>
               </select>
             </div>
-            {!editingId && (
-              <div className="form-group">
-                <label>Mot de passe</label>
-                <input type="password" required value={form.mot_de_passe} onChange={e => setForm({ ...form, mot_de_passe: e.target.value })} />
+            <div className="form-group">
+              <label>{editingId ? 'Mot de passe (actuel ou nouveau)' : 'Mot de passe'}</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required={!editingId}
+                  value={form.mot_de_passe}
+                  onChange={e => setForm({ ...form, mot_de_passe: e.target.value })}
+                  placeholder={editingId ? 'Laisser vide pour ne pas changer' : ''}
+                  style={{ paddingRight: 36 }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', padding: 2,
+                    color: 'var(--text-muted)', display: 'flex', alignItems: 'center'
+                  }}
+                  title={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
-            )}
+              {editingId && <small style={{ color: 'var(--text-muted)', fontSize: 11 }}>Le mot de passe actuel est affiché. Modifiez-le pour changer.</small>}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <button type="submit" className="btn btn--primary">{editingId ? 'Enregistrer les modifications' : 'Créer le compte'}</button>

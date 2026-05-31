@@ -14,19 +14,53 @@ import '../shared.css';
  *  - Boutons Modifier ET Supprimer sur chaque carte
  */
 
-const JOURS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi'];
+const JOURS = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Samedi'];
 
-// ─── Horaires officiels (départ 08:30, créneaux de 1h30) ─────────────────────
-const HEURES = ['08:30', '10:00', '11:30', '13:00', '14:30', '16:00'];
+// ─── Créneaux canoniques (périodes universitaires) ──────────────────────────
+// Chaque cours dure 1h30. On fusionne toutes les heures de début en base
+// (08:00, 08:30, 09:30, 09:50, etc.) dans la période correspondante.
+const PERIOD_RANGES = [
+  { key: '08:00', display: '08:00 – 09:30', from: 480, to: 569 },
+  { key: '09:30', display: '09:30 – 11:00', from: 570, to: 659 },
+  { key: '11:00', display: '11:00 – 12:30', from: 660, to: 779 },
+  { key: '13:00', display: '13:00 – 14:30', from: 780, to: 869 },
+  { key: '14:30', display: '14:30 – 16:00', from: 870, to: 959 },
+  { key: '16:00', display: '16:00 – 17:30', from: 960, to: 1080 },
+];
+const CANONICAL_SLOTS = PERIOD_RANGES.map(p => p.key);
+// Map a period key to its display label
+const PERIOD_DISPLAY = Object.fromEntries(PERIOD_RANGES.map(p => [p.key, p.display]));
 
-// ─── Salles disponibles par type ─────────────────────────────────────────────
+// Convert "HH:MM" to minutes since midnight
+function timeToMin(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+// Map a raw "HH:MM" start time to the period key it belongs to
+function normalizeSlot(raw) {
+  const rawMin = timeToMin(raw);
+  for (const p of PERIOD_RANGES) {
+    if (rawMin >= p.from && rawMin <= p.to) return p.key;
+  }
+  // Fallback: nearest period label
+  let best = PERIOD_RANGES[0].key, bestDist = Infinity;
+  for (const p of PERIOD_RANGES) {
+    const mid = (p.from + p.to) / 2;
+    const d = Math.abs(mid - rawMin);
+    if (d < bestDist) { bestDist = d; best = p.key; }
+  }
+  return best;
+}
+
+// ─── Salles disponibles par type (synchronisées avec la BDD) ─────────────────
 const SALLES = {
-  CM:  ['Amphi A', 'Amphi B', 'Amphi C', 'Amphi D'],
-  TD:  ['TD 01', 'TD 02', 'TD 03', 'TD 04', 'TD 05', 'TD 06'],
-  TP:  ['TP 01', 'TP 02', 'TP 03', 'TP 04'],
+  CM:  ['Amphi 3', 'Amphi 4', 'Amphi A1', 'Amphi A2', 'Amphi A3', 'Amphi A4', 'Amphi A5', 'Amphi A6', 'Amphi A7', 'Amphi A8', 'EAD'],
+  TD:  ['GS2', 'GS7', '313', 'Info1', 'Info2', 'Info3', 'Info4'],
+  TP:  ['Salle P1', 'Salle P2', 'Salle TP A1', 'Salle TP A2', 'Salle TP A5', 'Salle TP A6'],
 };
 // Toutes les salles confondues pour la liste complète
-const TOUTES_SALLES = [...SALLES.CM, ...SALLES.TD, ...SALLES.TP];
+const TOUTES_SALLES = [...new Set([...SALLES.CM, ...SALLES.TD, ...SALLES.TP])].sort();
 
 // Auto-calculate end time: start + 1h30
 function calcEndTime(startTime) {
@@ -68,8 +102,8 @@ export default function EdtAgentPage() {
   const emptyForm = {
     id_affectation: '',
     jour: 'Lundi',
-    heure_debut: '08:30',
-    heure_fin: calcEndTime('08:30'),
+    heure_debut: '08:00',
+    heure_fin: calcEndTime('08:00'),
     salle: SALLES.CM[0],    // pré-sélectionné
     type_seance: 'CM',
   };
@@ -95,40 +129,82 @@ export default function EdtAgentPage() {
     return Object.values(map).sort((a, b) => a.nom.localeCompare(b.nom));
   }, [affectations]);
 
-  // ── Salles filtrées selon le type de séance sélectionné ──────
-  const sallesDisponibles = useMemo(() => {
-    return SALLES[form.type_seance] || TOUTES_SALLES;
-  }, [form.type_seance]);
+  // sallesDisponibles is now computed below as sallesForType (after grid construction)
 
   // ── Conflict detection ────────────────────────────────────────
-  // Returns array of conflict messages for the current form values
+  // Returns array of conflict messages for the current form values.
+  // IMPORTANT : les semestres S1 et S2 se déroulent à des dates
+  // différentes → un créneau S1 ne peut PAS entrer en conflit
+  // avec un créneau S2 (même jour/heure/salle).
   const detectConflicts = (f, excludeId = null) => {
     const msgs = [];
-    const debut = f.heure_debut;
+    // Normaliser vers la clé de période canonique (ex : '08:30' → '08:00').
+    // Identique à la logique d'affichage de la grille, ce qui garantit la cohérence
+    // entre ce qui est affiché et ce qui est détecté comme conflit.
+    const debut = normalizeSlot(f.heure_debut);
 
     // Get selected affectation details
     const aff = affectations.find(a => String(a.id_affectation) === String(f.id_affectation));
     if (!aff) return msgs;
 
+    // Fonction pour extraire le numéro du semestre de manière robuste
+    const extractSemesterNumber = (semestreStr) => {
+      if (!semestreStr) return 0;
+      const s = String(semestreStr).toLowerCase();
+      if (s.includes('premier')) return 1;
+      if (s.includes('second') || s.includes('deuxième') || s.includes('deuxieme')) return 2;
+      if (s.includes('troisième') || s.includes('troisieme')) return 3;
+      if (s.includes('quatrième') || s.includes('quatrieme')) return 4;
+      if (s.includes('cinquième') || s.includes('cinquieme')) return 5;
+      if (s.includes('sixième') || s.includes('sixieme')) return 6;
+
+      const match = s.match(/(?:s|semestre)\s*(\d)/);
+      if (match) return parseInt(match[1], 10);
+
+      const firstDigit = s.match(/\d/);
+      return firstDigit ? parseInt(firstDigit[0], 10) : 0;
+    };
+
+    // Déterminer la parité du semestre du cours en cours d'ajout :
+    //   S1, S3, S5 → impair ;  S2, S4, S6 → pair
+    const semestreNum = extractSemesterNumber(aff.semestre);
+    const isImpair = semestreNum % 2 !== 0;
+
     const candidats = creneaux.filter(c => {
       if (excludeId && c.id_creneau === excludeId) return false; // ignore self when editing
       if (c.jour !== f.jour) return false;
-      const cDebut = (c.heure_debut || '').slice(0, 5);
-      return cDebut === debut;
+      const cDebutRaw = (c.heure_debut || '').slice(0, 5);
+      if (!cDebutRaw) return false;
+      // Normaliser le créneau existant pour comparer les périodes, pas les heures brutes
+      const cDebut = normalizeSlot(cDebutRaw);
+      if (cDebut !== debut) return false;
+
+      // ── Filtre semestre ──────────────────────────────────
+      // Un cours S1 (impair) et un cours S2 (pair) ne sont JAMAIS
+      // en conflit car ils ont lieu à des périodes de l'année différentes.
+      const cSemNum = extractSemesterNumber(c.semestre);
+      // Si l'un des deux numéros de semestre est 0 (inconnu), on laisse le conflit s'appliquer par sécurité,
+      // sinon on vérifie la parité.
+      if (semestreNum !== 0 && cSemNum !== 0) {
+        const cIsImpair = cSemNum % 2 !== 0;
+        if (cIsImpair !== isImpair) return false; // semestres de parité différente → pas de conflit
+      }
+
+      return true;
     });
 
     // 1. Conflit de salle
     if (f.salle) {
       const salleOccupee = candidats.find(c => c.salle === f.salle);
       if (salleOccupee) {
-        msgs.push(`⚠️ Salle « ${f.salle} » déjà occupée par ${salleOccupee.nom_enseignant} (${salleOccupee.nom_module}) le ${f.jour} à ${debut}`);
+        msgs.push(`⚠️ Salle « ${f.salle} » déjà occupée par ${salleOccupee.nom_enseignant} (${salleOccupee.nom_module}, ${salleOccupee.semestre || '?'}) le ${f.jour} à ${debut}`);
       }
     }
 
     // 2. Conflit enseignant
     const memeEnseignant = candidats.find(c => c.id_enseignant === aff.id_utilisateur);
     if (memeEnseignant) {
-      msgs.push(`⚠️ Enseignant déjà planifié pour « ${memeEnseignant.nom_module} » le ${f.jour} à ${debut}`);
+      msgs.push(`⚠️ Enseignant déjà planifié pour « ${memeEnseignant.nom_module} » (${memeEnseignant.semestre || '?'}) le ${f.jour} à ${debut}`);
     }
 
     // 3. Conflit groupe (pour TD/TP seulement, CM = section entière → toujours signaler)
@@ -152,7 +228,21 @@ export default function EdtAgentPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.id_affectation, form.jour, form.heure_debut, form.salle, creneaux, affectations, editingId]);
 
-  // ── Grid construction ─────────────────────────────────────────
+  // ── Dynamic time slots: snap to canonical slots ────────────────
+  const dynamicHeures = useMemo(() => {
+    const slotSet = new Set();
+    creneaux.forEach(c => {
+      if (enseignantFilter && String(c.id_enseignant) !== enseignantFilter) return;
+      if (jourFilter      && c.jour     !== jourFilter)                     return;
+      if (niveauFilter    && c.niveau   !== niveauFilter)                   return;
+      if (semestreFilter  && c.semestre !== semestreFilter)                 return;
+      const raw = (c.heure_debut || '').slice(0, 5);
+      if (raw) slotSet.add(normalizeSlot(raw));
+    });
+    return [...slotSet].sort();
+  }, [creneaux, enseignantFilter, jourFilter, niveauFilter, semestreFilter]);
+
+  // ── Grid construction (keyed by canonical slot) ───────────────
   const grid = useMemo(() => {
     const map = {};
     creneaux.forEach(c => {
@@ -160,20 +250,41 @@ export default function EdtAgentPage() {
       if (jourFilter      && c.jour     !== jourFilter)                     return;
       if (niveauFilter    && c.niveau   !== niveauFilter)                   return;
       if (semestreFilter  && c.semestre !== semestreFilter)                 return;
-      const hNorm = (c.heure_debut || '').slice(0, 5);
-      const key = `${c.jour}-${hNorm}`;
+      const raw = (c.heure_debut || '').slice(0, 5);
+      const slot = normalizeSlot(raw);
+      const key = `${c.jour}-${slot}`;
       if (!map[key]) map[key] = [];
       map[key].push(c);
     });
     return map;
   }, [creneaux, enseignantFilter, jourFilter, niveauFilter, semestreFilter]);
 
+  // ── Form dropdown: canonical slots only ───────────────────────
+  const formHeures = CANONICAL_SLOTS;
+
+  // ── Dynamic salles: merge hardcoded + data-derived ────────────
+  const allSallesFromData = useMemo(() => {
+    const set = new Set(TOUTES_SALLES);
+    creneaux.forEach(c => { if (c.salle) set.add(c.salle); });
+    return [...set].sort();
+  }, [creneaux]);
+
+  const sallesForType = useMemo(() => {
+    const base = SALLES[form.type_seance] || allSallesFromData;
+    // Also include any data-derived salles not in the hardcoded list
+    const extra = new Set(base);
+    creneaux.forEach(c => {
+      if (c.type_seance === form.type_seance && c.salle) extra.add(c.salle);
+    });
+    return [...extra].sort();
+  }, [form.type_seance, creneaux, allSallesFromData]);
+
   function getWeekLabel() {
     const now = new Date();
     const start = new Date(now);
     start.setDate(now.getDate() - now.getDay());
     const end = new Date(start);
-    end.setDate(start.getDate() + 4);
+    end.setDate(start.getDate() + 6); // Sunday through Saturday
     const moisFr = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
     return `Semaine du ${start.getDate()} au ${end.getDate()} ${moisFr[end.getMonth()]} ${end.getFullYear()}`;
   }
@@ -344,7 +455,7 @@ export default function EdtAgentPage() {
             <div className="form-group">
               <label>Heure début</label>
               <select value={form.heure_debut} onChange={e => handleHeureChange(e.target.value)}>
-                {HEURES.map(h => <option key={h} value={h}>{h}</option>)}
+                {formHeures.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>
             <div className="form-group">
@@ -370,7 +481,7 @@ export default function EdtAgentPage() {
                 value={form.salle}
                 onChange={e => setForm({ ...form, salle: e.target.value })}
               >
-                {sallesDisponibles.map(s => <option key={s} value={s}>{s}</option>)}
+                {sallesForType.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="form-group">
@@ -410,17 +521,21 @@ export default function EdtAgentPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: 32 }}>Chargement…</td></tr>
+              <tr><td colSpan={JOURS.length + 1} style={{ textAlign: 'center', padding: 32 }}>Chargement…</td></tr>
+            ) : dynamicHeures.length === 0 ? (
+              <tr><td colSpan={JOURS.length + 1} style={{ textAlign: 'center', padding: 40, color: 'var(--text-secondary)', fontSize: 14 }}>
+                Aucun créneau trouvé pour les filtres sélectionnés.
+              </td></tr>
             ) : (
-              HEURES.map(h => (
+              dynamicHeures.map(h => (
                 <tr key={h}>
-                  {/* Time label */}
+                  {/* Time label — plage horaire */}
                   <td style={{
-                    fontWeight: 600, fontSize: 12, color: 'var(--text-secondary)',
-                    whiteSpace: 'nowrap', textAlign: 'center', verticalAlign: 'top', paddingTop: 14
+                    fontWeight: 600, fontSize: 11, color: 'var(--text-secondary)',
+                    whiteSpace: 'nowrap', textAlign: 'center', verticalAlign: 'top', paddingTop: 14,
+                    lineHeight: 1.6
                   }}>
-                    {h}<br />
-                    <span style={{ fontWeight: 400, fontSize: 11 }}>{calcEndTime(h)}</span>
+                    {PERIOD_DISPLAY[h] || `${h} – ${calcEndTime(h)}`}
                   </td>
 
                   {JOURS.map(j => {

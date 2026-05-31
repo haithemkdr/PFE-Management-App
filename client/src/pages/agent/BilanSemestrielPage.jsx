@@ -71,10 +71,10 @@ export default function BilanSemestrielPage() {
   return (
     <>
       <div className="page-header">
-        <h2 className="page-header__title"><BarChart2 style={{marginRight:8,verticalAlign:'middle'}} /> Bilan Semestriel</h2>
+        <h2 className="page-header__title"><BarChart2 style={{marginRight:8,verticalAlign:'middle'}} /> Délibérations</h2>
       </div>
       <div style={{display:'flex',gap:0,marginBottom:20,borderBottom:'1px solid var(--border-default)'}}>
-        {[['bilan','Bilan Semestriel',BarChart2],['deliberation','Délibération Annuelle',Award]].map(([k,l,Icon])=>(
+        {[['bilan','Délibérations',BarChart2],['deliberation','Délibération Annuelle',Award]].map(([k,l,Icon])=>(
           <button key={k} onClick={()=>setTab(k)} className={tab===k?'btn btn--primary':'btn btn--outline'}
             style={{borderRadius:'8px 8px 0 0',borderBottom:tab===k?'2px solid var(--brand-primary)':'none',fontSize:13}}>
             <Icon size={15}/> {l}
@@ -86,7 +86,7 @@ export default function BilanSemestrielPage() {
   );
 }
 
-/* ═══════ TAB 1: Bilan Semestriel ═══════ */
+/* ═══════ TAB 1: Délibérations ═══════ */
 function TabBilan() {
   const [niveau, setNiveau] = useState('L1');
   const [semestre, setSemestre] = useState('S1');

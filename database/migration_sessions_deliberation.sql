@@ -1,6 +1,6 @@
 -- ============================================================
 -- Migration: Sessions + Délibérations + session_validation
--- Bilan Semestriel — Refonte PV officiels
+-- Délibérations — Refonte PV officiels
 -- ============================================================
 
 -- 1. Table sessions : paramètre global par semestre

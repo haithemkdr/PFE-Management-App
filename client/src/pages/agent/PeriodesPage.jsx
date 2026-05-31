@@ -45,17 +45,28 @@ export default function PeriodesPage() {
   // Valeurs uniques pour les filtres
   const annees = [...new Set(affectations.map(a => a.annee_univ))].sort().reverse();
   const semestres = [...new Set(affectations.map(a => a.semestre).filter(Boolean))].sort();
-  const groupes = [...new Set(affectations.map(a => a.libelle_groupe).filter(Boolean))].sort();
+  // Groups filtered by selected niveau — ensures L3 only shows Gr1-Gr5, etc.
+  const groupes = [...new Set(
+    affectations
+      .filter(a => !niveauFilter || a.niveau === niveauFilter)
+      .map(a => a.libelle_groupe)
+      .filter(Boolean)
+  )].sort((a, b) => {
+    const na = parseInt(a.replace(/\D/g, '')) || 0;
+    const nb = parseInt(b.replace(/\D/g, '')) || 0;
+    return na - nb;
+  });
 
   // Filtrage des affectations
   const filtered = useMemo(() => {
     return affectations.filter(a => {
       if (anneeFilter && a.annee_univ !== anneeFilter) return false;
+      if (niveauFilter && a.niveau !== niveauFilter) return false;
       if (semestreFilter && a.semestre !== semestreFilter) return false;
       if (groupeFilter && a.libelle_groupe !== groupeFilter) return false;
       return true;
     });
-  }, [affectations, anneeFilter, semestreFilter, groupeFilter]);
+  }, [affectations, anneeFilter, niveauFilter, semestreFilter, groupeFilter]);
 
   // Toggle une seule affectation via PATCH /agent/periodes/:id/toggle
   function handleToggle(id, currentState) {
@@ -141,7 +152,7 @@ export default function PeriodesPage() {
         <select
           className="filter-bar__select"
           value={niveauFilter}
-          onChange={e => { setNiveauFilter(e.target.value); setSemestreFilter(''); }}
+          onChange={e => { setNiveauFilter(e.target.value); setSemestreFilter(''); setGroupeFilter(''); }}
         >
           <option value="">Tous les niveaux</option>
           <option value="L1">L1</option>
@@ -166,7 +177,7 @@ export default function PeriodesPage() {
           value={groupeFilter}
           onChange={e => setGroupeFilter(e.target.value)}
         >
-          <option value="">Toutes les filières</option>
+          <option value="">Tous les groupes</option>
           {groupes.map(g => <option key={g} value={g}>{g}</option>)}
         </select>
 

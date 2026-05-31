@@ -13,7 +13,6 @@ import {
   LockKeyhole,
   MonitorCheck,
   BarChart2,
-  Bell,
   LogOut,
 } from 'lucide-react';
 import './DashboardLayout.css';
@@ -26,7 +25,7 @@ const teacherNav = [
   { to: '/teacher/supports',  label: 'Supports',        icon: FolderOpen },
   { to: '/teacher/annonces',  label: 'Annonces',        icon: Megaphone },
   { to: '/teacher/emploi',    label: 'Emploi du temps',  icon: CalendarDays },
-  { to: '/teacher/bilan',     label: 'Bilan semestriel',  icon: BarChart2 },
+  { to: '/teacher/bilan',     label: 'Délibérations',  icon: BarChart2 },
 ];
 
 const agentNav = [
@@ -37,7 +36,7 @@ const agentNav = [
   { to: '/agent/periodes',      label: 'Périodes de saisie',    icon: LockKeyhole },
   { to: '/agent/supervision',   label: 'Supervision cours',     icon: MonitorCheck },
   { to: '/agent/emploi',        label: 'Emploi du temps',       icon: CalendarDays },
-  { to: '/agent/bilan',         label: 'Bilan semestriel',      icon: BarChart2 },
+  { to: '/agent/bilan',         label: 'Délibérations',      icon: BarChart2 },
 ];
 
 /* ── Page title helper ── */
@@ -113,6 +112,7 @@ export default function DashboardLayout({ role }) {
             title="Déconnexion"
           >
             <LogOut />
+            <span>Déconnexion</span>
           </button>
         </div>
       </aside>
@@ -123,9 +123,6 @@ export default function DashboardLayout({ role }) {
         <header className="navbar">
           <span className="navbar__title">{pageTitle}</span>
           <div className="navbar__actions">
-            <button className="navbar__bell" title="Notifications">
-              <Bell />
-            </button>
             <div className="navbar__user-pill">
               <div className={`navbar__user-pill-avatar navbar__user-pill-avatar${roleSuffix}`}>
                 {getInitials(displayName)}

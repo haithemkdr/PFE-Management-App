@@ -48,8 +48,8 @@ const getNotesByGroupe = async (req, res) => {
                 [id_affectation]
             );
 
-            if (affRows.length > 0 && affRows[0].type_seance === 'CM') {
-                // ── CM : jointure dynamique → tous les étudiants de la section ──
+            if (affRows.length > 0 && (affRows[0].type_seance === 'CM' || !id_groupe)) {
+                // ── CM ou TD/TP global : jointure dynamique → tous les étudiants de la section ──
                 let { section, niveau } = affRows[0];
                 let sql = `
                     SELECT e.id_etudiant, e.matricule, e.nom, e.prenom,
@@ -114,40 +114,27 @@ const upsertNote = async (req, res) => {
             return res.status(400).send("Il faut l'id module");
         }
 
-        // ============================================================
-        // CONTRÔLE D'ACCÈS PAR COLONNE (type_seance)
-        // On cherche l'affectation de l'enseignant connecté pour ce module
-        // ============================================================
-        let aff_sql = `
-            SELECT id_affectation, type_seance, id_groupe, section, niveau, periode_saisie_ouverte
-            FROM affectations
-            WHERE id_utilisateur = ? AND id_module = ?
-        `;
-        let aff_params = [saisie_par, id_module];
-
-        // Si un id_groupe est fourni, on filtre aussi par groupe (TD/TP)
-        // Sinon (CM), on cherche l'affectation sans groupe
-        if (id_groupe) {
-            aff_sql += " AND (id_groupe = ? OR id_groupe IS NULL)";
-            aff_params.push(id_groupe);
+        // Retrieve student's group and section
+        const [studentRows] = await db.query(
+            `SELECT e.id_groupe, g.section, g.niveau 
+             FROM etudiants e
+             JOIN groupes g ON e.id_groupe = g.id_groupe
+             WHERE e.id_etudiant = ?`,
+            [id_etudiant]
+        );
+        if (studentRows.length === 0) {
+            return res.status(404).send("Étudiant non trouvé.");
         }
+        const { id_groupe: studentGroupId, section, niveau } = studentRows[0];
 
-        let [affRows] = await db.query(aff_sql, aff_params);
+        // Determine if fields are sent in payload (allowing null)
+        const hasTD = req.body.hasOwnProperty('note_td');
+        const hasTP = req.body.hasOwnProperty('note_tp');
+        const hasEF = req.body.hasOwnProperty('note_ef');
+        const hasER = req.body.hasOwnProperty('note_er');
 
-        if (affRows.length === 0) {
-            return res.status(403).send("Vous n'avez pas d'affectation pour ce module.");
-        }
-
-        // Trouver l'affectation la plus pertinente
-        let affectation = affRows[0];
-
-        // Vérifier la période de saisie
-        if (affectation.periode_saisie_ouverte === 0) {
-            return res.status(403).send("La période de saisie des notes est fermée. Contactez l'Agent de scolarité.");
-        }
-
-        // ── VERROUILLAGE SESSION RATTRAPAGE ──
-        // Si la session est RATTRAPAGE, bloquer la modification des notes CC (TD/TP)
+        // Check active session (type_session) for locking
+        let isRattrapage = false;
         let [modRows] = await db.query("SELECT semestre FROM modules WHERE id_module = ?", [id_module]);
         if (modRows.length > 0) {
             let [sessRows] = await db.query(
@@ -155,37 +142,82 @@ const upsertNote = async (req, res) => {
                 [modRows[0].semestre]
             );
             if (sessRows.length > 0 && sessRows[0].type_session === 'RATTRAPAGE') {
-                if (note_td != null || note_tp != null) {
-                    return res.status(403).json({
-                        message: "Session Rattrapage active : les notes CC (TD/TP) sont verrouillées. Seule la note d'examen de rattrapage (ER) peut être saisie."
-                    });
-                }
+                isRattrapage = true;
             }
         }
 
-        // ── CONTRÔLE D'ACCÈS PAR COLONNE ──
-        let type_seance = affectation.type_seance;
+        // ============================================================
+        // CONTRÔLE D'ACCÈS PAR COLONNE ET ÉTUDIANT (type_seance)
+        // ============================================================
+        if (hasTD) {
+            if (isRattrapage) {
+                return res.status(403).json({ message: "Session Rattrapage active : les notes CC (TD/TP) sont verrouillées." });
+            }
+            const [aff] = await db.query(
+                `SELECT id_affectation, periode_saisie_ouverte 
+                 FROM affectations 
+                 WHERE id_utilisateur = ? AND id_module = ? AND id_groupe = ? AND type_seance = 'TD'`,
+                [saisie_par, id_module, studentGroupId]
+            );
+            if (aff.length === 0) {
+                return res.status(403).json({ message: "Vous n'êtes pas affecté en TD pour le groupe de cet étudiant." });
+            }
+            if (aff[0].periode_saisie_ouverte === 0) {
+                return res.status(403).json({ message: "La période de saisie pour ce TD est fermée." });
+            }
+        }
 
-        if (type_seance === 'CM') {
-            // CM → accès exclusif à note_ef et note_er
-            if (note_td != null || note_tp != null) {
-                return res.status(403).json({
-                    message: "En tant qu'enseignant CM, vous ne pouvez pas modifier les notes TD/TP. Seuls les enseignants TD/TP peuvent le faire."
-                });
+        if (hasTP) {
+            if (isRattrapage) {
+                return res.status(403).json({ message: "Session Rattrapage active : les notes CC (TD/TP) sont verrouillées." });
             }
-        } else if (type_seance === 'TD') {
-            // TD → accès exclusif à note_td
-            if (note_ef != null || note_er != null || note_tp != null) {
-                return res.status(403).json({
-                    message: "En tant qu'enseignant TD, vous ne pouvez modifier que la note TD."
-                });
+            const [aff] = await db.query(
+                `SELECT id_affectation, periode_saisie_ouverte 
+                 FROM affectations 
+                 WHERE id_utilisateur = ? AND id_module = ? AND id_groupe = ? AND type_seance = 'TP'`,
+                [saisie_par, id_module, studentGroupId]
+            );
+            if (aff.length === 0) {
+                return res.status(403).json({ message: "Vous n'êtes pas affecté en TP pour le groupe de cet étudiant." });
             }
-        } else if (type_seance === 'TP') {
-            // TP → accès exclusif à note_tp
-            if (note_ef != null || note_er != null || note_td != null) {
-                return res.status(403).json({
-                    message: "En tant qu'enseignant TP, vous ne pouvez modifier que la note TP."
-                });
+            if (aff[0].periode_saisie_ouverte === 0) {
+                return res.status(403).json({ message: "La période de saisie pour ce TP est fermée." });
+            }
+        }
+
+        if (hasEF) {
+            if (isRattrapage) {
+                return res.status(403).json({ message: "Session Rattrapage active : la note EF est verrouillée." });
+            }
+            const [aff] = await db.query(
+                `SELECT id_affectation, periode_saisie_ouverte 
+                 FROM affectations 
+                 WHERE id_utilisateur = ? AND id_module = ? AND section = ? AND niveau = ? AND type_seance = 'CM'`,
+                [saisie_par, id_module, section, niveau]
+            );
+            if (aff.length === 0) {
+                return res.status(403).json({ message: "Vous n'êtes pas affecté en CM pour la section de cet étudiant." });
+            }
+            if (aff[0].periode_saisie_ouverte === 0) {
+                return res.status(403).json({ message: "La période de saisie pour ce CM est fermée." });
+            }
+        }
+
+        if (hasER) {
+            if (!isRattrapage) {
+                return res.status(403).json({ message: "Session Normale active : la note ER est verrouillée." });
+            }
+            const [aff] = await db.query(
+                `SELECT id_affectation, periode_saisie_ouverte 
+                 FROM affectations 
+                 WHERE id_utilisateur = ? AND id_module = ? AND section = ? AND niveau = ? AND type_seance = 'CM'`,
+                [saisie_par, id_module, section, niveau]
+            );
+            if (aff.length === 0) {
+                return res.status(403).json({ message: "Vous n'êtes pas affecté en CM pour la section de cet étudiant." });
+            }
+            if (aff[0].periode_saisie_ouverte === 0) {
+                return res.status(403).json({ message: "La période de saisie pour ce CM est fermée." });
             }
         }
 
@@ -224,46 +256,18 @@ const upsertNote = async (req, res) => {
         );
 
         let final_td, final_tp, final_ef, final_er;
+        const existing = lignes.length > 0 ? lignes[0] : null;
 
-        if (lignes.length > 0) {
-            // La note existe → merge partiel selon le type_seance
-            let existing = lignes[0];
-            if (type_seance === 'CM') {
-                final_td = existing.note_td;
-                final_tp = existing.note_tp;
-                final_ef = note_ef != null ? note_ef : existing.note_ef;
-                final_er = note_er != null ? note_er : existing.note_er;
-            } else if (type_seance === 'TD') {
-                final_td = note_td != null ? note_td : existing.note_td;
-                final_tp = existing.note_tp;
-                final_ef = existing.note_ef;
-                final_er = existing.note_er;
-            } else {
-                // TP
-                final_td = existing.note_td;
-                final_tp = note_tp != null ? note_tp : existing.note_tp;
-                final_ef = existing.note_ef;
-                final_er = existing.note_er;
-            }
+        if (existing) {
+            final_td = hasTD ? note_td : existing.note_td;
+            final_tp = hasTP ? note_tp : existing.note_tp;
+            final_ef = hasEF ? note_ef : existing.note_ef;
+            final_er = hasER ? note_er : existing.note_er;
         } else {
-            // Pas de note existante → insertion directe
-            if (type_seance === 'CM') {
-                final_td = null;
-                final_tp = null;
-                final_ef = note_ef;
-                final_er = note_er;
-            } else if (type_seance === 'TD') {
-                final_td = note_td;
-                final_tp = null;
-                final_ef = null;
-                final_er = null;
-            } else {
-                // TP
-                final_td = null;
-                final_tp = note_tp;
-                final_ef = null;
-                final_er = null;
-            }
+            final_td = hasTD ? note_td : null;
+            final_tp = hasTP ? note_tp : null;
+            final_ef = hasEF ? note_ef : null;
+            final_er = hasER ? note_er : null;
         }
 
         // ── Calcul via gradeEngine (CENTRALISÉ) ──
@@ -306,7 +310,34 @@ const upsertNote = async (req, res) => {
     }
 };
 
-module.exports = { getNotesByGroupe, upsertNote, getMesAffectations, getBilanEnseignant };
+// ============================================================
+// getSessionForTeacher
+// Read-only endpoint for teachers to check the current session type
+// (NORMALE / RATTRAPAGE). Same data as agent's getSessionActive
+// but accessible to any authenticated user (teacher).
+// ============================================================
+const getSessionForTeacher = async (req, res) => {
+    try {
+        const { semestre, annee_univ } = req.query;
+        const annee = annee_univ || '2025-2026';
+
+        let sql = "SELECT * FROM sessions WHERE annee_univ = ?";
+        let params = [annee];
+        if (semestre) {
+            sql += " AND semestre = ?";
+            params.push(semestre);
+        }
+        sql += " ORDER BY id_session DESC";
+
+        const [rows] = await db.query(sql, params);
+        res.json(rows);
+    } catch (err) {
+        console.error("Erreur getSessionForTeacher:", err);
+        res.status(500).json({ message: "Erreur récupération session." });
+    }
+};
+
+module.exports = { getNotesByGroupe, upsertNote, getMesAffectations, getBilanEnseignant, getSessionForTeacher };
 
 // ============================================================
 // getMesAffectations
@@ -338,7 +369,7 @@ async function getMesAffectations(req, res) {
 
 // ============================================================
 // getBilanEnseignant
-// Bilan semestriel en lecture seule — scoped aux modules + groupes
+// Délibérations en lecture seule — scoped aux modules + groupes
 // de l'enseignant connecté. Requiert ?semestre=S5
 // ============================================================
 async function getBilanEnseignant(req, res) {
@@ -368,15 +399,29 @@ async function getBilanEnseignant(req, res) {
             return res.json({ modules: [], etudiants: [], semestre });
         }
 
+        // Dédupliquer les modules (un enseignant peut avoir CM+TD)
+        const modulesInfo = affs.map(a => ({
+            id_module: a.id_module,
+            nom_module: a.nom_module,
+            coefficient: parseFloat(a.coefficient),
+            credits: parseInt(a.credits),
+            poids_exam: parseFloat(a.poids_exam),
+            poids_td: parseFloat(a.poids_td),
+            poids_tp: parseFloat(a.poids_tp),
+            type_seance: a.type_seance,
+            nom_groupe: a.nom_groupe
+        }));
+        const uniqueModules = [...new Map(modulesInfo.map(m => [m.id_module, m])).values()];
+
         // 2. Collecter les étudiants concernés par les affectations
         //    CM → tous les étudiants de la section/niveau
         //    TD/TP → étudiants du groupe spécifique
         const etudiantSet = new Map();
-        const moduleIds = [...new Set(affs.map(a => a.id_module))];
+        const moduleIds = uniqueModules.map(m => m.id_module);
 
         for (const aff of affs) {
             let etuSql, etuParams;
-            if (aff.type_seance === 'CM') {
+            if (aff.type_seance === 'CM' || !aff.id_groupe) {
                 etuSql = `SELECT e.id_etudiant, e.matricule, e.nom, e.prenom, g.libelle AS nom_groupe
                           FROM etudiants e
                           JOIN groupes g ON e.id_groupe = g.id_groupe
@@ -397,7 +442,7 @@ async function getBilanEnseignant(req, res) {
 
         const etudiants = Array.from(etudiantSet.values());
         if (etudiants.length === 0) {
-            return res.json({ modules: affs, etudiants: [], semestre });
+            return res.json({ modules: uniqueModules, etudiants: [], semestre });
         }
 
         // 3. Récupérer les notes pour les modules de l'enseignant
@@ -418,21 +463,6 @@ async function getBilanEnseignant(req, res) {
         }
 
         // 4. Construire le résultat pour chaque étudiant
-        const modulesInfo = affs.map(a => ({
-            id_module: a.id_module,
-            nom_module: a.nom_module,
-            coefficient: parseFloat(a.coefficient),
-            credits: parseInt(a.credits),
-            poids_exam: parseFloat(a.poids_exam),
-            poids_td: parseFloat(a.poids_td),
-            poids_tp: parseFloat(a.poids_tp),
-            type_seance: a.type_seance,
-            nom_groupe: a.nom_groupe
-        }));
-
-        // Dédupliquer les modules (un enseignant peut avoir CM+TD)
-        const uniqueModules = [...new Map(modulesInfo.map(m => [m.id_module, m])).values()];
-
         const bilanEtudiants = etudiants.map(etu => {
             const modulesNotes = uniqueModules.map(mod => {
                 const noteRow = notesIndex[etu.id_etudiant]?.[mod.id_module];

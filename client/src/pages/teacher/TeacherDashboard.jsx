@@ -12,6 +12,12 @@ import {
 } from 'lucide-react';
 import '../Dashboard.css';
 
+const typeColors = {
+  CM: 'badge--info',
+  TD: 'badge--warning',
+  TP: 'badge--success',
+};
+
 export default function TeacherDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -22,14 +28,24 @@ export default function TeacherDashboard() {
   const [affectations, setAffectations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sessionActuelle, setSessionActuelle] = useState(null);
+  const [allSessions, setAllSessions] = useState([]);
 
   /* ── Fetch real affectations from API ── */
   useEffect(() => {
     async function load() {
       try {
         setLoading(true);
-        const { data } = await api.get('/notes/mes-affectations');
-        setAffectations(data);
+        const [affRes, sessRes] = await Promise.all([
+          api.get('/notes/mes-affectations'),
+          api.get('/notes/session-active'),
+        ]);
+        setAffectations(affRes.data);
+        // Store all sessions for lookup by semestre
+        if (sessRes.data && sessRes.data.length > 0) {
+          setAllSessions(sessRes.data);
+          setSessionActuelle(sessRes.data[0]); // fallback: most recent
+        }
       } catch (err) {
         setError(err.response?.data || err.message);
       } finally {
@@ -45,6 +61,18 @@ export default function TeacherDashboard() {
   const ouvertes = affectations.filter((a) => a.periode_saisie_ouverte === 1).length;
   const fermees = affectations.filter((a) => a.periode_saisie_ouverte === 0).length;
 
+  // Detect the current semester: most frequent semestre among open affectations
+  const semestreFreq = {};
+  for (const a of affectations.filter(a => a.periode_saisie_ouverte === 1)) {
+    if (a.semestre) semestreFreq[a.semestre] = (semestreFreq[a.semestre] || 0) + 1;
+  }
+  const semestreActuel = Object.entries(semestreFreq).sort((a, b) => b[1] - a[1])[0]?.[0]
+    || sessionActuelle?.semestre
+    || null;
+
+  // Find the session record matching semestreActuel
+  const sessionDuSemestre = allSessions.find(s => s.semestre === semestreActuel) || sessionActuelle;
+
   const stats = [
     { label: 'Groupes',        value: uniqueGroupes.size, color: 'blue',   icon: Users2 },
     { label: 'Modules',        value: uniqueModules.size,  color: 'orange', icon: BookOpen },
@@ -58,7 +86,17 @@ export default function TeacherDashboard() {
       <div className="welcome-card">
         <div className="welcome-card__text">
           <h2>Bienvenue, {name}</h2>
-          <p>Semestre en cours – 2025/2026</p>
+          <p>
+            {semestreActuel
+              ? <>
+                  Semestre en cours :&nbsp;<strong>{semestreActuel}</strong>
+                  {sessionDuSemestre && (
+                    <>&nbsp;— Session&nbsp;<strong>{sessionDuSemestre.type_session}</strong>&nbsp;·&nbsp;{sessionDuSemestre.annee_univ}</>
+                  )}
+                </>
+              : 'Année universitaire 2025/2026'
+            }
+          </p>
         </div>
         <span className="welcome-card__badge">
           {affectations.length} affectation{affectations.length !== 1 ? 's' : ''}
@@ -108,7 +146,8 @@ export default function TeacherDashboard() {
           <table className="simple-table">
             <thead>
               <tr>
-                <th>Groupe</th>
+                <th>Groupe / Section</th>
+                <th>Type</th>
                 <th>Module</th>
                 <th>Semestre</th>
                 <th>Période saisie</th>
@@ -120,7 +159,12 @@ export default function TeacherDashboard() {
                 const open = a.periode_saisie_ouverte === 1;
                 return (
                   <tr key={a.id_affectation}>
-                    <td>{a.nom_groupe}</td>
+                    <td>{a.nom_groupe || a.section || '—'}</td>
+                    <td>
+                      <span className={`badge ${typeColors[a.type_seance] || 'badge--info'}`}>
+                        {a.type_seance}
+                      </span>
+                    </td>
                     <td>{a.nom_module}</td>
                     <td>{a.semestre}</td>
                     <td>

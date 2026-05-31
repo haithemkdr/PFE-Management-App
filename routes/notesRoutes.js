@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getNotesByGroupe, upsertNote, getMesAffectations, getBilanEnseignant } = require('../controllers/notesController');
+const { getNotesByGroupe, upsertNote, getMesAffectations, getBilanEnseignant, getSessionForTeacher } = require('../controllers/notesController');
 const verifierToken = require('../middleware/authMiddleware');
 
 // ============================================================
@@ -19,8 +19,12 @@ router.get('/', verifierToken, getNotesByGroupe);
 // Saisie ou modification d'une note avec calcul automatique des moyennes
 router.post('/upsert', verifierToken, upsertNote);
 
+// GET /api/notes/session-active?semestre=S1
+// Read-only session state for teachers (NORMALE / RATTRAPAGE)
+router.get('/session-active', verifierToken, getSessionForTeacher);
+
 // GET /api/notes/bilan?semestre=S5
-// Bilan semestriel en lecture seule — scopé aux modules/groupes de l'enseignant
+// Délibérations en lecture seule — scopé aux modules/groupes de l'enseignant
 router.get('/bilan', verifierToken, getBilanEnseignant);
 
 module.exports = router;

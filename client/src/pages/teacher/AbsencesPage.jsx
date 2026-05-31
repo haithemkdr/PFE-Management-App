@@ -6,6 +6,14 @@ import { Search, CalendarDays, Save, AlertTriangle, ClipboardList, BarChart3, Us
 import '../shared.css';
 import '../Dashboard.css';
 
+// Determine current semester period based on date:
+// Sept(9)–Jan(1) → odd semesters (S1,S3,S5)
+// Feb(2)–Aug(8) → even semesters (S2,S4,S6)
+function getCurrentSemesters() {
+  // Return odd semesters to match backend timetable logic
+  return ['S1', 'S3', 'S5'];
+}
+
 export default function AbsencesPage() {
   const [tab, setTab] = useState('appel');
   return (
@@ -29,6 +37,7 @@ function TabAppel() {
   const [affectations, setAffectations] = useState([]);
   const [selectedModule, setSelectedModule] = useState('');
   const [selectedGroupe, setSelectedGroupe] = useState('');
+  const [selectedTypeSeance, setSelectedTypeSeance] = useState('');
   const [dateSeance, setDateSeance] = useState('');
   const [edtDates, setEdtDates] = useState([]);
   const [edtInfo, setEdtInfo] = useState(null);
@@ -45,28 +54,55 @@ function TabAppel() {
       .catch(err => console.error('Erreur affectations:', err));
   }, []);
 
-  const modules = [...new Map(affectations.map(a => [a.id_module, a])).values()];
-  const groupes = affectations.filter(a => String(a.id_module) === selectedModule);
+  // Semestres académiques en cours — calculé dynamiquement selon la date
+  const CURRENT_SEMESTERS = getCurrentSemesters();
+  const currentAffectations = affectations.filter(a => CURRENT_SEMESTERS.includes(a.semestre));
+
+  const modules = [...new Map(currentAffectations.map(a => [a.id_module, a])).values()];
+  // Build group options: CM affectations (type_seance='CM', id_groupe=null) → synthetic section group
+  // TD/TP affectations MUST have an id_groupe; skip broken ones that don't
+  // Use composite key (id_groupe + type_seance) to avoid duplicates when teacher has both TD+TP for same group
+  const groupesRaw = currentAffectations
+    .filter(a => String(a.id_module) === selectedModule)
+    .filter(a => a.id_groupe != null || a.type_seance === 'CM')  // exclude TD/TP with missing group
+    .map(a => ({
+      ...a,
+      _key: a.type_seance === 'CM' && a.id_groupe == null ? 'cm' : `${a.id_groupe}_${a.type_seance}`,
+      id_groupe: a.type_seance === 'CM' && a.id_groupe == null ? 'cm' : a.id_groupe,
+      nom_groupe: a.type_seance === 'CM' && a.id_groupe == null
+        ? `${a.section || 'Section'} (CM)`
+        : `${a.nom_groupe} (${a.type_seance})`
+    }));
+  // Deduplicate by composite key
+  const groupes = [...new Map(groupesRaw.map(g => [g._key, g])).values()];
 
   // Fetch EDT dates when module+groupe changes
   useEffect(() => {
     if (!selectedModule || !selectedGroupe) { setEdtDates([]); setEdtInfo(null); setDateSeance(''); return; }
-    api.get(`/absences/edt-dates/${selectedModule}/${selectedGroupe}`)
+    const typeParam = selectedTypeSeance && selectedTypeSeance !== 'CM' ? `?type_seance=${selectedTypeSeance}` : '';
+    api.get(`/absences/edt-dates/${selectedModule}/${selectedGroupe}${typeParam}`)
       .then(res => {
         setEdtDates(res.data.dates || []);
         setEdtInfo(res.data.edt);
-        // Auto-select the most recent past session
+        // Auto-select the first past session (start of semester)
         const passed = (res.data.dates || []).filter(d => d.passed);
-        if (passed.length > 0) setDateSeance(passed[passed.length - 1].date);
+        if (passed.length > 0) setDateSeance(passed[0].date);
         else if (res.data.dates?.length > 0) setDateSeance(res.data.dates[0].date);
         else setDateSeance('');
       })
       .catch(err => { console.error(err); setEdtDates([]); setEdtInfo(null); });
-  }, [selectedModule, selectedGroupe]);
+  }, [selectedModule, selectedGroupe, selectedTypeSeance]);
 
   function getAffectationId() {
+    // For CM (selectedGroupe === 'cm'), find the CM affectation for this module
+    if (selectedGroupe === 'cm') {
+      const aff = affectations.find(
+        a => String(a.id_module) === selectedModule && a.id_groupe == null && a.type_seance === 'CM'
+      );
+      return aff ? aff.id_affectation : null;
+    }
     const aff = affectations.find(
-      a => String(a.id_module) === selectedModule && String(a.id_groupe) === selectedGroupe
+      a => String(a.id_module) === selectedModule && String(a.id_groupe) === selectedGroupe && a.type_seance === selectedTypeSeance
     );
     return aff ? aff.id_affectation : null;
   }
@@ -74,7 +110,8 @@ function TabAppel() {
   function loadAppel() {
     if (!selectedModule || !selectedGroupe || !dateSeance) return;
     setLoading(true);
-    api.get(`/absences/appel/${selectedModule}/${selectedGroupe}/${dateSeance}`)
+    const typeParam = selectedTypeSeance && selectedTypeSeance !== 'CM' ? `?type_seance=${selectedTypeSeance}` : '';
+    api.get(`/absences/appel/${selectedModule}/${selectedGroupe}/${dateSeance}${typeParam}`)
       .then(res => {
         const data = res.data.map(s => ({ ...s, statut: s.statut || 'Présent', justifiee: Boolean(s.justifiee) }));
         setStudents(data);
@@ -97,8 +134,9 @@ function TabAppel() {
   }
 
   function isPast48h() {
-    if (!dateSeance) return false;
-    return (new Date() - new Date(dateSeance)) / (1000*60*60) > 48;
+    // Restriction de 48h désactivée pour permettre aux enseignants de gérer
+    // les absences sur l'ensemble du semestre sans blocage.
+    return false;
   }
 
   function resetSession() { setStudents(JSON.parse(JSON.stringify(originalStudents))); }
@@ -149,14 +187,24 @@ function TabAppel() {
 
     <div className="filter-bar">
       <select className="filter-bar__select" value={selectedModule}
-        onChange={e => { setSelectedModule(e.target.value); setSelectedGroupe(''); }}>
+        onChange={e => { setSelectedModule(e.target.value); setSelectedGroupe(''); setSelectedTypeSeance(''); }}>
         <option value="">— Module —</option>
         {modules.map(m => <option key={m.id_module} value={m.id_module}>{m.nom_module}</option>)}
       </select>
-      <select className="filter-bar__select" value={selectedGroupe}
-        onChange={e => setSelectedGroupe(e.target.value)} disabled={!selectedModule}>
+      <select className="filter-bar__select" value={selectedGroupe === 'cm' ? 'cm' : selectedGroupe && selectedTypeSeance ? `${selectedGroupe}_${selectedTypeSeance}` : selectedGroupe}
+        onChange={e => {
+          const val = e.target.value;
+          const matched = groupes.find(g => g._key === val);
+          if (matched) {
+            setSelectedGroupe(String(matched.id_groupe));
+            setSelectedTypeSeance(matched.type_seance || '');
+          } else {
+            setSelectedGroupe('');
+            setSelectedTypeSeance('');
+          }
+        }} disabled={!selectedModule}>
         <option value="">— Groupe —</option>
-        {groupes.map(g => <option key={g.id_groupe} value={g.id_groupe}>{g.nom_groupe}</option>)}
+        {groupes.map(g => <option key={g._key} value={g._key}>{g.nom_groupe}</option>)}
       </select>
       <select className="filter-bar__select" value={dateSeance}
         onChange={e => setDateSeance(e.target.value)}
@@ -191,7 +239,7 @@ function TabAppel() {
         <div style={{display:'flex',gap:'8px'}}>
           <button className="btn" onClick={resetSession} disabled={saving||JSON.stringify(students)===JSON.stringify(originalStudents)}
             style={{backgroundColor:'white',color:'#374151',border:'1px solid #d1d5db',padding:'0.5rem 1rem'}}>Annuler</button>
-          <button className="btn--save-session" onClick={saveSession}
+          <button className="btn btn--success" onClick={saveSession}
             disabled={saving||JSON.stringify(students)===JSON.stringify(originalStudents)||isPast48h()}
             title={isPast48h()?"Délai de 48h dépassé":""}>
             <Save size={16}/> {saving?'Enregistrement...':'Enregistrer la séance'}
@@ -228,14 +276,17 @@ function TabAppel() {
                   </div>
                 ):(
                   <div className="attendance-group">
-                    {['Présent','Absent','Retard'].map(st=>(
-                      <div key={st} className={`attendance-badge ${s.statut===st?`attendance-badge--${st.toLowerCase()}`:'attendance-badge--inactive'}`}
+                    {['Présent','Absent','Retard'].map(st=>{
+                      const cls = st.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+                      return (
+                      <div key={st} className={`attendance-badge ${s.statut===st?`attendance-badge--${cls}`:'attendance-badge--inactive'}`}
                         onClick={()=>!isPast48h()&&handleStatusChange(s.id_etudiant,st)}
                         style={{opacity:isPast48h()?0.6:1,cursor:isPast48h()?'not-allowed':'pointer'}}>
-                        <div className={`attendance-dot ${s.statut===st?`attendance-dot--${st.toLowerCase()}`:''}`}/>
-                        {st === 'Présent' ? 'Présent' : st}
+                        <div className={`attendance-dot ${s.statut===st?`attendance-dot--${cls}`:''}`}/>
+                        {st}
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}</td>
                 <td style={{textAlign:'center'}}>
@@ -264,6 +315,7 @@ function TabSuivi() {
   const [affectations, setAffectations] = useState([]);
   const [selectedModule, setSelectedModule] = useState('');
   const [selectedGroupe, setSelectedGroupe] = useState('');
+  const [selectedTypeSeance, setSelectedTypeSeance] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -274,17 +326,37 @@ function TabSuivi() {
       .catch(err => console.error(err));
   }, []);
 
-  const modules = [...new Map(affectations.map(a => [a.id_module, a])).values()];
-  const groupes = affectations.filter(a => String(a.id_module) === selectedModule && a.id_groupe);
+  // Semestres académiques en cours — calculé dynamiquement selon la date
+  const CURRENT_SEMESTERS = getCurrentSemesters();
+  const currentAffectations = affectations.filter(a => CURRENT_SEMESTERS.includes(a.semestre));
+
+  const modules = [...new Map(currentAffectations.map(a => [a.id_module, a])).values()];
+  // Build group options: CM affectations (type_seance='CM', id_groupe=null) → synthetic section group
+  // TD/TP affectations MUST have an id_groupe; skip broken ones that don't
+  // Use composite key (id_groupe + type_seance) to avoid duplicates when teacher has both TD+TP for same group
+  const groupesRaw = currentAffectations
+    .filter(a => String(a.id_module) === selectedModule)
+    .filter(a => a.id_groupe != null || a.type_seance === 'CM')  // exclude TD/TP with missing group
+    .map(a => ({
+      ...a,
+      _key: a.type_seance === 'CM' && a.id_groupe == null ? 'cm' : `${a.id_groupe}_${a.type_seance}`,
+      id_groupe: a.type_seance === 'CM' && a.id_groupe == null ? 'cm' : a.id_groupe,
+      nom_groupe: a.type_seance === 'CM' && a.id_groupe == null
+        ? `${a.section || 'Section'} (CM)`
+        : `${a.nom_groupe} (${a.type_seance})`
+    }));
+  // Deduplicate by composite key
+  const groupes = [...new Map(groupesRaw.map(g => [g._key, g])).values()];
 
   useEffect(() => {
     if (!selectedModule || !selectedGroupe) { setData(null); return; }
     setLoading(true);
-    api.get(`/absences/suivi/${selectedModule}/${selectedGroupe}`)
+    const typeParam = selectedTypeSeance && selectedTypeSeance !== 'CM' ? `?type_seance=${selectedTypeSeance}` : '';
+    api.get(`/absences/suivi/${selectedModule}/${selectedGroupe}${typeParam}`)
       .then(r => setData(r.data))
       .catch(e => console.error(e))
       .finally(() => setLoading(false));
-  }, [selectedModule, selectedGroupe]);
+  }, [selectedModule, selectedGroupe, selectedTypeSeance]);
 
   const filtered = useMemo(() => {
     if (!data?.etudiants) return [];
@@ -331,14 +403,24 @@ function TabSuivi() {
   return (<>
     <div className="filter-bar">
       <select className="filter-bar__select" value={selectedModule}
-        onChange={e => { setSelectedModule(e.target.value); setSelectedGroupe(''); }}>
+        onChange={e => { setSelectedModule(e.target.value); setSelectedGroupe(''); setSelectedTypeSeance(''); }}>
         <option value="">— Module —</option>
         {modules.map(m => <option key={m.id_module} value={m.id_module}>{m.nom_module}</option>)}
       </select>
-      <select className="filter-bar__select" value={selectedGroupe}
-        onChange={e => setSelectedGroupe(e.target.value)} disabled={!selectedModule}>
+      <select className="filter-bar__select" value={selectedGroupe === 'cm' ? 'cm' : selectedGroupe && selectedTypeSeance ? `${selectedGroupe}_${selectedTypeSeance}` : selectedGroupe}
+        onChange={e => {
+          const val = e.target.value;
+          const matched = groupes.find(g => g._key === val);
+          if (matched) {
+            setSelectedGroupe(String(matched.id_groupe));
+            setSelectedTypeSeance(matched.type_seance || '');
+          } else {
+            setSelectedGroupe('');
+            setSelectedTypeSeance('');
+          }
+        }} disabled={!selectedModule}>
         <option value="">— Groupe —</option>
-        {groupes.map(g => <option key={g.id_groupe} value={g.id_groupe}>{g.nom_groupe || g.libelle}</option>)}
+        {groupes.map(g => <option key={g._key} value={g._key}>{g.nom_groupe || g.libelle}</option>)}
       </select>
       <div className="filter-bar__spacer" />
       <button className="btn btn--sm btn--outline" onClick={handleExport} disabled={!filtered.length}><Download size={14}/> Exporter CSV</button>
@@ -362,7 +444,7 @@ function TabSuivi() {
     {st && (
       <div className="stat-grid" style={{ marginBottom: 20 }}>
         {[
-          [`${st.seances_dispensees} / ${st.total_seances}`, 'Séances dispensées', '--blue', CalendarDays],
+          [`${st.seances_dispensees} / ${st.total_seances}`, 'Séances complétées', '--blue', CalendarDays],
           [st.seances_restantes, 'Séances restantes', '--green', Clock],
           [st.total_etudiants, 'Étudiants', '--gold', CheckCircle],
           [st.total_exclus, 'Exclus', '--orange', UserX],
@@ -392,7 +474,7 @@ function TabSuivi() {
         <div className="data-card__header">
           <span className="data-card__title">Suivi des présences — S1 à S14</span>
           <span className="data-card__subtitle">
-            {st?.seances_dispensees || 0} séance(s) dispensée(s) — {filtered.length} étudiant(s)
+            {st?.seances_dispensees || 0} séance(s) complétée(s) — {filtered.length} étudiant(s)
           </span>
         </div>
         <div style={{ overflowX: 'auto' }}>
@@ -453,7 +535,7 @@ function TabSuivi() {
           <span><strong style={{ ...cellStyle('Présent'), padding: '1px 6px', borderRadius: 4 }}>P</strong> = Présent</span>
           <span><strong style={{ ...cellStyle('Absent'), padding: '1px 6px', borderRadius: 4 }}>A</strong> = Absent</span>
           <span><strong style={{ ...cellStyle('Retard'), padding: '1px 6px', borderRadius: 4 }}>R</strong> = Retard</span>
-          <span><strong style={{ ...cellStyle(null), padding: '1px 6px', borderRadius: 4 }}>—</strong> = Non dispensée</span>
+          <span><strong style={{ ...cellStyle(null), padding: '1px 6px', borderRadius: 4 }}>—</strong> = Non complétée</span>
           <span><strong>*</strong> = Justifié(e)</span>
           <span style={{ marginLeft: 'auto', color: 'var(--text-muted)' }}>
             Exclusion : 3 abs. non justifiées ou 5 abs. totales

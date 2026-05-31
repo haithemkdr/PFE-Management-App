@@ -1,10 +1,12 @@
-// BilanEnseignantPage.jsx — Bilan Semestriel (Enseignant)
+// BilanEnseignantPage.jsx — Délibérations (Enseignant)
 // Vue lecture seule scopée aux modules et groupes de l'enseignant
 // Affiche les notes TD/TP/EF/ER et moyennes pour chaque étudiant
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../utils/api';
-import { BarChart2, Search } from 'lucide-react';
+import { BarChart2, Search, Users, CheckCircle, XCircle } from 'lucide-react';
 import '../shared.css';
+import '../Dashboard.css';
+
 
 // Niveau → Semestre mapping (LMD standard)
 const NIVEAU_SEMESTERS = {
@@ -68,11 +70,11 @@ export default function BilanEnseignantPage() {
   }
 
   return (
-    <>
+    <div style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
       <div className="page-header">
         <h2 className="page-header__title">
           <BarChart2 style={{ marginRight: 8, verticalAlign: 'middle' }} />
-          Bilan Semestriel
+          Délibérations
         </h2>
       </div>
 
@@ -113,18 +115,35 @@ export default function BilanEnseignantPage() {
 
       {/* Stats rapides */}
       {stats && (
-        <div className="stats-row" style={{ marginBottom: 20 }}>
-          <div className="stat-card">
-            <div className="stat-card__label">Étudiants</div>
-            <div className="stat-card__value">{stats.total}</div>
+        <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: 20 }}>
+          <div className="stat-card" style={{ borderTop: '3px solid var(--brand-primary)' }}>
+            <div>
+              <div className="stat-card__value">{stats.total}</div>
+              <div className="stat-card__label">Étudiants</div>
+            </div>
+            <div className="stat-card__icon" style={{ background: 'rgba(67, 97, 238, 0.1)', color: 'var(--brand-primary)' }}>
+              <Users />
+            </div>
           </div>
-          <div className="stat-card stat-card--success">
-            <div className="stat-card__label">Avec notes</div>
-            <div className="stat-card__value">{stats.withNotes}</div>
+          
+          <div className="stat-card" style={{ borderTop: '3px solid var(--semantic-success)' }}>
+            <div>
+              <div className="stat-card__value">{stats.withNotes}</div>
+              <div className="stat-card__label">Avec notes</div>
+            </div>
+            <div className="stat-card__icon" style={{ background: 'rgba(56, 161, 105, 0.1)', color: 'var(--semantic-success)' }}>
+              <CheckCircle />
+            </div>
           </div>
-          <div className="stat-card stat-card--danger">
-            <div className="stat-card__label">Sans notes</div>
-            <div className="stat-card__value">{stats.withoutNotes}</div>
+
+          <div className="stat-card" style={{ borderTop: '3px solid var(--semantic-danger)' }}>
+            <div>
+              <div className="stat-card__value">{stats.withoutNotes}</div>
+              <div className="stat-card__label">Sans notes</div>
+            </div>
+            <div className="stat-card__icon" style={{ background: 'rgba(229, 62, 62, 0.1)', color: 'var(--semantic-danger)' }}>
+              <XCircle />
+            </div>
           </div>
         </div>
       )}
@@ -140,7 +159,7 @@ export default function BilanEnseignantPage() {
 
       {/* Tableau principal */}
       {!loading && modules.length > 0 && (
-        <div className="data-card">
+        <div className="data-card" style={{ overflow: 'visible' }}>
           <div className="data-card__header">
             <span className="data-card__title">
               Mes modules — {semestre}
@@ -150,7 +169,7 @@ export default function BilanEnseignantPage() {
             </span>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: 'auto', borderRadius: '0 0 var(--radius-lg) var(--radius-lg)' }}>
             <table className="data-table">
               <thead>
                 <tr>
@@ -159,7 +178,7 @@ export default function BilanEnseignantPage() {
                   <th>Prénom</th>
                   <th>Groupe</th>
                   {modules.map(mod => (
-                    <th key={mod.id_module} style={{ textAlign: 'center', minWidth: 100 }}>
+                    <th key={mod.id_module} style={{ textAlign: 'center', minWidth: 120 }}>
                       {mod.nom_module}
                       <div style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400 }}>
                         Coef. {mod.coefficient}
@@ -213,6 +232,6 @@ export default function BilanEnseignantPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

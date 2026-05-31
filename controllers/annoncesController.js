@@ -18,6 +18,37 @@ exports.creerAnnonce = async (req, res) => {
     }
 
     try {
+        if (typeof id_groupe === 'string' && id_groupe.startsWith('section:')) {
+            const parts = id_groupe.split(':');
+            const niveau = parts[1];
+            const section = parts[2];
+
+            const [groups] = await db.execute(
+                'SELECT id_groupe FROM groupes WHERE niveau = ? AND section = ?',
+                [niveau, section]
+            );
+
+            if (groups.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Aucun groupe trouvé pour le niveau ${niveau} et la section ${section}.`
+                });
+            }
+
+            for (const g of groups) {
+                await db.execute(
+                    `INSERT INTO annonces (id_enseignant, id_groupe, titre, contenu)
+                     VALUES (?, ?, ?, ?)`,
+                    [id_enseignant, g.id_groupe, titre, contenu]
+                );
+            }
+
+            return res.status(201).json({
+                success: true,
+                message: 'Annonce envoyée avec succès à tous les groupes de la section.'
+            });
+        }
+
         const [result] = await db.execute(
             `INSERT INTO annonces (id_enseignant, id_groupe, titre, contenu)
              VALUES (?, ?, ?, ?)`,

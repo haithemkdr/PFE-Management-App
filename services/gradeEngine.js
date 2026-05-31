@@ -130,7 +130,7 @@ function calculeMoyenneUE(modulesNotes, creditsUE) {
 
 
 // ────────────────────────────────────────────────────
-// 3. Calcul du bilan semestriel complet
+// 3. Calcul de délibérations complet
 // ────────────────────────────────────────────────────
 
 /**
@@ -366,7 +366,7 @@ module.exports = {
     valideNote,
     validePoids,
     round2,
-    // Nouvelles fonctions — Bilan Semestriel v2
+    // Nouvelles fonctions — Délibérations v2
     calculeSessionValidation,
     calculeBilanAnnuel,
     calculeDecisionJury,
