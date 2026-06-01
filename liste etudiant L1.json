@@ -1,0 +1,3364 @@
+{
+  "L1": [
+    {
+      "nom": "ZEMOURI",
+      "prenom": "ASMA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000001"
+    },
+    {
+      "nom": "ASMANI",
+      "prenom": "MOHAMED ISLAM",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000002"
+    },
+    {
+      "nom": "DJETNI",
+      "prenom": "AYMENE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000003"
+    },
+    {
+      "nom": "HADDAD",
+      "prenom": "AYA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000004"
+    },
+    {
+      "nom": "BELHADJ",
+      "prenom": "HADJER",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000005"
+    },
+    {
+      "nom": "BENFATMA",
+      "prenom": "YASMINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000006"
+    },
+    {
+      "nom": "CHAIB",
+      "prenom": "MOKHTARIA MARIA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000007"
+    },
+    {
+      "nom": "SIDI YAKOUB",
+      "prenom": "Abdelkhalek",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000008"
+    },
+    {
+      "nom": "MOSTEFA DAOUADJI",
+      "prenom": "ADEM",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000009"
+    },
+    {
+      "nom": "BOUGHARI",
+      "prenom": "ABDERRAHMRM",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000010"
+    },
+    {
+      "nom": "MAMMAR",
+      "prenom": "FATIMA ZOHRA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000011"
+    },
+    {
+      "nom": "BENSAIDA",
+      "prenom": "INES",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000012"
+    },
+    {
+      "nom": "TARA",
+      "prenom": "NADIR",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000013"
+    },
+    {
+      "nom": "OUKRIF",
+      "prenom": "MOHAMED EL HABIB",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000014"
+    },
+    {
+      "nom": "CHABNI",
+      "prenom": "MOHAMMED YOUNES",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000015"
+    },
+    {
+      "nom": "LAKHRIF",
+      "prenom": "ABDELHAMMID",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000016"
+    },
+    {
+      "nom": "LABLACK",
+      "prenom": "ANIS ABDELLAH",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000017"
+    },
+    {
+      "nom": "BOUMEDINE",
+      "prenom": "ZAKARIA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000018"
+    },
+    {
+      "nom": "KAZI TANI",
+      "prenom": "ISRAA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000019"
+    },
+    {
+      "nom": "MEHALLI",
+      "prenom": "OUSSAMA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000020"
+    },
+    {
+      "nom": "AGBOUBI",
+      "prenom": "ABDRAOUF",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000021"
+    },
+    {
+      "nom": "RAHALI",
+      "prenom": "MOHAMMED EL HABIB",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000022"
+    },
+    {
+      "nom": "MAARAF",
+      "prenom": "MOHAMMED ABDERAHMANE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000023"
+    },
+    {
+      "nom": "GHLAM",
+      "prenom": "YACINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000024"
+    },
+    {
+      "nom": "BOUZAFFA",
+      "prenom": "IYAD",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000025"
+    },
+    {
+      "nom": "TSAKI",
+      "prenom": "AHMED",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000026"
+    },
+    {
+      "nom": "KHECHAB",
+      "prenom": "OUASSILLA NOUR EL HOUDA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000027"
+    },
+    {
+      "nom": "BELKADI",
+      "prenom": "AYMEN EL HABIB",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000028"
+    },
+    {
+      "nom": "LARKEM",
+      "prenom": "OUAIL BAHAA EDDINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000029"
+    },
+    {
+      "nom": "BENBACHIR",
+      "prenom": "INES",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000030"
+    },
+    {
+      "nom": "REKAB",
+      "prenom": "MOHAMMED",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000031"
+    },
+    {
+      "nom": "MOHAMED MAHDI",
+      "prenom": "MERZOUK",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000032"
+    },
+    {
+      "nom": "ZAHAF",
+      "prenom": "AICHA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000033"
+    },
+    {
+      "nom": "OUAFI",
+      "prenom": "HABIB",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000034"
+    },
+    {
+      "nom": "SAHOUANE",
+      "prenom": "YAMINA CHAIMAA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000035"
+    },
+    {
+      "nom": "MANSOURI",
+      "prenom": "HAMZA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000036"
+    },
+    {
+      "nom": "BELHACHEMI",
+      "prenom": "CHAHRAZED",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000037"
+    },
+    {
+      "nom": "CHERIF",
+      "prenom": "Abdelkader",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000038"
+    },
+    {
+      "nom": "MAANANE",
+      "prenom": "Mohammed islam",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000039"
+    },
+    {
+      "nom": "BOUDEHEDJE",
+      "prenom": "YACINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000040"
+    },
+    {
+      "nom": "MARAF",
+      "prenom": "HADJ MAHIEDINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000041"
+    },
+    {
+      "nom": "SAADALLAH",
+      "prenom": "MOHAMMED ABDELHADI",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000042"
+    },
+    {
+      "nom": "LECHEHEB",
+      "prenom": "LINA CHIRAZE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000043"
+    },
+    {
+      "nom": "DERRAR",
+      "prenom": "WALID",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000044"
+    },
+    {
+      "nom": "BADAOUI",
+      "prenom": "AYA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000045"
+    },
+    {
+      "nom": "SAID",
+      "prenom": "ALAA HANAA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000046"
+    },
+    {
+      "nom": "SABEUR CHOUIREF",
+      "prenom": "IMAD EDDINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000047"
+    },
+    {
+      "nom": "FLITI",
+      "prenom": "YOUNES",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000048"
+    },
+    {
+      "nom": "ROGUI",
+      "prenom": "ABDALLAH ZAKARIA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000049"
+    },
+    {
+      "nom": "MAHROUG",
+      "prenom": "ZAKARIA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000050"
+    },
+    {
+      "nom": "LABACI",
+      "prenom": "IMEDEDDINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000051"
+    },
+    {
+      "nom": "BENZAOUI",
+      "prenom": "RAYAN MOHAMED RAFIK",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000052"
+    },
+    {
+      "nom": "BENSAID",
+      "prenom": "MOHAMMED LAMINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000053"
+    },
+    {
+      "nom": "ZAOUI",
+      "prenom": "MOHAMMED EL AMINE ABDELKADER",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000054"
+    },
+    {
+      "nom": "BOUDKHILI",
+      "prenom": "MERIEM",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000055"
+    },
+    {
+      "nom": "SOUAK",
+      "prenom": "CHAIMAA",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000056"
+    },
+    {
+      "nom": "KOUDA",
+      "prenom": "MOHAMMED ACHRAF",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000057"
+    },
+    {
+      "nom": "RIANE",
+      "prenom": "Firas salah eddine",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000058"
+    },
+    {
+      "nom": "SAIED",
+      "prenom": "NOURSSINE",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000059"
+    },
+    {
+      "nom": "NAIT BAHLOUL",
+      "prenom": "ABDERRAHMEN",
+      "section": "1",
+      "groupe": "1",
+      "matricule": "37000060"
+    },
+    {
+      "nom": "BENMAZOUZA",
+      "prenom": "OUSSAMA ABDELKADER",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000061"
+    },
+    {
+      "nom": "TOUAIBIA",
+      "prenom": "KHALIL ABD EL DJALIL",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000062"
+    },
+    {
+      "nom": "BEDAD",
+      "prenom": "ALI Minto",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000063"
+    },
+    {
+      "nom": "MENHADJ",
+      "prenom": "BRAHIM MEFLAHMOHAMED",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000064"
+    },
+    {
+      "nom": "أوراغ",
+      "prenom": "عبد الكریم",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000065"
+    },
+    {
+      "nom": "AOUAD",
+      "prenom": "IBRAHIM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000066"
+    },
+    {
+      "nom": "MEGHERBI",
+      "prenom": "MOHAMMED ARSLENE",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000067"
+    },
+    {
+      "nom": "MOKADEM",
+      "prenom": "TAREK",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000068"
+    },
+    {
+      "nom": "MOUHADJER",
+      "prenom": "ILYAS AYOUB",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000069"
+    },
+    {
+      "nom": "ZERDAZI",
+      "prenom": "ADEM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000070"
+    },
+    {
+      "nom": "MAHAMMEDI",
+      "prenom": "AYA IBTISSAM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000071"
+    },
+    {
+      "nom": "HAMMANI",
+      "prenom": "ISLEM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000072"
+    },
+    {
+      "nom": "ZENGUI",
+      "prenom": "MOHAMMED ABDALLAH",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000073"
+    },
+    {
+      "nom": "FATAH",
+      "prenom": "FADI",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000074"
+    },
+    {
+      "nom": "RAHOU",
+      "prenom": "ABDENNOUR",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000075"
+    },
+    {
+      "nom": "BOUALAM",
+      "prenom": "SARA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000076"
+    },
+    {
+      "nom": "ZIANE",
+      "prenom": "FATIMA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000077"
+    },
+    {
+      "nom": "KELTOUMI",
+      "prenom": "LOUBNA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000078"
+    },
+    {
+      "nom": "SADOUKI",
+      "prenom": "YOUCEF",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000079"
+    },
+    {
+      "nom": "BENTATA",
+      "prenom": "ZAKARIA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000080"
+    },
+    {
+      "nom": "DERROUIS",
+      "prenom": "MOHAMMED MEHDI",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000081"
+    },
+    {
+      "nom": "BELKACEM SADOUN",
+      "prenom": "MOHAMED",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000082"
+    },
+    {
+      "nom": "BEDERIAT",
+      "prenom": "LEILA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000083"
+    },
+    {
+      "nom": "TIRES",
+      "prenom": "KODS DOUAA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000084"
+    },
+    {
+      "nom": "AOUMEUR",
+      "prenom": "ABDELMEDJID AMINE",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000085"
+    },
+    {
+      "nom": "RAMI",
+      "prenom": "RIHEB HIBA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000086"
+    },
+    {
+      "nom": "ABELLAH",
+      "prenom": "ABDERRAHMANE",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000087"
+    },
+    {
+      "nom": "BENTRIA",
+      "prenom": "SARA RAYAN",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000088"
+    },
+    {
+      "nom": "AINOUCHE",
+      "prenom": "SARA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000089"
+    },
+    {
+      "nom": "SALMI",
+      "prenom": "AMAL",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000090"
+    },
+    {
+      "nom": "STAALI",
+      "prenom": "AMIRA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000091"
+    },
+    {
+      "nom": "KIDARI",
+      "prenom": "ADEL HAMZA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000092"
+    },
+    {
+      "nom": "BOULADAS",
+      "prenom": "YACINE ABDEL ILLAH",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000093"
+    },
+    {
+      "nom": "CHEHIR",
+      "prenom": "DJAMILA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000094"
+    },
+    {
+      "nom": "MEHARZI",
+      "prenom": "OUSSAMA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000095"
+    },
+    {
+      "nom": "BENBRAHAM",
+      "prenom": "KHOULOUD",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000096"
+    },
+    {
+      "nom": "YACEF",
+      "prenom": "HIBAT ALLAH DOUAA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000097"
+    },
+    {
+      "nom": "BOUCHRA",
+      "prenom": "SALEM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000098"
+    },
+    {
+      "nom": "GHAOUL",
+      "prenom": "NOUREDDINE",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000099"
+    },
+    {
+      "nom": "LALAOUI",
+      "prenom": "MOHAMMED RACIM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000100"
+    },
+    {
+      "nom": "OUAHDI",
+      "prenom": "ROUMAISSA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000101"
+    },
+    {
+      "nom": "BERREFAS",
+      "prenom": "ZAKARIA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000102"
+    },
+    {
+      "nom": "KASSIMI",
+      "prenom": "ABDELKADER",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000103"
+    },
+    {
+      "nom": "SENOUCI",
+      "prenom": "BILAL",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000104"
+    },
+    {
+      "nom": "BACHIK",
+      "prenom": "KAOUTHER",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000105"
+    },
+    {
+      "nom": "M'HAMED HACNHOUR",
+      "prenom": "CHAIMAA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000106"
+    },
+    {
+      "nom": "BOULIL",
+      "prenom": "HIND",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000107"
+    },
+    {
+      "nom": "ABID",
+      "prenom": "SIDI MOHAMED OMAR",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000108"
+    },
+    {
+      "nom": "BAAZIZ",
+      "prenom": "MALAK ROUMAISSA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000109"
+    },
+    {
+      "nom": "KOURDI",
+      "prenom": "ISLAM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000110"
+    },
+    {
+      "nom": "BOUHADIBA",
+      "prenom": "RAFIK",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000111"
+    },
+    {
+      "nom": "DJEDID",
+      "prenom": "IKRAM",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000112"
+    },
+    {
+      "nom": "YAKOUTA",
+      "prenom": "NOUR HOUARI",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000113"
+    },
+    {
+      "nom": "BERRAHAL",
+      "prenom": "AYA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000114"
+    },
+    {
+      "nom": "GUEZGOUZ",
+      "prenom": "LILYA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000115"
+    },
+    {
+      "nom": "CHERIF",
+      "prenom": "KHADIDJA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000116"
+    },
+    {
+      "nom": "KENIOUA",
+      "prenom": "DOUAA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000117"
+    },
+    {
+      "nom": "BENAISSA",
+      "prenom": "RADJAA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000118"
+    },
+    {
+      "nom": "ARIBI",
+      "prenom": "MARWA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000119"
+    },
+    {
+      "nom": "BOUHADEF",
+      "prenom": "WAFAA",
+      "section": "1",
+      "groupe": "2",
+      "matricule": "37000120"
+    },
+    {
+      "nom": "GHELMOUL",
+      "prenom": "EMBAREK EL AMINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000121"
+    },
+    {
+      "nom": "MISSOUM",
+      "prenom": "NABILA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000122"
+    },
+    {
+      "nom": "AMRANI",
+      "prenom": "MOHAMED ELSADIK BENYAHIA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000123"
+    },
+    {
+      "nom": "SAIDI",
+      "prenom": "YANIS KHAMIS",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000124"
+    },
+    {
+      "nom": "LABIOD",
+      "prenom": "NOUR",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000125"
+    },
+    {
+      "nom": "MAHAMMED",
+      "prenom": "RYM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000126"
+    },
+    {
+      "nom": "GUELLIL",
+      "prenom": "IKHLAS",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000127"
+    },
+    {
+      "nom": "SI ABDELKADER",
+      "prenom": "ABDELKADER",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000128"
+    },
+    {
+      "nom": "ZIOUANE",
+      "prenom": "MOHAMMED AYMEN",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000129"
+    },
+    {
+      "nom": "BENACHOUR",
+      "prenom": "AHMED YACINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000130"
+    },
+    {
+      "nom": "TEBBAL",
+      "prenom": "YOUNES",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000131"
+    },
+    {
+      "nom": "ALIANE",
+      "prenom": "NOURHENE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000132"
+    },
+    {
+      "nom": "ZERHOUNI",
+      "prenom": "BENAMAR MOULAY IDRIS",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000133"
+    },
+    {
+      "nom": "BENZAHAF",
+      "prenom": "CHEMSS EDDINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000134"
+    },
+    {
+      "nom": "BENLAZREGUE",
+      "prenom": "ABDERRAHMANE ILIES",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000135"
+    },
+    {
+      "nom": "AMRANE",
+      "prenom": "ABDERRAHMANE HICHEM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000136"
+    },
+    {
+      "nom": "BOUDJELLAL",
+      "prenom": "AIDA HANINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000137"
+    },
+    {
+      "nom": "DAHNOUN",
+      "prenom": "DJEFFAL ROFAIDA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000138"
+    },
+    {
+      "nom": "ARAR",
+      "prenom": "WAFAA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000139"
+    },
+    {
+      "nom": "HENNI",
+      "prenom": "YASSER",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000140"
+    },
+    {
+      "nom": "TEBBAKH",
+      "prenom": "ROSTOM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000141"
+    },
+    {
+      "nom": "BOUDJELLA",
+      "prenom": "OUSSAMA OMAR ELHEK",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000142"
+    },
+    {
+      "nom": "KHAMMES",
+      "prenom": "MAAMAR BASSEM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000143"
+    },
+    {
+      "nom": "MEKROUSSI",
+      "prenom": "ABDELHAKIM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000144"
+    },
+    {
+      "nom": "RAHIEL",
+      "prenom": "MOHAMMED YACINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000145"
+    },
+    {
+      "nom": "MESLEM",
+      "prenom": "MOHAMED WALID",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000146"
+    },
+    {
+      "nom": "BABA",
+      "prenom": "RIAD",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000147"
+    },
+    {
+      "nom": "OUDAD",
+      "prenom": "TAREK NADIR",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000148"
+    },
+    {
+      "nom": "BELZINA",
+      "prenom": "MOHAMED AMINE ABDELKADER",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000149"
+    },
+    {
+      "nom": "SENNI",
+      "prenom": "CHIRAZ",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000150"
+    },
+    {
+      "nom": "MOUZIANE",
+      "prenom": "HADJA CHAIMAA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000151"
+    },
+    {
+      "nom": "SENHADJI",
+      "prenom": "IMED EDDINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000152"
+    },
+    {
+      "nom": "REZINE",
+      "prenom": "ZOULIKHA HAFSA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000153"
+    },
+    {
+      "nom": "NEMDILI",
+      "prenom": "ILYES",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000154"
+    },
+    {
+      "nom": "MOKHTARI",
+      "prenom": "ROUMAISSA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000155"
+    },
+    {
+      "nom": "TIRENIFI",
+      "prenom": "MOHAMMED ZAKARIA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000156"
+    },
+    {
+      "nom": "MESLI",
+      "prenom": "RAFIK",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000157"
+    },
+    {
+      "nom": "BENREDJIL",
+      "prenom": "SAMI YASSER",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000158"
+    },
+    {
+      "nom": "BAOUCHE",
+      "prenom": "ZOUBIDA GHIZLENE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000159"
+    },
+    {
+      "nom": "HOUMRI",
+      "prenom": "ABDELILLAH",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000160"
+    },
+    {
+      "nom": "BAJAWI",
+      "prenom": "KAIS",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000161"
+    },
+    {
+      "nom": "BETTAHAR",
+      "prenom": "MOHAMMED",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000162"
+    },
+    {
+      "nom": "TORKI",
+      "prenom": "FAROUK",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000163"
+    },
+    {
+      "nom": "BOUMAZA",
+      "prenom": "AHAB",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000164"
+    },
+    {
+      "nom": "BENDAOUD",
+      "prenom": "KAMEL",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000165"
+    },
+    {
+      "nom": "HAMMAS",
+      "prenom": "MOHAMED ABDELMADJID",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000166"
+    },
+    {
+      "nom": "SAYAD",
+      "prenom": "ANFEL",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000167"
+    },
+    {
+      "nom": "BOUBLENZA",
+      "prenom": "RAYANE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000168"
+    },
+    {
+      "nom": "AISSANI",
+      "prenom": "MOHAMMED REDA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000169"
+    },
+    {
+      "nom": "BEN SLITANE",
+      "prenom": "IKRAM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000170"
+    },
+    {
+      "nom": "ARROUMIA",
+      "prenom": "SARAH",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000171"
+    },
+    {
+      "nom": "BOURAYA",
+      "prenom": "TAHER ILYES",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000172"
+    },
+    {
+      "nom": "MAKHLOUFI",
+      "prenom": "BOUCHRA YASMINE",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000173"
+    },
+    {
+      "nom": "BENDERBAL",
+      "prenom": "INSAF",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000174"
+    },
+    {
+      "nom": "MOHAMMEDI",
+      "prenom": "FATIMA ZOHRA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000175"
+    },
+    {
+      "nom": "KRATTAR",
+      "prenom": "HADJER",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000176"
+    },
+    {
+      "nom": "BENHABARA",
+      "prenom": "HOUSSEM EDDINE NASR ALLAH",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000177"
+    },
+    {
+      "nom": "BENAICHA",
+      "prenom": "DOUAA",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000178"
+    },
+    {
+      "nom": "DJATOU",
+      "prenom": "FATIMA ZOHRA BATOUL",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000179"
+    },
+    {
+      "nom": "BENOUZZA",
+      "prenom": "WISSEM",
+      "section": "1",
+      "groupe": "3",
+      "matricule": "37000180"
+    },
+    {
+      "nom": "HAFFAR",
+      "prenom": "MOHAMMED EL AMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000181"
+    },
+    {
+      "nom": "TOUZANI",
+      "prenom": "MOHAMMED ELAMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000182"
+    },
+    {
+      "nom": "CHERGUI",
+      "prenom": "YASMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000183"
+    },
+    {
+      "nom": "HOUARI",
+      "prenom": "MOHAMMED ABDERRAHMENE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000184"
+    },
+    {
+      "nom": "LAMROUS",
+      "prenom": "HANAA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000185"
+    },
+    {
+      "nom": "BENYAHIA",
+      "prenom": "MERIEM",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000186"
+    },
+    {
+      "nom": "BENNOURA",
+      "prenom": "BOUCHIBA HADJER",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000187"
+    },
+    {
+      "nom": "AMINA",
+      "prenom": "ABDELOUAHED",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000188"
+    },
+    {
+      "nom": "KENNICHE",
+      "prenom": "DOHA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000189"
+    },
+    {
+      "nom": "DADOUA",
+      "prenom": "HADRIA YOUCEF",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000190"
+    },
+    {
+      "nom": "AOUFI",
+      "prenom": "ZOUBIR",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000191"
+    },
+    {
+      "nom": "HARCHOUCHE",
+      "prenom": "ABDELHADI BOUALEM",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000192"
+    },
+    {
+      "nom": "BENLAHDJAR",
+      "prenom": "MOHAMED EL AMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000193"
+    },
+    {
+      "nom": "ARAISSIA",
+      "prenom": "SARA CHAHD",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000194"
+    },
+    {
+      "nom": "ABDELLAOUI",
+      "prenom": "HANA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000195"
+    },
+    {
+      "nom": "IBRAHIM",
+      "prenom": "ABDELKADER IBRAHIM DOBANRABAA BESSMALA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000196"
+    },
+    {
+      "nom": "BENAZIEZ",
+      "prenom": "MAHMOUD MEROUANE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000197"
+    },
+    {
+      "nom": "SENOUCI",
+      "prenom": "ABDELMADJID",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000198"
+    },
+    {
+      "nom": "AMROUNE",
+      "prenom": "ABDERRACHID",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000199"
+    },
+    {
+      "nom": "MEROUFEL",
+      "prenom": "ABDERRAHMANE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000200"
+    },
+    {
+      "nom": "KAMRAOUI",
+      "prenom": "AYA KHADIDJA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000201"
+    },
+    {
+      "nom": "ZEDDOUR",
+      "prenom": "ABDALLAH",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000202"
+    },
+    {
+      "nom": "LAFKOUNE",
+      "prenom": "MOHAMED EL AMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000203"
+    },
+    {
+      "nom": "KADMI",
+      "prenom": "DJAMEL EDDINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000204"
+    },
+    {
+      "nom": "OUKIL",
+      "prenom": "WISSEM REZKIA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000205"
+    },
+    {
+      "nom": "OUARAS",
+      "prenom": "DOUAA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000206"
+    },
+    {
+      "nom": "GUERBAA",
+      "prenom": "LOUEI",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000207"
+    },
+    {
+      "nom": "BENKHETTOU",
+      "prenom": "AHMED YACINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000208"
+    },
+    {
+      "nom": "OUCIF",
+      "prenom": "NARDJES",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000209"
+    },
+    {
+      "nom": "BELHACINE",
+      "prenom": "Hadjer",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000210"
+    },
+    {
+      "nom": "ZERROUKI",
+      "prenom": "IKRAM",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000211"
+    },
+    {
+      "nom": "HACHAICHI",
+      "prenom": "RIHAB",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000212"
+    },
+    {
+      "nom": "BOUALI",
+      "prenom": "YASMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000213"
+    },
+    {
+      "nom": "BENAOUDA",
+      "prenom": "CHAHT MOHAMED EL AMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000214"
+    },
+    {
+      "nom": "OUAFI",
+      "prenom": "SMAIL",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000215"
+    },
+    {
+      "nom": "FARES",
+      "prenom": "AYOUB",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000216"
+    },
+    {
+      "nom": "HAMEL",
+      "prenom": "MOHAMMED EL AMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000217"
+    },
+    {
+      "nom": "DAOUAR",
+      "prenom": "SARRA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000218"
+    },
+    {
+      "nom": "KAINANE",
+      "prenom": "MEZADEK IMAD EDDINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000219"
+    },
+    {
+      "nom": "KHELIL",
+      "prenom": "SARA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000220"
+    },
+    {
+      "nom": "ZOUAI",
+      "prenom": "BELHADJ",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000221"
+    },
+    {
+      "nom": "MOULAI",
+      "prenom": "ABDERRAZEK",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000222"
+    },
+    {
+      "nom": "HADJ",
+      "prenom": "MAHAMMED YACINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000223"
+    },
+    {
+      "nom": "SEMMADI",
+      "prenom": "MOHAMMED LAMINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000224"
+    },
+    {
+      "nom": "HADJFATEH",
+      "prenom": "HOUSSAM EDDINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000225"
+    },
+    {
+      "nom": "OTMANE",
+      "prenom": "NOURHANE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000226"
+    },
+    {
+      "nom": "KADDOURI",
+      "prenom": "ILIES",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000227"
+    },
+    {
+      "nom": "HANNOU",
+      "prenom": "MOHAMED ABD EL ILLAH",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000228"
+    },
+    {
+      "nom": "BENALI",
+      "prenom": "GAYA KHEIREDDINE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000229"
+    },
+    {
+      "nom": "MERZOUG",
+      "prenom": "ISLAM",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000230"
+    },
+    {
+      "nom": "TALBI",
+      "prenom": "HADJER",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000231"
+    },
+    {
+      "nom": "YOUSFI",
+      "prenom": "KAMEL",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000232"
+    },
+    {
+      "nom": "ABDOUNI",
+      "prenom": "YOUSSOUF",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000233"
+    },
+    {
+      "nom": "BENTALEB",
+      "prenom": "WISSAL",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000234"
+    },
+    {
+      "nom": "MARROUCHE",
+      "prenom": "ABDELDJALIL",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000235"
+    },
+    {
+      "nom": "TACHIBENT",
+      "prenom": "DOUAA KHADIDJA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000236"
+    },
+    {
+      "nom": "SAYAH",
+      "prenom": "DOUAA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000237"
+    },
+    {
+      "nom": "NAIT",
+      "prenom": "BRAHIM MELISSA",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000238"
+    },
+    {
+      "nom": "HACHEMI",
+      "prenom": "RACHIDA LAMISSE",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000239"
+    },
+    {
+      "nom": "LAZREG",
+      "prenom": "MANEL",
+      "section": "1",
+      "groupe": "4",
+      "matricule": "37000240"
+    },
+    {
+      "nom": "OUADAH",
+      "prenom": "AHMED",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000241"
+    },
+    {
+      "nom": "BOUSSOURI",
+      "prenom": "AHLEM CHAIMAA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000242"
+    },
+    {
+      "nom": "DJELLOUL",
+      "prenom": "IKRAM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000243"
+    },
+    {
+      "nom": "TEBBAL",
+      "prenom": "AMINA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000244"
+    },
+    {
+      "nom": "BENAMARA",
+      "prenom": "ASMAA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000245"
+    },
+    {
+      "nom": "MEHDI",
+      "prenom": "ALI HOUARI",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000246"
+    },
+    {
+      "nom": "IZERROUKENE",
+      "prenom": "ASMAA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000247"
+    },
+    {
+      "nom": "GHARBI",
+      "prenom": "IMAD EDDINE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000248"
+    },
+    {
+      "nom": "MISOUTAR",
+      "prenom": "AYA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000249"
+    },
+    {
+      "nom": "RAOUANE",
+      "prenom": "BENMANSOUR",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000250"
+    },
+    {
+      "nom": "DAHMANI",
+      "prenom": "FATIMA ZOHRA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000251"
+    },
+    {
+      "nom": "BADI",
+      "prenom": "Kawther",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000252"
+    },
+    {
+      "nom": "BOUSOUSALA",
+      "prenom": "RIHEM SAKINA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000253"
+    },
+    {
+      "nom": "BENLARBI",
+      "prenom": "NOURHENE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000254"
+    },
+    {
+      "nom": "ZATLA",
+      "prenom": "OMAR EL HUSSEINE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000255"
+    },
+    {
+      "nom": "TAIBI",
+      "prenom": "CHEMSEDDINE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000256"
+    },
+    {
+      "nom": "RAHAL",
+      "prenom": "NACER",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000257"
+    },
+    {
+      "nom": "BESSAHRAOUI",
+      "prenom": "ABIR",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000258"
+    },
+    {
+      "nom": "DJARFOUR",
+      "prenom": "IMRAN",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000259"
+    },
+    {
+      "nom": "EL HANAFI",
+      "prenom": "Batoul",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000260"
+    },
+    {
+      "nom": "DJENNADI",
+      "prenom": "Adel aimad-edine",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000261"
+    },
+    {
+      "nom": "MATI",
+      "prenom": "ABDERRAHMAN",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000262"
+    },
+    {
+      "nom": "BELAZIZ",
+      "prenom": "NOUR EL HOUDA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000263"
+    },
+    {
+      "nom": "BETTAHAR",
+      "prenom": "Mouna kaouther",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000264"
+    },
+    {
+      "nom": "BELGHIT",
+      "prenom": "ABDERRAHIM RAYAN",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000265"
+    },
+    {
+      "nom": "HADJADJ",
+      "prenom": "CHAIMA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000266"
+    },
+    {
+      "nom": "ZITOUNI",
+      "prenom": "RAYHANE KHEIRA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000267"
+    },
+    {
+      "nom": "BELHADJ",
+      "prenom": "IKRAM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000268"
+    },
+    {
+      "nom": "MADANI",
+      "prenom": "NACERA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000269"
+    },
+    {
+      "nom": "EL GHOUL",
+      "prenom": "MOULAY HACHEM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000270"
+    },
+    {
+      "nom": "BELBAH",
+      "prenom": "IBTISSEM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000271"
+    },
+    {
+      "nom": "SAID",
+      "prenom": "HANANE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000272"
+    },
+    {
+      "nom": "MEHIDI",
+      "prenom": "KHAOULA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000273"
+    },
+    {
+      "nom": "SENHADJI",
+      "prenom": "ISLAM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000274"
+    },
+    {
+      "nom": "BELALEM",
+      "prenom": "ABDELQADDOUS",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000275"
+    },
+    {
+      "nom": "BOUZIANE",
+      "prenom": "GHEZLANE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000276"
+    },
+    {
+      "nom": "BELGHABA",
+      "prenom": "MOATASSEM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000277"
+    },
+    {
+      "nom": "ZIDOUR",
+      "prenom": "BEKKADDOUR IMENE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000278"
+    },
+    {
+      "nom": "HAROUNI",
+      "prenom": "ABDELKADER",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000279"
+    },
+    {
+      "nom": "BERKANE",
+      "prenom": "KRACHAI IKHLAS",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000280"
+    },
+    {
+      "nom": "BOUTALBI",
+      "prenom": "MEHDI",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000281"
+    },
+    {
+      "nom": "BENSAADA",
+      "prenom": "HIND",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000282"
+    },
+    {
+      "nom": "MENBER",
+      "prenom": "HAIFAA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000283"
+    },
+    {
+      "nom": "BELLAL",
+      "prenom": "MOHAMMED",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000284"
+    },
+    {
+      "nom": "ZOUAGUI",
+      "prenom": "BADIS",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000285"
+    },
+    {
+      "nom": "BOUSEKKEK",
+      "prenom": "HAITHEM ABDELMADJID",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000286"
+    },
+    {
+      "nom": "BAHLOUL",
+      "prenom": "DHIA EDDINE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000287"
+    },
+    {
+      "nom": "KHETIB",
+      "prenom": "WISSAL",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000288"
+    },
+    {
+      "nom": "FOUL",
+      "prenom": "MUSTAPHA YACINE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000289"
+    },
+    {
+      "nom": "BELARBI",
+      "prenom": "MERIEM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000290"
+    },
+    {
+      "nom": "BENCHALLAL",
+      "prenom": "RAYANE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000291"
+    },
+    {
+      "nom": "BENAMAR",
+      "prenom": "MOHAMMED CHERIF",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000292"
+    },
+    {
+      "nom": "TOUATI",
+      "prenom": "MERIEM",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000293"
+    },
+    {
+      "nom": "ELKEURTI",
+      "prenom": "ANES",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000294"
+    },
+    {
+      "nom": "NEMOURA",
+      "prenom": "SOFIANE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000295"
+    },
+    {
+      "nom": "FARFOUR",
+      "prenom": "ABDELLAH",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000296"
+    },
+    {
+      "nom": "MEZAZIGH",
+      "prenom": "IMENE",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000297"
+    },
+    {
+      "nom": "BERRAHO",
+      "prenom": "MOHAMMED BEN ACHOUR",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000298"
+    },
+    {
+      "nom": "KHELIFI",
+      "prenom": "INES",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000299"
+    },
+    {
+      "nom": "BAGHDADI",
+      "prenom": "AICHA",
+      "section": "2",
+      "groupe": "5",
+      "matricule": "37000300"
+    },
+    {
+      "nom": "LALEG",
+      "prenom": "CHAHRAZED",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000301"
+    },
+    {
+      "nom": "BOUCHIKH",
+      "prenom": "ILYES",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000302"
+    },
+    {
+      "nom": "OUHIB",
+      "prenom": "FARAH KHOULOUD",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000303"
+    },
+    {
+      "nom": "ZAOUI",
+      "prenom": "ILYES RAMZI",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000304"
+    },
+    {
+      "nom": "HOURI",
+      "prenom": "MOHAMMED AKRAM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000305"
+    },
+    {
+      "nom": "KHANNOUSSI",
+      "prenom": "ELHADJ",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000306"
+    },
+    {
+      "nom": "MOZIANE",
+      "prenom": "BOUCHRA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000307"
+    },
+    {
+      "nom": "BERBAOUI",
+      "prenom": "IMAD",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000308"
+    },
+    {
+      "nom": "KOUIDER",
+      "prenom": "MERIEM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000309"
+    },
+    {
+      "nom": "BOUCHAKOUR",
+      "prenom": "SOUHILA IKRAM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000310"
+    },
+    {
+      "nom": "BENDADA",
+      "prenom": "WALID",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000311"
+    },
+    {
+      "nom": "AISSA",
+      "prenom": "NOUHA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000312"
+    },
+    {
+      "nom": "KAMLI",
+      "prenom": "ADEM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000313"
+    },
+    {
+      "nom": "OUAFIANE",
+      "prenom": "RABAB",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000314"
+    },
+    {
+      "nom": "BERHAB",
+      "prenom": "ILHEM LILIA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000315"
+    },
+    {
+      "nom": "ZIGH",
+      "prenom": "AHMED HOUSSEM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000316"
+    },
+    {
+      "nom": "YAMINE",
+      "prenom": "AMINA ZOHRA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000317"
+    },
+    {
+      "nom": "KHELFI",
+      "prenom": "ALAA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000318"
+    },
+    {
+      "nom": "SEDDIKI",
+      "prenom": "KHEIRA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000319"
+    },
+    {
+      "nom": "MERKOUCHE",
+      "prenom": "RAYENE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000320"
+    },
+    {
+      "nom": "OBADA",
+      "prenom": "ASAMI",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000321"
+    },
+    {
+      "nom": "HACENE",
+      "prenom": "WALID",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000322"
+    },
+    {
+      "nom": "HOUBAD",
+      "prenom": "DOUAA EL SABRIRIN",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000323"
+    },
+    {
+      "nom": "HAIBAOUI",
+      "prenom": "MOULAY MHAMMD",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000324"
+    },
+    {
+      "nom": "TALHI",
+      "prenom": "YOUCEF",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000325"
+    },
+    {
+      "nom": "KHALDI",
+      "prenom": "MOHAMMED MONCEF NADIR",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000326"
+    },
+    {
+      "nom": "LOUADJ",
+      "prenom": "ABDELAZIZ",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000327"
+    },
+    {
+      "nom": "BELLOULA",
+      "prenom": "KHAWLA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000328"
+    },
+    {
+      "nom": "BOUAKLINE",
+      "prenom": "ANAIS INES FATIMA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000329"
+    },
+    {
+      "nom": "BAHRI",
+      "prenom": "YOUCEF ABDELMALEK",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000330"
+    },
+    {
+      "nom": "KHERIF",
+      "prenom": "SIRINE YAKINE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000331"
+    },
+    {
+      "nom": "MANAA",
+      "prenom": "HASNI",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000332"
+    },
+    {
+      "nom": "MAKRELOUFI",
+      "prenom": "MEHDI AMAR",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000333"
+    },
+    {
+      "nom": "TERBECHE",
+      "prenom": "MAHMOUD",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000334"
+    },
+    {
+      "nom": "MEHDI",
+      "prenom": "IBTISSEM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000335"
+    },
+    {
+      "nom": "IKKACHE",
+      "prenom": "MOHAMED",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000336"
+    },
+    {
+      "nom": "YAHIAOUI",
+      "prenom": "MOHAMMED MEHDI",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000337"
+    },
+    {
+      "nom": "ZITOUNI",
+      "prenom": "Abdessamed",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000338"
+    },
+    {
+      "nom": "BENCHERIF",
+      "prenom": "MOHAMED AYOUB",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000339"
+    },
+    {
+      "nom": "HOUCINE",
+      "prenom": "MOULAY RADHWANE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000340"
+    },
+    {
+      "nom": "MESFEF",
+      "prenom": "FELLA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000341"
+    },
+    {
+      "nom": "DAHMOUNE",
+      "prenom": "MOHAMED NADJIM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000342"
+    },
+    {
+      "nom": "AMARA",
+      "prenom": "LAMIS DJIHANE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000343"
+    },
+    {
+      "nom": "BEZZAR",
+      "prenom": "MERIEM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000344"
+    },
+    {
+      "nom": "TALBI",
+      "prenom": "SANAA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000345"
+    },
+    {
+      "nom": "DJELOUAT",
+      "prenom": "ABDERRAHMANE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000346"
+    },
+    {
+      "nom": "TAA",
+      "prenom": "SANAA NARDJES MAISSA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000347"
+    },
+    {
+      "nom": "DAOUDI",
+      "prenom": "HACENE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000348"
+    },
+    {
+      "nom": "BELAZZOUZ",
+      "prenom": "HIZIA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000349"
+    },
+    {
+      "nom": "HAFFANE",
+      "prenom": "BENHERMAS FATIMA ZOHRA GHADIR",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000350"
+    },
+    {
+      "nom": "BENMAZA",
+      "prenom": "MOHAMMED EL AMINE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000351"
+    },
+    {
+      "nom": "KADA",
+      "prenom": "BENNEKROUF CHAKIB",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000352"
+    },
+    {
+      "nom": "KECIR",
+      "prenom": "RABEH",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000353"
+    },
+    {
+      "nom": "BENRAHOU",
+      "prenom": "AZZEDDINE EL KASSAM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000354"
+    },
+    {
+      "nom": "BENCHAIB",
+      "prenom": "ABIR RIHANE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000355"
+    },
+    {
+      "nom": "LENSARI",
+      "prenom": "OMAR",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000356"
+    },
+    {
+      "nom": "AHMED FOUATIH",
+      "prenom": "ABDERAHIM JEBRIL",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000357"
+    },
+    {
+      "nom": "BENKENINE",
+      "prenom": "AISSA",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000358"
+    },
+    {
+      "nom": "LARBI",
+      "prenom": "ABDERRAHMANE RAHIM",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000359"
+    },
+    {
+      "nom": "SAIDI",
+      "prenom": "AYMENE",
+      "section": "2",
+      "groupe": "6",
+      "matricule": "37000360"
+    },
+    {
+      "nom": "BENSSALAH",
+      "prenom": "RADIA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000361"
+    },
+    {
+      "nom": "BENDJEBBOUR",
+      "prenom": "YACINE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000362"
+    },
+    {
+      "nom": "LAROUCI",
+      "prenom": "AYA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000363"
+    },
+    {
+      "nom": "MENMAR",
+      "prenom": "RANIA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000364"
+    },
+    {
+      "nom": "LAKBER",
+      "prenom": "BELALEUG BELKACEM",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000365"
+    },
+    {
+      "nom": "MAHI",
+      "prenom": "BAHI AMAR MOHAMMED ABDESSAMAD",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000366"
+    },
+    {
+      "nom": "TAYEBI",
+      "prenom": "ABDELOUAHEB",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000367"
+    },
+    {
+      "nom": "SBAIHI",
+      "prenom": "MOHAMED SADEK",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000368"
+    },
+    {
+      "nom": "MOULAI",
+      "prenom": "ALI ABDESSAMAD",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000369"
+    },
+    {
+      "nom": "BELAZREG",
+      "prenom": "AYA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000370"
+    },
+    {
+      "nom": "BOUDJEMA",
+      "prenom": "EL MEHDI",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000371"
+    },
+    {
+      "nom": "MANSOURA",
+      "prenom": "MOHAMMED MOHSEN",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000372"
+    },
+    {
+      "nom": "ANES",
+      "prenom": "BAHAAEDDINE YOUCEF",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000373"
+    },
+    {
+      "nom": "AMMOUR",
+      "prenom": "Firas alla eddinne",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000374"
+    },
+    {
+      "nom": "GUERROUABI",
+      "prenom": "MOHAMMED",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000375"
+    },
+    {
+      "nom": "MEGHOUFEL",
+      "prenom": "KARIMA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000376"
+    },
+    {
+      "nom": "TALBI",
+      "prenom": "MOHAMMED EL RACHID",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000377"
+    },
+    {
+      "nom": "BENAMAR",
+      "prenom": "KHOULOUD",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000378"
+    },
+    {
+      "nom": "ZINE",
+      "prenom": "MOHAMED ALI",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000379"
+    },
+    {
+      "nom": "MADANI",
+      "prenom": "SABEIR AYOUB",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000380"
+    },
+    {
+      "nom": "YAGOUB",
+      "prenom": "KHAWLA ASSIA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000381"
+    },
+    {
+      "nom": "BENKHARROUBA",
+      "prenom": "MARWA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000382"
+    },
+    {
+      "nom": "BENSMAIN",
+      "prenom": "MOHAMMED ADEL",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000383"
+    },
+    {
+      "nom": "DOUCEN",
+      "prenom": "KHAIRA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000384"
+    },
+    {
+      "nom": "DJELLID",
+      "prenom": "MOHAMMED EL AMIN",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000385"
+    },
+    {
+      "nom": "ALLAL",
+      "prenom": "RAIHANE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000386"
+    },
+    {
+      "nom": "SIDI IKHLEF",
+      "prenom": "HOUSSEM EDDINE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000387"
+    },
+    {
+      "nom": "LADOUANI",
+      "prenom": "MASSINISSA ABDELJALIL",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000388"
+    },
+    {
+      "nom": "TALEB",
+      "prenom": "ABDELDJELIL",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000389"
+    },
+    {
+      "nom": "HACHEM",
+      "prenom": "AYA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000390"
+    },
+    {
+      "nom": "DJEBBAR",
+      "prenom": "MOHAMMED RAYANE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000391"
+    },
+    {
+      "nom": "TAHAR",
+      "prenom": "AMAR CHAIMAA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000392"
+    },
+    {
+      "nom": "MAAMAR",
+      "prenom": "DAOUIA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000393"
+    },
+    {
+      "nom": "OURABAH",
+      "prenom": "RANIA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000394"
+    },
+    {
+      "nom": "MOULAY",
+      "prenom": "FATIMA ZOHRA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000395"
+    },
+    {
+      "nom": "BERRAHAL",
+      "prenom": "MOHAMED YOUCEF",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000396"
+    },
+    {
+      "nom": "LEZZAR",
+      "prenom": "AMINA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000397"
+    },
+    {
+      "nom": "SMATI",
+      "prenom": "Malak",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000398"
+    },
+    {
+      "nom": "BENDIMIA",
+      "prenom": "ABDELKRIM",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000399"
+    },
+    {
+      "nom": "MEDIMED",
+      "prenom": "ALAA ZINE EDDINE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000400"
+    },
+    {
+      "nom": "HAOUD",
+      "prenom": "NOUR EL HOUDA RAYHANE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000401"
+    },
+    {
+      "nom": "ZINAI",
+      "prenom": "MOHAMMED IDRIS",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000402"
+    },
+    {
+      "nom": "MEZIANE",
+      "prenom": "MOHAMMED ISLAM",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000403"
+    },
+    {
+      "nom": "REGUIEG",
+      "prenom": "AYMAN",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000404"
+    },
+    {
+      "nom": "EL FODDA",
+      "prenom": "MOSTAPHA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000405"
+    },
+    {
+      "nom": "BEN LEBNA",
+      "prenom": "MOUEDH ELMOKHTAR",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000406"
+    },
+    {
+      "nom": "CHAFI",
+      "prenom": "ASMAA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000407"
+    },
+    {
+      "nom": "SADOK",
+      "prenom": "MOHAMED",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000408"
+    },
+    {
+      "nom": "DINE",
+      "prenom": "BOUCHRA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000409"
+    },
+    {
+      "nom": "AOUIMEUR",
+      "prenom": "ILYES",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000410"
+    },
+    {
+      "nom": "HIBOUT",
+      "prenom": "YASSER ABDERRAHIM",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000411"
+    },
+    {
+      "nom": "MAZOUZ",
+      "prenom": "BAYA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000412"
+    },
+    {
+      "nom": "MOURAH",
+      "prenom": "ALI MOUSSA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000413"
+    },
+    {
+      "nom": "AZZI",
+      "prenom": "MOHAMMED EL HABIB",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000414"
+    },
+    {
+      "nom": "TAHARI",
+      "prenom": "CHAMSE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000415"
+    },
+    {
+      "nom": "DALI",
+      "prenom": "YAHIA MOHAMMED ISLEM",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000416"
+    },
+    {
+      "nom": "BENARBA",
+      "prenom": "LAHOUARI",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000417"
+    },
+    {
+      "nom": "CHEROUATI",
+      "prenom": "CHAIMAA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000418"
+    },
+    {
+      "nom": "KADRI",
+      "prenom": "MEROUANE",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000419"
+    },
+    {
+      "nom": "GOUNANI",
+      "prenom": "RACHIDA",
+      "section": "2",
+      "groupe": "7",
+      "matricule": "37000420"
+    },
+    {
+      "nom": "BENYAKOUB",
+      "prenom": "BACHIR",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000421"
+    },
+    {
+      "nom": "LAROUCI",
+      "prenom": "FAIROUZ",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000422"
+    },
+    {
+      "nom": "CHAOUI",
+      "prenom": "MOHAMMED",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000423"
+    },
+    {
+      "nom": "MOKADAM",
+      "prenom": "ABDEL WAHAB",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000424"
+    },
+    {
+      "nom": "MEDJAHED",
+      "prenom": "NARIMENE LYLIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000425"
+    },
+    {
+      "nom": "HAMZAOUI",
+      "prenom": "YOUCEF ELHABIB",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000426"
+    },
+    {
+      "nom": "DALI",
+      "prenom": "ABDELHAMID",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000427"
+    },
+    {
+      "nom": "BADJI",
+      "prenom": "YAMINA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000428"
+    },
+    {
+      "nom": "BENLEMMOU",
+      "prenom": "SARRA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000429"
+    },
+    {
+      "nom": "CHALABI",
+      "prenom": "CHAIMAA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000430"
+    },
+    {
+      "nom": "OUASTI",
+      "prenom": "ABDENNOUR",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000431"
+    },
+    {
+      "nom": "GOURARI",
+      "prenom": "AKRAM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000432"
+    },
+    {
+      "nom": "TLEMCANI",
+      "prenom": "WALID",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000433"
+    },
+    {
+      "nom": "KEDDAR",
+      "prenom": "ABDELAZIZ",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000434"
+    },
+    {
+      "nom": "BEKHEIRA",
+      "prenom": "HADJER KHEIRA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000435"
+    },
+    {
+      "nom": "KADDOURI",
+      "prenom": "YACINE MOHAMMED",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000436"
+    },
+    {
+      "nom": "GUEDDJALI",
+      "prenom": "MAHDI",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000437"
+    },
+    {
+      "nom": "DELBEZE",
+      "prenom": "BOUCHRA HIDAYET",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000438"
+    },
+    {
+      "nom": "DALA",
+      "prenom": "WALID",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000439"
+    },
+    {
+      "nom": "NOUAR",
+      "prenom": "HASNA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000440"
+    },
+    {
+      "nom": "SID LAKHDAR",
+      "prenom": "MOHAMMED FAYCAL",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000441"
+    },
+    {
+      "nom": "JAARA",
+      "prenom": "RAID",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000442"
+    },
+    {
+      "nom": "KHELIL",
+      "prenom": "SOFIANE",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000443"
+    },
+    {
+      "nom": "BOUDIAF",
+      "prenom": "AMINE",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000444"
+    },
+    {
+      "nom": "MEBARKI",
+      "prenom": "NOUR EL HOUDA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000445"
+    },
+    {
+      "nom": "TALBI",
+      "prenom": "YACINE",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000446"
+    },
+    {
+      "nom": "BOUCHAMA",
+      "prenom": "IKRAM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000447"
+    },
+    {
+      "nom": "HADJADJ",
+      "prenom": "RIAD",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000448"
+    },
+    {
+      "nom": "KADDOUR",
+      "prenom": "AMIRA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000449"
+    },
+    {
+      "nom": "ZIANI",
+      "prenom": "ABDELKADER",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000450"
+    },
+    {
+      "nom": "BOUKHALFA",
+      "prenom": "SARAH",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000451"
+    },
+    {
+      "nom": "FERHAT",
+      "prenom": "LYES",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000452"
+    },
+    {
+      "nom": "SEDDIKI",
+      "prenom": "FATIMA ZAHRA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000453"
+    },
+    {
+      "nom": "BENHABIB",
+      "prenom": "RAYAN",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000454"
+    },
+    {
+      "nom": "GHEZALI",
+      "prenom": "MERIEM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000455"
+    },
+    {
+      "nom": "LAHLOU",
+      "prenom": "ABDERRAHIM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000456"
+    },
+    {
+      "nom": "TOUATI",
+      "prenom": "NADIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000457"
+    },
+    {
+      "nom": "BENSALAH",
+      "prenom": "ISSAM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000458"
+    },
+    {
+      "nom": "KORICHI",
+      "prenom": "DALILA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000459"
+    },
+    {
+      "nom": "MEZIANE",
+      "prenom": "KHALED",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000460"
+    },
+    {
+      "nom": "BERRAHMA",
+      "prenom": "SAMIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000461"
+    },
+    {
+      "nom": "OUARTI",
+      "prenom": "ADEL",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000462"
+    },
+    {
+      "nom": "BOUDRA",
+      "prenom": "LAMIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000463"
+    },
+    {
+      "nom": "CHAREF",
+      "prenom": "OUSSAMA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000464"
+    },
+    {
+      "nom": "HEMIDA",
+      "prenom": "ASSIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000465"
+    },
+    {
+      "nom": "BENKARA",
+      "prenom": "ZAKARIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000466"
+    },
+    {
+      "nom": "DJILALI",
+      "prenom": "SOUMIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000467"
+    },
+    {
+      "nom": "KOUADRI",
+      "prenom": "IMAD",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000468"
+    },
+    {
+      "nom": "BENAMARA",
+      "prenom": "RIMA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000469"
+    },
+    {
+      "nom": "GHERBI",
+      "prenom": "NASSIM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000470"
+    },
+    {
+      "nom": "SLIMANI",
+      "prenom": "CHAHINEZ",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000471"
+    },
+    {
+      "nom": "BOUZID",
+      "prenom": "MEHDI",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000472"
+    },
+    {
+      "nom": "OUKACI",
+      "prenom": "HANANE",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000473"
+    },
+    {
+      "nom": "BOURAS",
+      "prenom": "ABDELHALIM",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000474"
+    },
+    {
+      "nom": "FEKIR",
+      "prenom": "AICHA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000475"
+    },
+    {
+      "nom": "HAMADOUCHE",
+      "prenom": "YASSER",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000476"
+    },
+    {
+      "nom": "BENAISSA",
+      "prenom": "KHADIDJA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000477"
+    },
+    {
+      "nom": "TABET",
+      "prenom": "FETHI",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000478"
+    },
+    {
+      "nom": "KEROUANI",
+      "prenom": "HOURIA",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000479"
+    },
+    {
+      "nom": "OULD ALI",
+      "prenom": "NADIR",
+      "section": "2",
+      "groupe": "8",
+      "matricule": "37000480"
+    }
+  ]
+}
