@@ -101,13 +101,6 @@ export default function DashboardLayout({ role }) {
         </nav>
 
         <div className="sidebar__footer">
-          <div className={`sidebar__avatar sidebar__avatar${roleSuffix}`}>
-            {getInitials(displayName)}
-          </div>
-          <div className="sidebar__user-info">
-            <span className="sidebar__user-name">{displayName}</span>
-            <span className="sidebar__user-role">{roleLabel}</span>
-          </div>
           <button
             className="sidebar__logout-btn"
             onClick={handleLogout}
@@ -116,7 +109,20 @@ export default function DashboardLayout({ role }) {
             <LogOut />
             <span>Déconnexion</span>
           </button>
+
+          <div className="sidebar__user-profile">
+            <div className={`sidebar__avatar sidebar__avatar${roleSuffix}`}>
+              {getInitials(displayName)}
+            </div>
+            <div className="sidebar__user-info">
+              <span className="sidebar__user-name">{displayName}</span>
+              <span className="sidebar__user-role">
+                {roleLabel}{user?.grade ? ` · ${user.grade}` : ''}
+              </span>
+            </div>
+          </div>
         </div>
+
       </aside>
 
       {/* ── Main ── */}
@@ -129,9 +135,9 @@ export default function DashboardLayout({ role }) {
               <div className={`navbar__user-pill-avatar navbar__user-pill-avatar${roleSuffix}`}>
                 {getInitials(displayName)}
               </div>
-              <span className="navbar__user-pill-name">
-                {displayName.split(' ').pop()}
-              </span>
+                <span className="navbar__user-pill-name">
+                {user.email}
+                </span>
             </div>
           </div>
         </header>

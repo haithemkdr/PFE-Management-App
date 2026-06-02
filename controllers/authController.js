@@ -24,7 +24,7 @@ const login = async (req, res) => {
         // Requête SQL : chercher l'utilisateur par email avec son rôle
         const sql = `
             SELECT u.id_utilisateur, u.nom, u.prenom, u.email, u.mot_de_passe, u.actif,
-                   r.libelle AS role
+                   u.grade, r.libelle AS role
             FROM utilisateurs u
             LEFT JOIN roles r ON u.id_role = r.id_role
             WHERE u.email = ?
@@ -66,6 +66,12 @@ const login = async (req, res) => {
         // Générer le token JWT avec une durée de validité de 8 heures
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
 
+        // Construire le nom complet
+        const nomComplet = [utilisateur.prenom, utilisateur.nom]
+            .filter(Boolean)
+            .join(' ')
+            .trim() || utilisateur.email;
+
         // Réponse réussie : renvoyer le token et les infos de l'utilisateur
         res.status(200).json({
             message: "Connexion réussie !",
@@ -74,8 +80,10 @@ const login = async (req, res) => {
                 id: utilisateur.id_utilisateur,
                 nom: utilisateur.nom,
                 prenom: utilisateur.prenom,
+                nom_complet: nomComplet,
                 email: utilisateur.email,
-                role: utilisateur.role
+                role: utilisateur.role,
+                grade: utilisateur.grade || null
             }
         });
 

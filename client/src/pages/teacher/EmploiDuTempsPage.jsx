@@ -109,7 +109,7 @@ export default function EmploiDuTempsPage() {
 
   return (
     <>
-      {/* Figma: En-tête avec informations et navigation */}
+      {/* En-tête avec informations et navigation */}
       <div style={{
         background: 'linear-gradient(135deg, #1B3A5C 0%, #264D73 100%)',
         borderRadius: 12,

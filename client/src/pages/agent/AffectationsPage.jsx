@@ -1,10 +1,11 @@
 // AffectationsPage.jsx — Gestion des Affectations (Agent Pédagogique)
-// Layout Figma P10 : FormCard (340px) | AffTable (flex-1) — split-layout
+// Layout: FormCard (340px) | AffTable (flex-1) — split-layout
 // CRUD complet : Créer, Lire, Modifier, Supprimer les affectations enseignant → module → groupe
 // Cascading filters : Semestre → Module, Niveau → Section → Groupe
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../utils/api';
 import { Search, Pencil, Trash2, Download } from 'lucide-react';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 import '../shared.css';
 
 export default function AffectationsPage() {
@@ -18,12 +19,13 @@ export default function AffectationsPage() {
   // ─── États du formulaire ───
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', onConfirm: null });
 
   // ─── États des filtres (tableau) ───
   const [search, setSearch] = useState('');
   const [moduleFilter, setModuleFilter] = useState('');
 
-  // Formulaire vide par défaut (Figma P10 fields)
+  // Formulaire vide par défaut
   const emptyForm = {
     id_utilisateur: '',
     id_module: '',
@@ -208,13 +210,21 @@ export default function AffectationsPage() {
 
   // ─── Supprimer une affectation ───
   function handleDelete(id) {
-    if (!window.confirm('Supprimer cette affectation ?\nLes notes et absences liées seront aussi supprimées.')) return;
-    api.delete(`/agent/affectations/${id}`)
-      .then(() => {
-        showToast('Affectation supprimée', 'success');
-        setAffectations(prev => prev.filter(a => a.id_affectation !== id));
-      })
-      .catch(err => showToast(err.response?.data?.message || 'Erreur suppression', 'error'));
+    setConfirmDialog({
+      open: true,
+      title: 'Supprimer l\'affectation',
+      message: 'Supprimer cette affectation ?\nLes notes et absences liées seront aussi supprimées.',
+      variant: 'danger',
+      onConfirm: () => {
+        setConfirmDialog(prev => ({ ...prev, open: false }));
+        api.delete(`/agent/affectations/${id}`)
+          .then(() => {
+            showToast('Affectation supprimée', 'success');
+            setAffectations(prev => prev.filter(a => a.id_affectation !== id));
+          })
+          .catch(err => showToast(err.response?.data?.message || 'Erreur suppression', 'error'));
+      }
+    });
   }
 
   // ─── Toggle période de saisie (ouvrir / fermer) ───
@@ -265,7 +275,7 @@ export default function AffectationsPage() {
   // ─── RENDU ───
   return (
     <>
-      {/* Figma P10 : Split Layout — FormCard | AffTable */}
+      {/* Split Layout — FormCard | AffTable */}
       <div className="split-layout">
 
         {/* ═══ Colonne Gauche : Formulaire Nouvelle Affectation ═══ */}
@@ -428,7 +438,7 @@ export default function AffectationsPage() {
             </div>
           </div>
 
-          {/* Tableau de données — Figma P10 columns: Enseignant, Module, Niveau, Section, Groupe, Période, Actions */}
+          {/* Tableau de données */}
           <table className="data-table">
             <thead>
               <tr>
@@ -490,6 +500,11 @@ export default function AffectationsPage() {
 
       {/* Toast de feedback */}
       {toast && <div className={`toast toast--${toast.type}`}>{toast.msg}</div>}
+      
+      <ConfirmModal
+        {...confirmDialog}
+        onCancel={() => setConfirmDialog(prev => ({ ...prev, open: false }))}
+      />
     </>
   );
 }

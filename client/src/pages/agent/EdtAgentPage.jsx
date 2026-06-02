@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../utils/api';
 import { Plus, X, Edit2, Trash2, Calendar, AlertTriangle } from 'lucide-react';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 import '../shared.css';
 
 /**
  * EdtAgentPage — Gestion de l'Emploi du Temps (UC-A06)
- * Figma Page 14 (node 51:13577)
  *
  * Features:
  *  - Horaires démarrent à 08:30
@@ -71,7 +71,7 @@ function calcEndTime(startTime) {
   return `${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
 }
 
-// Figma color scheme per session type
+// Color scheme per session type
 const TYPE_COLORS = {
   CM: { bg: '#e8f5e9', border: '#a5d6a7', text: '#2e7d32', badge: '#43a047' },
   TD: { bg: '#e3f2fd', border: '#90caf9', text: '#1565c0', badge: '#1e88e5' },
@@ -92,6 +92,7 @@ export default function EdtAgentPage() {
   const [editingId,    setEditingId]    = useState(null);
   const [toast,        setToast]        = useState(null);
   const [conflicts,    setConflicts]    = useState([]); // list of conflict messages
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', variant: 'danger', onConfirm: null });
 
   // Filters
   const [enseignantFilter, setEnseignantFilter] = useState('');
@@ -126,7 +127,7 @@ export default function EdtAgentPage() {
       if (!map[a.id_utilisateur])
         map[a.id_utilisateur] = { id: a.id_utilisateur, nom: a.nom_enseignant, prenom: a.prenom_enseignant };
     });
-    return Object.values(map).sort((a, b) => a.nom.localeCompare(b.nom));
+    return Object.values(map).sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
   }, [affectations]);
 
   // sallesDisponibles is now computed below as sallesForType (after grid construction)
@@ -175,9 +176,12 @@ export default function EdtAgentPage() {
       if (c.jour !== f.jour) return false;
       const cDebutRaw = (c.heure_debut || '').slice(0, 5);
       if (!cDebutRaw) return false;
-      // Normaliser le créneau existant pour comparer les périodes, pas les heures brutes
-      const cDebut = normalizeSlot(cDebutRaw);
-      if (cDebut !== debut) return false;
+      
+      const cDebutMin = timeToMin(cDebutRaw);
+      const newDebutMin = timeToMin(f.heure_debut);
+      
+      // Deux cours se chevauchent si la différence de leurs heures de début est strictement inférieure à 90 minutes.
+      if (Math.abs(cDebutMin - newDebutMin) >= 90) return false;
 
       // ── Filtre semestre ──────────────────────────────────
       // Un cours S1 (impair) et un cours S2 (pair) ne sont JAMAIS
@@ -342,13 +346,21 @@ export default function EdtAgentPage() {
   }
 
   function handleDelete(id) {
-    if (!window.confirm('Supprimer ce créneau ?')) return;
-    api.delete(`/agent/edt/${id}`)
-      .then(() => {
-        setCreneaux(prev => prev.filter(c => c.id_creneau !== id));
-        showToast('Créneau supprimé', 'success');
-      })
-      .catch(() => showToast('Erreur suppression', 'error'));
+    setConfirmDialog({
+      open: true,
+      title: 'Supprimer le créneau',
+      message: 'Supprimer ce créneau ?',
+      variant: 'danger',
+      onConfirm: () => {
+        setConfirmDialog(prev => ({ ...prev, open: false }));
+        api.delete(`/agent/edt/${id}`)
+          .then(() => {
+            setCreneaux(prev => prev.filter(c => c.id_creneau !== id));
+            showToast('Créneau supprimé', 'success');
+          })
+          .catch(() => showToast('Erreur suppression', 'error'));
+      }
+    });
   }
 
   function resetForm() {
@@ -638,6 +650,11 @@ export default function EdtAgentPage() {
 
       {/* Toast */}
       {toast && <div className={`toast toast--${toast.type}`}>{toast.msg}</div>}
+
+      <ConfirmModal
+        {...confirmDialog}
+        onCancel={() => setConfirmDialog(prev => ({ ...prev, open: false }))}
+      />
     </>
   );
 }

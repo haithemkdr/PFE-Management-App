@@ -5,7 +5,10 @@ const {
     getStatutGroupes,
     deverrouillerGroupe,
     getMesModulesResponsable,
-    genererPV
+    genererPV,
+    relancerEnseignant,
+    apercuNotesGroupe,
+    cloturerModule
 } = require('../controllers/responsableController');
 const verifierToken = require('../middleware/authMiddleware');
 
@@ -34,4 +37,17 @@ router.post('/deverrouiller', verifierToken, deverrouillerGroupe);
 // Générer et télécharger le PV (CSV)
 router.get('/pv', verifierToken, genererPV);
 
+// POST /api/responsable/relancer
+// Envoyer un rappel à un enseignant en retard
+router.post('/relancer', verifierToken, relancerEnseignant);
+
+// GET /api/responsable/apercu-notes?id_affectation=X
+// Aperçu rapide des notes d'un groupe spécifique
+router.get('/apercu-notes', verifierToken, apercuNotesGroupe);
+
+// POST /api/responsable/cloturer
+// Clôturer définitivement le module (verrouillage)
+router.post('/cloturer', verifierToken, cloturerModule);
+
 module.exports = router;
+

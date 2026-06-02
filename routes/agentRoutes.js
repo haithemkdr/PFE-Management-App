@@ -39,7 +39,9 @@ const {
     getFormations,
     // Responsable matière
     getEnseignantModules,
-    toggleResponsableMatiere
+    toggleResponsableMatiere,
+    getModulesWithResponsable,
+    setResponsableModule
 } = require('../controllers/agentController');
 
 const verifierToken     = require('../middleware/authMiddleware');
@@ -121,5 +123,11 @@ router.post  ('/deliberation/valider',           ...guard, validerDeliberation);
 router.get   ('/modules',                        ...guard, getModules);
 router.get   ('/groupes',                        ...guard, getGroupes);
 router.get   ('/affectations',                   ...guard, getAffectationsTous);
+
+// ============================================================
+// Responsables de modules (vue module-centric)
+// ============================================================
+router.get   ('/modules-responsables',           ...guard, getModulesWithResponsable);
+router.put   ('/modules/:id/responsable',        ...guard, setResponsableModule);
 
 module.exports = router;

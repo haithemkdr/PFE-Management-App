@@ -164,7 +164,7 @@ const getMesModulesResponsable = async (req, res) => {
 
         const [rows] = await db.query(
             `SELECT DISTINCT m.id_module, m.nom_module, m.semestre, m.credits, m.coefficient,
-                    m.poids_td, m.poids_tp, m.poids_exam, a.niveau
+                    m.poids_td, m.poids_tp, m.poids_exam, m.est_cloture, a.niveau
              FROM affectations a
              JOIN modules m ON a.id_module = m.id_module
              WHERE a.id_utilisateur = ? AND a.est_responsable_matiere = 1
@@ -209,40 +209,75 @@ const genererPV = async (req, res) => {
         }
         const mod = modRows[0];
 
-        // Récupérer TOUTES les affectations CM pour déterminer les sections/niveaux concernés
-        const [cmAffs] = await db.query(
-            `SELECT DISTINCT section, niveau FROM affectations 
-             WHERE id_module = ? AND type_seance = 'CM'`,
+        // Vérifier s'il existe des affectations TD/TP pour ce module
+        const [tdtpCheck] = await db.query(
+            `SELECT COUNT(*) AS cnt FROM affectations
+             WHERE id_module = ? AND type_seance IN ('TD','TP') AND id_groupe IS NOT NULL`,
             [id_module]
         );
+        const hasTdTp = tdtpCheck[0].cnt > 0;
 
-        if (cmAffs.length === 0) {
-            return res.status(404).json({ message: "Aucune affectation CM trouvée pour ce module." });
+        let etudiants;
+        if (hasTdTp) {
+            // Cas standard : récupérer les étudiants via les groupes TD/TP affectés
+            const [rows] = await db.query(
+                `SELECT e.matricule, e.nom, e.prenom, g.libelle AS nom_groupe, g.section,
+                        n.note_td, n.note_tp, n.note_ef, n.note_er,
+                        n.moy1, n.moy2, n.moyenne_finale, n.resultat
+                 FROM etudiants e
+                 JOIN groupes g ON e.id_groupe = g.id_groupe
+                 LEFT JOIN notes n ON e.id_etudiant = n.id_etudiant AND n.id_module = ?
+                 WHERE e.id_groupe IN (
+                     SELECT DISTINCT id_groupe FROM affectations
+                     WHERE id_module = ? AND type_seance IN ('TD','TP') AND id_groupe IS NOT NULL
+                 )
+                 ORDER BY g.section, g.libelle, e.nom, e.prenom`,
+                [id_module, id_module]
+            );
+            etudiants = rows;
+        } else {
+            // Module CM-only (langues, séminaires, etc.) : récupérer les étudiants
+            // via le niveau et la section de l'affectation CM du responsable
+            const [cmAff] = await db.query(
+                `SELECT section, niveau FROM affectations
+                 WHERE id_module = ? AND type_seance = 'CM' LIMIT 1`,
+                [id_module]
+            );
+            if (cmAff.length === 0) {
+                return res.status(400).json({ message: "Aucune affectation trouvée pour ce module." });
+            }
+            const { section, niveau } = cmAff[0];
+
+            // Construire la condition : si la section est définie, filtrer par section aussi
+            let whereClause = 'g.niveau = ?';
+            const params = [id_module, niveau];
+            if (section) {
+                whereClause += ' AND g.section = ?';
+                params.push(section);
+            }
+
+            const [rows] = await db.query(
+                `SELECT e.matricule, e.nom, e.prenom, g.libelle AS nom_groupe, g.section,
+                        n.note_td, n.note_tp, n.note_ef, n.note_er,
+                        n.moy1, n.moy2, n.moyenne_finale, n.resultat
+                 FROM etudiants e
+                 JOIN groupes g ON e.id_groupe = g.id_groupe
+                 LEFT JOIN notes n ON e.id_etudiant = n.id_etudiant AND n.id_module = ?
+                 WHERE ${whereClause}
+                 ORDER BY g.section, g.libelle, e.nom, e.prenom`,
+                params
+            );
+            etudiants = rows;
         }
 
-        // Construire les filtres pour inclure TOUS les étudiants de toutes les sections/niveaux
-        const sectionFilters = cmAffs.map(a => `(g.section = '${a.section}' AND g.niveau = '${a.niveau}')`).join(' OR ');
-
-        // Récupérer tous les étudiants de toutes les sections/niveaux concernés
-        const [etudiants] = await db.query(
-            `SELECT e.matricule, e.nom, e.prenom, g.libelle AS nom_groupe, g.section,
-                    n.note_td, n.note_tp, n.note_ef, n.note_er,
-                    n.moy1, n.moy2, n.moyenne_finale, n.resultat
-             FROM etudiants e
-             JOIN groupes g ON e.id_groupe = g.id_groupe
-             LEFT JOIN notes n ON e.id_etudiant = n.id_etudiant AND n.id_module = ?
-             WHERE (${sectionFilters})
-             ORDER BY g.section, e.nom, e.prenom`,
-            [id_module]
-        );
-
         // Construire le CSV
-        const sectionsLabel = cmAffs.map(a => `${a.section} (${a.niveau})`).join(', ');
+        const sectionsSet = [...new Set(etudiants.map(e => e.section).filter(Boolean))];
+        const sectionsLabel = sectionsSet.join(', ') || '—';
         const BOM = '\uFEFF'; // UTF-8 BOM pour Excel
         let csv = BOM;
         csv += `PV de Notes - ${mod.nom_module} (${mod.semestre})\n`;
         csv += `Pondérations: TD=${(mod.poids_td * 100).toFixed(0)}%, TP=${(mod.poids_tp * 100).toFixed(0)}%, Exam=${(mod.poids_exam * 100).toFixed(0)}%\n`;
-        csv += `Sections: ${sectionsLabel}\n\n`;
+        csv += `Sections: ${sectionsLabel} — ${etudiants.length} étudiant(s)\n\n`;
         csv += `Matricule;Nom;Prénom;Groupe;Section;Note TD;Note TP;Note EF;Note ER;Moy Normale;Moy Rattrapage;Moyenne Finale;Résultat\n`;
 
         for (const etu of etudiants) {
@@ -272,10 +307,198 @@ const genererPV = async (req, res) => {
     }
 };
 
+// ============================================================
+// 6. relancerEnseignant
+// Envoyer un rappel à un enseignant en retard (notification simulée)
+// Prêt à brancher sur Nodemailer / SendGrid ultérieurement
+// ============================================================
+const relancerEnseignant = async (req, res) => {
+    try {
+        const id_enseignant = req.user.id_utilisateur;
+        const { id_affectation } = req.body;
+
+        if (!id_affectation) {
+            return res.status(400).json({ message: "id_affectation est obligatoire." });
+        }
+
+        // Récupérer info de l'affectation
+        const [affRows] = await db.query(
+            `SELECT a.id_module, a.id_utilisateur, a.statut_saisie,
+                    u.nom, u.prenom, u.email,
+                    g.libelle AS nom_groupe, m.nom_module
+             FROM affectations a
+             JOIN utilisateurs u ON a.id_utilisateur = u.id_utilisateur
+             LEFT JOIN groupes g ON a.id_groupe = g.id_groupe
+             JOIN modules m ON a.id_module = m.id_module
+             WHERE a.id_affectation = ?`,
+            [id_affectation]
+        );
+
+        if (affRows.length === 0) {
+            return res.status(404).json({ message: "Affectation introuvable." });
+        }
+
+        const aff = affRows[0];
+
+        // Vérifier que le demandeur est responsable de ce module
+        const estResp = await verifierResponsable(id_enseignant, aff.id_module);
+        if (!estResp) {
+            return res.status(403).json({
+                message: "Seul le responsable matière peut envoyer des rappels."
+            });
+        }
+
+        if (aff.statut_saisie === 'SOUMIS') {
+            return res.status(400).json({ message: "Cet enseignant a déjà soumis ses notes." });
+        }
+
+        // -- Notification simulée (log serveur) --
+        // TODO: Remplacer par un vrai envoi e-mail (Nodemailer)
+        console.log(`[RAPPEL] Notification envoyée à ${aff.nom} ${aff.prenom} (${aff.email}) pour le groupe ${aff.nom_groupe} — module ${aff.nom_module}`);
+
+        res.json({
+            message: `Rappel envoyé à ${aff.nom} ${aff.prenom} (${aff.email}) pour le groupe ${aff.nom_groupe}.`,
+            enseignant: { nom: aff.nom, prenom: aff.prenom, email: aff.email }
+        });
+    } catch (err) {
+        console.log("Erreur dans relancerEnseignant:", err);
+        res.status(500).json({ message: "Erreur lors de l'envoi du rappel." });
+    }
+};
+
+// ============================================================
+// 7. apercuNotesGroupe
+// Aperçu rapide des notes d'un groupe spécifique (pour la modale)
+// ============================================================
+const apercuNotesGroupe = async (req, res) => {
+    try {
+        const id_enseignant = req.user.id_utilisateur;
+        const { id_affectation } = req.query;
+
+        if (!id_affectation) {
+            return res.status(400).json({ message: "id_affectation est obligatoire." });
+        }
+
+        // Récupérer l'affectation et vérifier le module
+        const [affRows] = await db.query(
+            `SELECT a.id_module, a.id_groupe, a.type_seance, g.libelle AS nom_groupe, m.nom_module
+             FROM affectations a
+             LEFT JOIN groupes g ON a.id_groupe = g.id_groupe
+             JOIN modules m ON a.id_module = m.id_module
+             WHERE a.id_affectation = ?`,
+            [id_affectation]
+        );
+
+        if (affRows.length === 0) {
+            return res.status(404).json({ message: "Affectation introuvable." });
+        }
+
+        const aff = affRows[0];
+
+        const estResp = await verifierResponsable(id_enseignant, aff.id_module);
+        if (!estResp) {
+            return res.status(403).json({
+                message: "Seul le responsable matière peut consulter l'aperçu des notes."
+            });
+        }
+
+        // Récupérer les étudiants et leurs notes pour ce groupe/module
+        const [notes] = await db.query(
+            `SELECT e.matricule, e.nom, e.prenom,
+                    n.note_td, n.note_tp, n.note_ef, n.note_er,
+                    n.moyenne_finale, n.resultat
+             FROM etudiants e
+             LEFT JOIN notes n ON e.id_etudiant = n.id_etudiant AND n.id_module = ?
+             WHERE e.id_groupe = ?
+             ORDER BY e.nom, e.prenom`,
+            [aff.id_module, aff.id_groupe]
+        );
+
+        res.json({
+            groupe: aff.nom_groupe,
+            module: aff.nom_module,
+            type_seance: aff.type_seance,
+            total_etudiants: notes.length,
+            notes
+        });
+    } catch (err) {
+        console.log("Erreur dans apercuNotesGroupe:", err);
+        res.status(500).json({ message: "Erreur lors de la récupération de l'aperçu." });
+    }
+};
+
+// ============================================================
+// 8. cloturerModule
+// Verrouiller définitivement le module (lecture seule)
+// Marquer comme "Prêt" pour les délibérations globales
+// ============================================================
+const cloturerModule = async (req, res) => {
+    try {
+        const id_enseignant = req.user.id_utilisateur;
+        const { id_module } = req.body;
+
+        if (!id_module) {
+            return res.status(400).json({ message: "id_module est obligatoire." });
+        }
+
+        const estResp = await verifierResponsable(id_enseignant, id_module);
+        if (!estResp) {
+            return res.status(403).json({
+                message: "Seul le responsable matière peut clôturer le module."
+            });
+        }
+
+        // Vérifier que le module n'est pas déjà clôturé
+        const [modRows] = await db.query(
+            "SELECT est_cloture FROM modules WHERE id_module = ?",
+            [id_module]
+        );
+        if (modRows.length === 0) {
+            return res.status(404).json({ message: "Module introuvable." });
+        }
+        if (modRows[0].est_cloture === 1) {
+            return res.status(400).json({ message: "Ce module est déjà clôturé." });
+        }
+
+        // Vérifier que TOUS les groupes TD/TP ont soumis
+        const [pending] = await db.query(
+            `SELECT COUNT(*) AS cnt FROM affectations 
+             WHERE id_module = ? AND type_seance IN ('TD','TP') AND statut_saisie != 'SOUMIS'`,
+            [id_module]
+        );
+        if (pending[0].cnt > 0) {
+            return res.status(400).json({
+                message: `Impossible de clôturer : ${pending[0].cnt} groupe(s) n'ont pas encore soumis leurs notes.`
+            });
+        }
+
+        // Clôturer le module
+        await db.query(
+            "UPDATE modules SET est_cloture = 1 WHERE id_module = ?",
+            [id_module]
+        );
+
+        // Verrouiller toutes les affectations TD/TP (empêcher toute modification)
+        await db.query(
+            `UPDATE affectations SET statut_saisie = 'SOUMIS' 
+             WHERE id_module = ? AND type_seance IN ('TD','TP')`,
+            [id_module]
+        );
+
+        res.json({ message: "Module clôturé avec succès. Les notes sont désormais en lecture seule." });
+    } catch (err) {
+        console.log("Erreur dans cloturerModule:", err);
+        res.status(500).json({ message: "Erreur lors de la clôture du module." });
+    }
+};
+
 module.exports = {
     updatePoidsCoordonnateur,
     getStatutGroupes,
     deverrouillerGroupe,
     getMesModulesResponsable,
-    genererPV
+    genererPV,
+    relancerEnseignant,
+    apercuNotesGroupe,
+    cloturerModule
 };

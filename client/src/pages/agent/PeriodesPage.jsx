@@ -12,7 +12,6 @@ const NIVEAU_SEMESTERS = {
 
 /**
  * PeriodesPage — Gestion des Périodes de Saisie (UC-A04)
- * Correspond au Figma Page 12 (node 21:5456)
  *
  * L'agent peut ouvrir ou fermer la saisie des notes par affectation.
  * Les enseignants ne peuvent saisir les notes que si la période est ouverte.
@@ -136,7 +135,7 @@ export default function PeriodesPage() {
         <h2 className="page-header__title">Gestion des Périodes de Saisie</h2>
       </div>
 
-      {/* Barre de filtres + actions en masse — Figma : 3 selects + 2 boutons */}
+      {/* Barre de filtres + actions en masse */}
       <div className="filter-bar">
         <span style={{ fontWeight: 500, fontSize: 13, color: 'var(--text-secondary)' }}>Filtres:</span>
 
@@ -191,13 +190,13 @@ export default function PeriodesPage() {
         </button>
       </div>
 
-      {/* Bandeau d'information — Figma : alerte bleue info */}
+      {/* Bandeau d'information */}
       <div className="alert alert--info">
         <Info className="alert__icon" />
         Lorsqu'une période est ouverte, les enseignants peuvent saisir et modifier les notes pour les affectations correspondantes.
       </div>
 
-      {/* Tableau des affectations — Figma : colonnes complètes */}
+      {/* Tableau des affectations */}
       <div className="data-card">
         <table className="data-table">
           <thead>
@@ -228,7 +227,7 @@ export default function PeriodesPage() {
             ) : (
               filtered.map(a => (
                 <tr key={a.id_affectation}>
-                  {/* Enseignant — Figma : "M. Benali" → Initiale prénom + nom */}
+                  {/* Enseignant — Initiale prénom + nom */}
                   <td>{a.prenom_enseignant?.charAt(0)}. {a.nom_enseignant}</td>
 
                   {/* Module */}
@@ -243,10 +242,10 @@ export default function PeriodesPage() {
                   {/* Semestre */}
                   <td>{a.semestre || '—'}</td>
 
-                  {/* CC/EF — Figma : "40/60" */}
+                  {/* CC/EF */}
                   <td>{formatPoids(a.poids_exam, a.poids_td, a.poids_tp)}</td>
 
-                  {/* Statut Période — Figma : badge vert/rouge */}
+                  {/* Statut Période */}
                   <td>
                     <span
                       className={`status-badge ${
@@ -259,7 +258,7 @@ export default function PeriodesPage() {
                     </span>
                   </td>
 
-                  {/* Action — Figma : toggle switch + texte Ouvrir/Fermer */}
+                  {/* Action — toggle switch + texte Ouvrir/Fermer */}
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <label className="toggle">

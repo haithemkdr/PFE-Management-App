@@ -5,7 +5,6 @@ import '../shared.css';
 
 /**
  * SupervisionPage — Supervision des Supports de Cours (UC-A05)
- * Figma Page 13 (node 51:13416)
  *
  * Features:
  *  - Filter by instructor, module, file type

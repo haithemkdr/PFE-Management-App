@@ -439,7 +439,7 @@ const upsertCreneauAgent = async (req, res) => {
             "SELECT id_affectation, type_seance FROM affectations WHERE id_affectation = ?",
             [id_affectation]
         );
-        if (verif[0].length === 0) {
+        if (!verif || !verif[0] || verif[0].length === 0) {
             return res.status(404).json({ message: "Affectation introuvable." });
         }
 
@@ -1475,6 +1475,143 @@ const toggleResponsableMatiere = async (req, res) => {
 };
 
 
+// ============================================================
+// Dashboard "Responsables de Modules" — vue module-centric
+// ============================================================
+
+/**
+ * GET /agent/modules-responsables
+ * Retourne chaque module avec :
+ *   - responsable actuel (nom, prénom, grade)
+ *   - liste des enseignants candidats (ceux affectés à ce module)
+ */
+const getModulesWithResponsable = async (req, res) => {
+    try {
+        // 1. Tous les modules avec leur responsable actuel (s'il existe)
+        const [modules] = await db.query(`
+            SELECT 
+                m.id_module, m.nom_module, m.code_module, m.semestre, m.coefficient, m.credits,
+                ue.titre AS titre_ue,
+                resp_u.id_utilisateur AS resp_id,
+                resp_u.nom AS resp_nom,
+                resp_u.prenom AS resp_prenom,
+                resp_u.grade AS resp_grade,
+                resp_a.id_affectation AS resp_id_affectation
+            FROM modules m
+            LEFT JOIN unites_enseignement ue ON m.id_ue = ue.id_ue
+            LEFT JOIN (
+                SELECT a.id_affectation, a.id_module, a.id_utilisateur
+                FROM affectations a
+                WHERE a.est_responsable_matiere = 1
+                AND a.id_affectation = (
+                    SELECT MAX(a2.id_affectation) FROM affectations a2
+                    WHERE a2.id_module = a.id_module AND a2.est_responsable_matiere = 1
+                )
+            ) resp_a ON resp_a.id_module = m.id_module
+            LEFT JOIN utilisateurs resp_u ON resp_a.id_utilisateur = resp_u.id_utilisateur
+            ORDER BY m.semestre, m.nom_module
+        `);
+
+        // 2. Tous les enseignants affectés (candidats potentiels) groupés par module
+        const [candidats] = await db.query(`
+            SELECT 
+                a.id_affectation, a.id_module, a.type_seance, a.est_responsable_matiere,
+                u.id_utilisateur, u.nom, u.prenom, u.grade
+            FROM affectations a
+            JOIN utilisateurs u ON a.id_utilisateur = u.id_utilisateur
+            ORDER BY a.id_module, a.type_seance, u.nom
+        `);
+
+        // Grouper les candidats par id_module
+        const candidatsMap = {};
+        for (const c of candidats) {
+            if (!candidatsMap[c.id_module]) candidatsMap[c.id_module] = [];
+            candidatsMap[c.id_module].push({
+                id_affectation: c.id_affectation,
+                id_utilisateur: c.id_utilisateur,
+                nom: c.nom,
+                prenom: c.prenom,
+                grade: c.grade,
+                type_seance: c.type_seance,
+                est_responsable_matiere: c.est_responsable_matiere
+            });
+        }
+
+        // Enrichir les modules avec leurs candidats
+        const result = modules.map(m => ({
+            ...m,
+            candidats: candidatsMap[m.id_module] || []
+        }));
+
+        res.json(result);
+    } catch (err) {
+        console.error("Erreur getModulesWithResponsable:", err);
+        res.status(500).json({ message: "Erreur lors de la récupération des modules avec responsables." });
+    }
+};
+
+/**
+ * PUT /agent/modules/:id/responsable
+ * Body: { id_utilisateur }  — l'enseignant à désigner responsable
+ *        ou { id_utilisateur: null } pour retirer le responsable
+ */
+const setResponsableModule = async (req, res) => {
+    try {
+        const id_module = req.params.id;
+        const { id_utilisateur } = req.body;
+
+        // Cas retrait : on retire tous les responsables du module
+        if (!id_utilisateur) {
+            await db.query(
+                `UPDATE affectations SET est_responsable_matiere = 0 WHERE id_module = ?`,
+                [id_module]
+            );
+            return res.json({ message: "Responsable retiré du module." });
+        }
+
+        // Vérifier que l'enseignant a une affectation CM sur ce module
+        const [affCM] = await db.query(
+            `SELECT a.id_affectation, u.grade
+             FROM affectations a
+             JOIN utilisateurs u ON a.id_utilisateur = u.id_utilisateur
+             WHERE a.id_module = ? AND a.id_utilisateur = ? AND a.type_seance = 'CM'`,
+            [id_module, id_utilisateur]
+        );
+
+        if (affCM.length === 0) {
+            return res.status(400).json({
+                message: "Cet enseignant n'a pas d'affectation CM sur ce module. Seul un enseignant CM peut être désigné responsable."
+            });
+        }
+
+        // Vérification du grade
+        const grade = affCM[0].grade;
+        const gradesAutorises = ['MAA', 'MCA', 'MCB', 'Prof', 'Professeur'];
+        if (!gradesAutorises.includes(grade)) {
+            return res.status(400).json({
+                message: `Le grade "${grade || 'inconnu'}" ne permet pas d'être responsable de matière. Grade minimum requis : MAA.`
+            });
+        }
+
+        // Retirer l'ancien responsable du module
+        await db.query(
+            `UPDATE affectations SET est_responsable_matiere = 0 WHERE id_module = ? AND est_responsable_matiere = 1`,
+            [id_module]
+        );
+
+        // Désigner le nouveau responsable
+        await db.query(
+            `UPDATE affectations SET est_responsable_matiere = 1 WHERE id_affectation = ?`,
+            [affCM[0].id_affectation]
+        );
+
+        res.json({ message: "Responsable de matière désigné avec succès." });
+    } catch (err) {
+        console.error("Erreur setResponsableModule:", err);
+        res.status(500).json({ message: "Erreur lors de la désignation du responsable." });
+    }
+};
+
 module.exports = {
     // REQ-1 : Gestion des comptes enseignants
     getEnseignants,
@@ -1510,6 +1647,8 @@ module.exports = {
     // Responsable matière
     getEnseignantModules,
     toggleResponsableMatiere,
+    getModulesWithResponsable,
+    setResponsableModule,
     // Helpers pour le frontend
     getModules,
     getGroupes,

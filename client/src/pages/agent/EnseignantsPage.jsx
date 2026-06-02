@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../utils/api';
-import { Plus, Search, Pencil, Trash2, X, Download, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Plus, Search, Pencil, Trash2, X, Download, Eye, EyeOff } from 'lucide-react';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 import '../shared.css';
 
 export default function EnseignantsPage() {
@@ -13,46 +14,7 @@ export default function EnseignantsPage() {
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-
-  // ─── Module/Responsable modal state ───
-  const [respModal, setRespModal] = useState(null); // { id_utilisateur, nom, prenom }
-  const [respModules, setRespModules] = useState([]);
-  const [respLoading, setRespLoading] = useState(false);
-  const [confirmAction, setConfirmAction] = useState(null); // { group, action: 'assign'|'remove' }
-
-  // Group affectations by module+type+semestre to avoid repetition
-  const groupedModules = useMemo(() => {
-    const map = new Map();
-    respModules.forEach(m => {
-      const key = `${m.id_module}-${m.type_seance}-${m.semestre}`;
-      if (!map.has(key)) {
-        map.set(key, {
-          key,
-          id_module: m.id_module,
-          nom_module: m.nom_module,
-          type_seance: m.type_seance,
-          semestre: m.semestre,
-          niveau: m.niveau,
-          est_responsable_matiere: m.est_responsable_matiere,
-          sections: [],
-          cmAffectation: m.type_seance === 'CM' ? m : null
-        });
-      }
-      const entry = map.get(key);
-      // Build section/group labels
-      const parts = [];
-      if (m.section) parts.push(m.section);
-      if (m.nom_groupe) parts.push(m.nom_groupe);
-      const label = parts.join(' / ') || null;
-      if (label && !entry.sections.includes(label)) entry.sections.push(label);
-      // Track responsable status
-      if (m.est_responsable_matiere) {
-        entry.est_responsable_matiere = 1;
-        if (m.type_seance === 'CM') entry.cmAffectation = m;
-      }
-    });
-    return Array.from(map.values());
-  }, [respModules]);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', onConfirm: null });
 
   // Form state
   const emptyForm = { nom: '', prenom: '', email: '', matricule: '', grade: 'MAA', mot_de_passe: '' };
@@ -163,13 +125,21 @@ export default function EnseignantsPage() {
 
   // Delete enseignant
   function handleDelete(id) {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) return;
-    api.delete(`/agent/enseignants/${id}`)
-      .then(() => {
-        showToast('Enseignant supprimé', 'success');
-        setEnseignants(prev => prev.filter(e => e.id_utilisateur !== id));
-      })
-      .catch(err => showToast(err.response?.data?.message || 'Erreur suppression', 'error'));
+    setConfirmDialog({
+      open: true,
+      title: 'Supprimer l\'enseignant',
+      message: 'Êtes-vous sûr de vouloir supprimer cet enseignant ?',
+      variant: 'danger',
+      onConfirm: () => {
+        setConfirmDialog(prev => ({ ...prev, open: false }));
+        api.delete(`/agent/enseignants/${id}`)
+          .then(() => {
+            showToast('Enseignant supprimé', 'success');
+            setEnseignants(prev => prev.filter(e => e.id_utilisateur !== id));
+          })
+          .catch(err => showToast(err.response?.data?.message || 'Erreur suppression', 'error'));
+      }
+    });
   }
 
   // Export CSV
@@ -198,47 +168,6 @@ export default function EnseignantsPage() {
   function showToast(msg, type) {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
-  }
-
-  // ─── Responsable de module Modal ───
-  function openRespModal(enseignant) {
-    setRespModal({
-      id_utilisateur: enseignant.id_utilisateur,
-      nom: enseignant.nom,
-      prenom: enseignant.prenom,
-      grade: enseignant.grade
-    });
-    setRespLoading(true);
-    api.get(`/agent/enseignants/${enseignant.id_utilisateur}/modules`)
-      .then(res => setRespModules(res.data))
-      .catch(() => showToast('Erreur chargement modules', 'error'))
-      .finally(() => setRespLoading(false));
-  }
-
-  function closeRespModal() {
-    setRespModal(null);
-    setRespModules([]);
-    setConfirmAction(null);
-  }
-
-  function handleToggleResp(affectation) {
-    // MySQL returns integers; coerce to boolean explicitly
-    const isCurrentlyResponsable = Number(affectation.est_responsable_matiere) === 1;
-    const newVal = !isCurrentlyResponsable;
-    api.put('/agent/enseignants/responsable', {
-      id_affectation: affectation.id_affectation,
-      est_responsable: newVal
-    })
-      .then(res => {
-        showToast(res.data.message, 'success');
-        // Reload fresh data from server to guarantee UI matches DB
-        if (respModal) {
-          api.get(`/agent/enseignants/${respModal.id_utilisateur}/modules`)
-            .then(r => setRespModules(r.data))
-            .catch(() => {});
-        }
-      })
-      .catch(err => showToast(err.response?.data?.message || 'Erreur', 'error'));
   }
 
   return (
@@ -422,14 +351,7 @@ export default function EnseignantsPage() {
                       <button className="action-icon action-icon--edit" title="Modifier" onClick={() => handleEdit(e)}>
                         <Pencil size={15} />
                       </button>
-                      <button
-                        className="action-icon"
-                        title="Gérer responsable de module"
-                        onClick={() => openRespModal(e)}
-                        style={{ color: 'var(--brand-primary)' }}
-                      >
-                        <ShieldCheck size={15} />
-                      </button>
+
                       <button className="action-icon action-icon--delete" title="Supprimer" onClick={() => handleDelete(e.id_utilisateur)}>
                         <Trash2 size={15} />
                       </button>
@@ -442,157 +364,14 @@ export default function EnseignantsPage() {
         </table>
       </div>
 
-      {/* ─── Modal : Gestion Responsable de module ─── */}
-      {respModal && (
-        <div className="modal-overlay" onClick={closeRespModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 660 }}>
-            <div className="modal-header">
-              <h3 style={{ margin: 0, fontSize: 16 }}>
-                <ShieldCheck size={18} style={{ marginRight: 6, verticalAlign: 'middle' }} />
-                Responsable de module — {respModal.nom} {respModal.prenom}
-              </h3>
-              <button className="modal-close" onClick={closeRespModal}><X size={18} /></button>
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '8px 0 16px' }}>
-              Désignez cet enseignant comme responsable de module sur ses affectations CM.
-              {respModal.grade && !['MAA', 'MCA', 'MCB', 'Prof', 'Professeur'].includes(respModal.grade) && (
-                <span style={{ display: 'block', color: 'var(--semantic-danger)', marginTop: 4, fontWeight: 600 }}>
-                  ⚠ Grade {respModal.grade} — non éligible au rôle de responsable de module (MAA minimum requis)
-                </span>
-              )}
-            </p>
-
-            {respLoading ? (
-              <div style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted)' }}>Chargement…</div>
-            ) : groupedModules.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted)' }}>
-                Aucune affectation trouvée pour cet enseignant.
-              </div>
-            ) : (
-              <table className="data-table" style={{ fontSize: 13 }}>
-                <thead>
-                  <tr>
-                    <th>Module</th>
-                    <th>Type</th>
-                    <th>Niveau</th>
-                    <th>Semestre</th>
-                    <th>Section / Groupe</th>
-                    <th>Responsable</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {groupedModules.map(g => (
-                    <tr key={g.key}>
-                      <td style={{ fontWeight: 500 }}>{g.nom_module}</td>
-                      <td>
-                        <span className={`type-seance-badge type-seance-badge--${g.type_seance.toLowerCase()}`}>
-                          {g.type_seance}
-                        </span>
-                      </td>
-                      <td>{g.niveau || '—'}</td>
-                      <td>{g.semestre}</td>
-                      <td>{g.sections.length > 0 ? g.sections.join(', ') : '—'}</td>
-                      <td>
-                        {g.type_seance === 'CM' && g.cmAffectation ? (
-                          g.est_responsable_matiere ? (
-                            <button
-                              className="btn btn--sm"
-                              style={{
-                                background: 'var(--semantic-success)',
-                                color: '#fff',
-                                border: 'none',
-                                fontSize: 11,
-                                padding: '4px 12px',
-                                borderRadius: 6,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4
-                              }}
-                              title="Cliquer pour retirer le rôle"
-                              onClick={() => setConfirmAction({ group: g, action: 'remove' })}
-                            >
-                              <ShieldCheck size={13} /> Responsable
-                              <X size={12} style={{ marginLeft: 2, opacity: 0.8 }} />
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn--sm btn--outline"
-                              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 6, cursor: 'pointer' }}
-                              title="Désigner comme responsable de module"
-                              onClick={() => setConfirmAction({ group: g, action: 'assign' })}
-                            >
-                              Assigner
-                            </button>
-                          )
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* ─── Styled Confirmation Overlay ─── */}
-            {confirmAction && (
-              <div style={{
-                position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)',
-                borderRadius: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                zIndex: 10, backdropFilter: 'blur(2px)'
-              }}>
-                <div style={{
-                  background: '#fff', borderRadius: 12, padding: '24px 28px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.18)', maxWidth: 380, width: '90%', textAlign: 'center'
-                }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: '50%', margin: '0 auto 12px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: confirmAction.action === 'remove' ? 'var(--semantic-danger-light, #fee)' : 'var(--semantic-success-light, #e8f5e9)'
-                  }}>
-                    <ShieldCheck size={22} style={{ color: confirmAction.action === 'remove' ? 'var(--semantic-danger)' : 'var(--semantic-success)' }} />
-                  </div>
-                  <h4 style={{ margin: '0 0 8px', fontSize: 15 }}>
-                    {confirmAction.action === 'remove' ? 'Retirer le rôle ?' : 'Assigner le rôle ?'}
-                  </h4>
-                  <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: '0 0 20px', lineHeight: 1.5 }}>
-                    {confirmAction.action === 'remove'
-                      ? <>Voulez-vous retirer le rôle de responsable de module pour <strong>{confirmAction.group.nom_module}</strong> ({confirmAction.group.semestre}) ?</>
-                      : <>Désigner cet enseignant comme responsable de module pour <strong>{confirmAction.group.nom_module}</strong> ({confirmAction.group.semestre}) ?</>
-                    }
-                  </p>
-                  <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-                    <button
-                      className="btn btn--outline"
-                      style={{ fontSize: 13, padding: '7px 20px', borderRadius: 8 }}
-                      onClick={() => setConfirmAction(null)}
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      className="btn"
-                      style={{
-                        fontSize: 13, padding: '7px 20px', borderRadius: 8, border: 'none', color: '#fff',
-                        background: confirmAction.action === 'remove' ? 'var(--semantic-danger)' : 'var(--semantic-success)'
-                      }}
-                      onClick={() => {
-                        handleToggleResp(confirmAction.group.cmAffectation);
-                        setConfirmAction(null);
-                      }}
-                    >
-                      {confirmAction.action === 'remove' ? 'Retirer' : 'Confirmer'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Toast */}
       {toast && <div className={`toast toast--${toast.type}`}>{toast.msg}</div>}
+
+      <ConfirmModal
+        {...confirmDialog}
+        onCancel={() => setConfirmDialog(prev => ({ ...prev, open: false }))}
+      />
     </>
   );
 }

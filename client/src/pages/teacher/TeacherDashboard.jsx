@@ -61,9 +61,17 @@ export default function TeacherDashboard() {
   const ouvertes = affectations.filter((a) => a.periode_saisie_ouverte === 1).length;
   const fermees = affectations.filter((a) => a.periode_saisie_ouverte === 0).length;
 
-  // Detect the current semester: most frequent semestre among open affectations
+  // Determine current semester period based on date:
+  function getCurrentSemesters() {
+    return ['S1', 'S3', 'S5'];
+  }
+
+  // Detect the current semester: most frequent semestre among affectations in the current period
+  const CURRENT_SEMESTERS = getCurrentSemesters();
+  const currentAffectations = affectations.filter((a) => CURRENT_SEMESTERS.includes(a.semestre));
+  
   const semestreFreq = {};
-  for (const a of affectations.filter(a => a.periode_saisie_ouverte === 1)) {
+  for (const a of currentAffectations) {
     if (a.semestre) semestreFreq[a.semestre] = (semestreFreq[a.semestre] || 0) + 1;
   }
   const semestreActuel = Object.entries(semestreFreq).sort((a, b) => b[1] - a[1])[0]?.[0]

@@ -208,8 +208,7 @@ export default function NotesPage() {
     try {
       const aff = affectations.find(a => String(a.id_affectation) === selectedAffectation);
       await api.post('/notes/soumettre', {
-        id_module: Number(selectedModule),
-        id_groupe: aff?.id_groupe ? Number(aff.id_groupe) : null,
+        id_affectation: Number(selectedAffectation),
       });
       setStatutSaisie('SOUMIS');
       showToast('Notes soumises et verrouillées avec succès', 'success');
